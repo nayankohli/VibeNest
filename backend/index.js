@@ -6,32 +6,35 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const session = require('express-session'); 
 const User = require('./models/user.js');
-const path = require('path'); // Import the path module
+const path = require('path'); 
 
-// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static files from the React app
-app.use(express.static('../frontend/build')); // Adjust the path if needed
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'jaihind@1480', 
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } 
+}));
 
-// Set up server with socket.io
+app.use(express.static('../frontend/build')); 
+
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// MongoDB connection using the environment variable
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
-// Socket.io connection
 io.on('connection', (socket) => {
     console.log('New client connected');
-    
+
     socket.on('message', (msg) => {
         io.emit('message', msg);
     });
@@ -39,10 +42,8 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
-// Test API route
 app.get('/', (req, res) => res.send('API running'));
 
-// Register route
 app.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -61,7 +62,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Login route
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -72,6 +73,8 @@ app.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
+        req.session.userId = user._id; 
+
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
     } catch (error) {
@@ -79,10 +82,25 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Serve React application for any other routes
+app.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Could not log out' });
+        }
+        res.json({ message: 'Logged out successfully' });
+    });
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
 });
 
-// Start the server
-server.listen(5000, () => console.log('Server running on port 3000'));
+app.get('/session-check', (req, res) => {
+    if (req.session.userId) {
+        return res.status(200).json({ message: 'User is logged in' });
+    } else {
+        return res.status(401).json({ message: 'User is not logged in' });
+    }
+});
+
+server.listen(5000, () => console.log('Server running on port 5000'));

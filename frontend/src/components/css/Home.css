@@ -1,0 +1,78 @@
+/* General dashboard layout */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: rgb(215, 255, 235);
+}
+
+/* Grid container for content */
+.grid-container {
+    display: grid;
+    grid-template-columns: 20% 57% 20%; /* Sidebar takes 20%, main content takes 60%, right sidebar takes 20% */
+    grid-template-rows: 60px 25vh 25vh 1fr; /* Navbar is 60px, additional items are 10vh, main content takes the remaining space */
+    gap: 20px; /* Add spacing between grid elements */
+    height: 100%; /* Full height */
+    padding: 20px; /* Add padding inside the grid container */
+}
+
+/* Navbar occupies the full width */
+.navbar-container {
+    grid-column: 1 / 4; /* Navbar spans all columns */
+    grid-row: 1; /* Place navbar in the first row */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+/* Left sidebar occupies the first column */
+.left-sidebar {
+    grid-column: 1; /* First column */
+    grid-row: 2 / 5; /* Spans rows 2 to 4 */
+    background-color: #fff;
+    padding: 20px; /* Padding for sidebar */
+    height: calc(100vh - 60px); /* Adjust for navbar height */
+    overflow-y: auto; /* Scrollable if content overflows */
+    border-radius: 8px;
+}
+
+/* Main content occupies the second column */
+.main-content {
+    grid-column: 2; /* Second column */
+    grid-row: 4; /* Spans row 4 */
+    background-color: #fff;
+    padding: 20px;
+    overflow-y: auto; /* Scrollable if content overflows */
+    border-radius: 8px;
+}
+
+/* Right sidebar occupies the third column */
+.right-sidebar {
+    grid-column: 3; /* Third column */
+    grid-row: 2 / 5; /* Spans rows 2 to 4 */
+    background-color: #fff;
+    padding: 20px; /* Padding for sidebar */
+    height: calc(100vh - 60px); /* Adjust for navbar height */
+    overflow-y: auto;
+    border-radius: 8px;
+}
+
+/* First additional item */
+.additional-item-1 {
+    grid-column: 2; /* Second column */
+    grid-row: 2; /* First additional item in the second row */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Second additional item */
+.additional-item-2 {
+    grid-column: 2; /* Second column */
+    grid-row: 3; /* Second additional item in the third row */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}

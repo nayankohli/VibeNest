@@ -5,5 +5,14 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true }
 });
-
-module.exports = mongoose.model('User', UserSchema);
+const EditedProfile=new mongoose.Schema({
+    name:String,
+    username:String,
+    profileImage:String,
+    banner:String,
+    bio:String
+})
+module.exports = {
+    User:mongoose.model('User', UserSchema),
+    EditedProfile:mongoose.model('EditedProfile', EditedProfile)
+}

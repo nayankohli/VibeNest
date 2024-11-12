@@ -1,0 +1,116 @@
+/* Background and Card Layout */
+.vh-100 {
+    height: 100vh;
+  }
+  
+  .bg-image {
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .mask {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .card {
+    border-radius: 15px;
+  }
+  
+  /* Gradient Backgrounds */
+  .gradient-custom-3 {
+    background: linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5));
+  }
+  
+  .gradient-custom-4 {
+    background: linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1));
+  }
+  
+  /* Form Styling */
+  .form-outline {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-outline input {
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+    font-size: 1rem;
+    color: #495057;
+    outline: none;
+  }
+  
+  .form-outline input:focus {
+    background-color: #fff;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .form-label {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+  
+  .form-check-input {
+    margin-top: 0.3rem;
+  }
+  
+  .form-check-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    width:100%;
+    margin-top: 20px;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+  
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+  }
+  
+  .text-body {
+    color: #495057 !important;
+  }
+  
+  .fw-bold {
+    font-weight: bold;
+  }
+  
+  /* Text and Links */
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-uppercase {
+    text-transform: uppercase;
+  }
+  
+  .text-muted {
+    color: #6c757d !important;
+  }
+  
+  .mb-5 {
+    margin-bottom: 3rem !important;
+  }
+  
+  .mt-5 {
+    margin-top: 3rem !important;
+  }
+  
