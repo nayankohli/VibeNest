@@ -4,19 +4,40 @@ import Register from './components/Register';
 import Login from './components/Login'; 
 import Home from './components/Home';
 import ProfilePage from './components/ProfilePage';
-import { UserProvider } from './components/UserContext';
 import EditProfile from './components/EditProfile';
+import { UserProvider } from './components/UserContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <UserProvider>  {/* Only wrap with UserProvider here */}
+    <UserProvider>
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/edit-profile" element={<EditProfile />} /> 
-        {/* Add other routes here */}
+        
+        {/* Protect sensitive routes */}
+        <Route
+          path="/home"
+          element={
+              <Home />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+           
+              <ProfilePage />
+            
+          }
+        />
+        <Route
+          path="/edit-profile"
+          element={
+            <ProtectedRoute>
+              <EditProfile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </UserProvider>
   );

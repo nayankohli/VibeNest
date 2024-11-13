@@ -12,7 +12,7 @@ const Home = () => {
     useEffect(() => {
         const checkSession = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/session-check'); 
+                const response = await axios.get('http://localhost:5000/api/session-check'); 
                 if (response.status !== 200) {
                     navigate('/login');
                 }

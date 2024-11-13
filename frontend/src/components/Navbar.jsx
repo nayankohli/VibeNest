@@ -24,17 +24,22 @@ const Navbar = () => {
         };
     }, []);
 
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:5000/logout');
-            localStorage.removeItem('token');
-            navigate('/login');
-            if (socket) socket.disconnect(); // Disconnect the socket on logout
-        } catch (error) {
-            console.error('Logout failed:', error);
-            alert('Failed to logout');
-        }
-    };
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+        await axios.post('http://localhost:5000/logout');
+        localStorage.removeItem('token');
+        navigate('/login');
+        if (socket) socket.disconnect();
+    } catch (error) {
+        console.error('Logout failed:', error);
+        alert('Failed to logout');
+    } finally {
+        setIsLoggingOut(false);
+    }
+};
     const handleViewProfile = () => {
         navigate('/profile');
     };

@@ -1,40 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import './css/EditProfile.css';
 
 function EditProfilePage() {
+    const [searchParams] = useSearchParams();
+    const userId = searchParams.get('userId'); // Get userId from query string
+
     const [bannerPhoto, setBannerPhoto] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [username, setUsername] = useState('');
     const [bio, setBio] = useState('');
 
-    const handleBannerPhotoChange = (e) => setBannerPhoto(URL.createObjectURL(e.target.files[0]));
-    const handleProfilePhotoChange = (e) => setProfilePhoto(URL.createObjectURL(e.target.files[0]));
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const response = await axios.get(`/api/profile/${userId}`);
+                const { username, bio } = response.data;
+                setUsername(username);
+                setBio(bio);
+            } catch (error) {
+                console.error('Error fetching profile data:', error.response?.data || error.message);
+            }
+        };
+        if (userId) fetchProfileData();
+    }, [userId]);
 
-    const handleSubmit = (e) => {
+    const handleBannerPhotoChange = (e) => setBannerPhoto(e.target.files[0]);
+    const handleProfilePhotoChange = (e) => setProfilePhoto(e.target.files[0]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Logic to handle form submission
-        console.log('Updated profile details:', { username, bio, bannerPhoto, profilePhoto });
+        const formData = new FormData();
+        formData.append('userId', userId);
+        formData.append('bannerPhoto', bannerPhoto);
+        formData.append('profilePhoto', profilePhoto);
+        formData.append('username', username);
+        formData.append('bio', bio);
+
+        try {
+            const response = await axios.post('/api/edit-profile', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            alert(response.data.message);
+        } catch (error) {
+            console.error('Error updating profile:', error.response?.data || error.message);
+        }
     };
 
     return (
         <div className="edit-profile-page">
             <h2>Edit Profile</h2>
             <form onSubmit={handleSubmit} className="edit-profile-form">
-                {/* Banner Photo */}
                 <div className="form-group">
                     <label htmlFor="bannerPhoto">Banner Photo</label>
-                    <input type="file" id="bannerPhoto" accept="image/*" onChange={handleBannerPhotoChange} />
-                    {bannerPhoto && <img src={bannerPhoto} alt="Banner Preview" className="banner-preview" />}
+                    <input type="file" id="bannerPhoto" accept="image/jpeg, image/png" onChange={handleBannerPhotoChange} />
                 </div>
-
-                {/* Profile Photo */}
                 <div className="form-group">
                     <label htmlFor="profilePhoto">Profile Photo</label>
-                    <input type="file" id="profilePhoto" accept="image/*" onChange={handleProfilePhotoChange} />
-                    {profilePhoto && <img src={profilePhoto} alt="Profile Preview" className="profile-preview" />}
+                    <input type="file" id="profilePhoto" accept="image/jpeg, image/png" onChange={handleProfilePhotoChange} />
                 </div>
-
-                {/* Username */}
                 <div className="form-group">
                     <label htmlFor="username">Username</label>
                     <input
@@ -45,8 +70,6 @@ function EditProfilePage() {
                         placeholder="Enter your username"
                     />
                 </div>
-
-                {/* Bio */}
                 <div className="form-group">
                     <label htmlFor="bio">Bio</label>
                     <textarea
@@ -57,8 +80,6 @@ function EditProfilePage() {
                         rows="4"
                     />
                 </div>
-
-                {/* Submit Button */}
                 <button type="submit" className="save-button">Save Changes</button>
             </form>
         </div>

@@ -9,41 +9,41 @@ import './css/ProfilePage.css';
 function ProfilePage() {
     const { user } = useUser();
     const [activeTab, setActiveTab] = useState('posts');
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+
     const handleEditClick = () => {
-        navigate('/edit-profile'); // Navigate to the EditProfile page
+        if (user) navigate(`/edit-profile?userId=${user.userId}`);
     };
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="main">
             <div className="navbar-container">
-                    <Navbar /> {/* Navbar grid item */}
-                </div>
-                <div className="profile-page">
-            {/* Banner Section */}
-            <div className="profile-banner">
-                <img src={user.bannerPhoto} alt="Banner" className="banner-photo" />
+                <Navbar />
             </div>
-            
-            {/* Profile Info Section */}
-            <div className="profile-info-container">
-            <img src={user.profilePhoto} alt="Profile" className="profile-photo" />
-                <div className="profile-details">
-                    <h2>{user.username}</h2>
-                    <div className="stats">
-                        <span>Connections: {user.connections}</span> | <span>Posts: {user.posts}</span>
+            <div className="profile-page">
+                <div className="profile-banner">
+                    <img src={user.bannerPhoto || '/default-banner.jpg'} alt="Banner" className="banner-photo" />
+                </div>
+                <div className="profile-info-container">
+                    <img src={user.profilePhoto || '/default-profile.jpg'} alt="Profile" className="profile-photo" />
+                    <div className="profile-details">
+                        <h2>{user.username}</h2>
+                        <div className="stats">
+                            <span>Connections: {user.connections || 0}</span> | <span>Posts: {user.posts || 0}</span>
+                        </div>
+                        <p className="profile-bio">{user.bio || 'No bio available.'}</p>
                     </div>
-                    <p className="profile-bio">{user.bio}</p>
+                    <button className="edit-profile-btn" onClick={handleEditClick}>
+                        Edit Profile
+                    </button>
                 </div>
-                <button className="edit-profile-btn" onClick={handleEditClick}>Edit Profile</button>
+                <ProfileNavBar activeTab={activeTab} setActiveTab={setActiveTab} />
+                <ProfileContent activeTab={activeTab} />
             </div>
-
-            {/* Profile Nav Bar */}
-            <ProfileNavBar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-            {/* Content based on selected tab */}
-            <ProfileContent activeTab={activeTab} />
-        </div>
         </div>
     );
 }
