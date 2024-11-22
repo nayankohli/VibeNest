@@ -5,12 +5,10 @@ import Login from './components/Login';
 import Home from './components/Home';
 import ProfilePage from './components/ProfilePage';
 import EditProfile from './components/EditProfile';
-import { UserProvider } from './components/UserContext';
-import ProtectedRoute from './components/ProtectedRoute';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <UserProvider>
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -33,13 +31,10 @@ function App() {
         <Route
           path="/edit-profile"
           element={
-            <ProtectedRoute>
               <EditProfile />
-            </ProtectedRoute>
           }
         />
       </Routes>
-    </UserProvider>
   );
 }
 

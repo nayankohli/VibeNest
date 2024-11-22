@@ -1,30 +1,37 @@
-import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
 import './css/Login.css'; // Import your CSS file
-
+import React, { useEffect, useState } from 'react';
+import Loading from "./Loading.jsx";
+import { Link } from "react-router-dom";
+import { login } from "../actions/UserActions.jsx";
+import { useDispatch, useSelector } from "react-redux";
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();  
+    const navigate = useNavigate();
+
+    
+  const dispatch = useDispatch();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { loading, userInfo } = userLogin;
+
+    useEffect(() => {
+        if(userInfo){
+            navigate("/home");
+        }
+    }, [navigate,userInfo]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post('http://localhost:5000/login', { email, password });
-            localStorage.setItem('token', response.data.token);
-            
-            // Redirect to the dashboard
-            navigate('/home');
-        } catch (error) {
-            console.error(error);
-            alert('Login failed!'); // Add better error handling as needed
-        }
+        dispatch(login(email, password));
     };
 
     return (
         <section className="vh-100 bg-image" style={{ backgroundImage: "url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp')" }}>
             <div className="mask d-flex align-items-center h-100 gradient-custom-3">
                 <div className="container h-100">
+                {loading&&<Loading/>}
                     <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="col-12 col-md-9 col-lg-7 col-xl-6">
                             <div className="card" style={{ borderRadius: "15px" }}>
@@ -77,7 +84,7 @@ const Login = () => {
                                             </button>
                                         </div>
                                         <p className="text-center text-muted mt-2 mb-0">
-                                            Don't have an account? <a href="/register" className="fw-bold text-body"><u>Register</u></a>
+                                            Don't have an account? <Link to="/register" className="fw-bold text-body"><u>Register</u></Link>
                                         </p>
                                     </form>
                                 </div>

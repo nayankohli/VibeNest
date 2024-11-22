@@ -1,22 +1,23 @@
 import React from 'react';
-import { useUser } from './UserContext';
+import {useSelector } from "react-redux";
 import './css/ProfileContent.css';
 
 function ProfileContent({ activeTab }) {
-    const { user } = useUser();  // Access the user data from context
+    const userLogin = useSelector((state) => state.userLogin);
+    const { userInfo } = userLogin; // Access the user data from context
 
     const renderContent = () => {
         switch (activeTab) {
             case 'posts':
-                return <div>Displaying {user.username}'s posts...</div>;
+                return <div>Displaying {userInfo.username}'s posts...</div>;
             case 'about':
-                return <div>About {user.username}: {user.bio}</div>;
+                return <div>About {userInfo.username}: {userInfo.bio}</div>;
             case 'connections':
-                return <div>{user.username}'s connections: {user.connections}</div>;
+                return <div>{userInfo.username}'s connections: {userInfo.connections}</div>;
             case 'media':
-                return <div>Media shared by {user.username}...</div>;
+                return <div>Media shared by {userInfo.username}...</div>;
             case 'videos':
-                return <div>{user.username}'s videos...</div>;
+                return <div>{userInfo.username}'s videos...</div>;
             default:
                 return <div>Loading...</div>;
         }

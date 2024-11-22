@@ -2,24 +2,24 @@
 .dashboard {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    background-color: rgb(215, 255, 235);
+    height: 100%;
+    background-color: rgba(180, 246, 212, 0.334);
 }
 
 /* Grid container for content */
 .grid-container {
-    display: grid;
-    grid-template-columns: 20% 57% 20%; /* Sidebar takes 20%, main content takes 60%, right sidebar takes 20% */
-    grid-template-rows: 60px 25vh 25vh 1fr; /* Navbar is 60px, additional items are 10vh, main content takes the remaining space */
+    display: flex; /* Navbar is 60px, additional items are 10vh, main content takes the remaining space */
     gap: 20px; /* Add spacing between grid elements */
     height: 100%; /* Full height */
     padding: 20px; /* Add padding inside the grid container */
+    margin-top:4em;
+    align-items: center;
+    justify-content: center;
+
 }
 
 /* Navbar occupies the full width */
 .navbar-container {
-    grid-column: 1 / 4; /* Navbar spans all columns */
-    grid-row: 1; /* Place navbar in the first row */
     position: fixed;
     top: 0;
     left: 0;
@@ -28,51 +28,161 @@
 }
 
 /* Left sidebar occupies the first column */
-.left-sidebar {
-    grid-column: 1; /* First column */
-    grid-row: 2 / 5; /* Spans rows 2 to 4 */
-    background-color: #fff;
-    padding: 20px; /* Padding for sidebar */
+.left-sidebar {/* Spans rows 2 to 4 */
+    background-color: #ffffff; /* Softer background for better contrast */
     height: calc(100vh - 60px); /* Adjust for navbar height */
-    overflow-y: auto; /* Scrollable if content overflows */
+    overflow-y: auto; /* Make sidebar scrollable if content exceeds height */
+    border-radius: 12px; /* Slightly more rounded corners for a modern look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border: 1px solid #e0e0e0; /* Light border for separation */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    gap: 15px; /* Space between elements */
+    transition: all 0.3s ease-in-out; /* Smooth hover or interaction effects */
+    /* margin-left:60px; */
+    width:20em;
+}
+
+.left-sidebar:hover { 
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Slightly larger shadow on hover */
+}
+
+.left-sidebar .profile-page .profile-info-container h2 {
+    font-size: 1.8rem; /* Adjust heading size */
+    font-weight: 600; /* Bold heading */
+    color: #333; /* Dark text color for readability */
+    margin-bottom: 0px;
+}
+
+.left-sidebar p {
+    font-size: 1rem; /* Standard text size */
+    color: #9f9f9f; /* Slightly muted color for text */
+    line-height: 1.5; /* Improve text readability */
+}
+
+.left-sidebar .profile-page {
+    margin-top: 0px; /* Add spacing at the top of the profile page */
+}
+
+.left-sidebar .profile-page .profile-banner {
+    height: 60px;
+}
+
+.left-sidebar .profile-page .profile-info-container img {
+    margin-top: 50px;
+    width: 5em; /* Responsive images */
+    height: 5em;
+    border-radius: 8px; /* Consistent corner rounding for images */
+    object-fit: cover; /* Ensure images cover the allotted space */
+    border: 2px solid rgb(255, 255, 255);
+}
+
+.left-sidebar .profile-details {
+    display: flex;
+    flex-direction: column; /* Align profile details vertically */
+    align-items: center; /* Center-align content */
+    text-align: center; /* Center-align text */
+}
+
+.left-sidebar .profile-details .stats {
+    display: flex; /* Display stats in a row */
+    padding: 20px;
+    padding-bottom: 10px;
+    gap: 33px;
+    justify-content: space-between; /* Space out items evenly */
+    border-bottom: 1px solid #e0e0e0; /* Bottom border for separation */
+}
+
+.left-sidebar .profile-details .stats p {
+    font-size: 0.8rem;
+}
+
+.left-sidebar .profile-details .stats > div {
+    flex: 1; /* Make each stat equal in size */
+    text-align: center; /* Center-align the text */
+    position: relative; /* Enable absolute positioning for the divider */
+}
+
+.left-sidebar .profile-details .stats > div:not(:last-child)::after {
+    content: ""; /* Divider line */
+    position: absolute;
+    top: 10%; /* Adjust the line to not touch the edges */
+    right: -16px; /* Place the divider in the gap between stats */
+    height: 65%; /* Shorten the height for better alignment */
+    width: 1px; /* Thin line */
+    background-color: #e0e0e0; /* Divider color */
+}
+
+.center-content {
+    padding: 20px;
     border-radius: 8px;
+    display: flex; /* Ensure it works with gap */
+    flex-direction: column; /* Stack child elements vertically */
+    justify-content: space-between;
+    gap: 2em;
+    padding-top: 0px;
+    position:sticky;
+    margin-top: -18em;
+    background-color: inherit; 
+    max-height: 50em;
 }
 
 /* Main content occupies the second column */
 .main-content {
-    grid-column: 2; /* Second column */
-    grid-row: 4; /* Spans row 4 */
+    overflow-y: auto; 
     background-color: #fff;
-    padding: 20px;
-    overflow-y: auto; /* Scrollable if content overflows */
-    border-radius: 8px;
+    border-radius: 12px; /* Slightly more rounded corners for a modern look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding:20px;
+    color:#9f9f9f;
+    text-align: center;
+    max-height: 30em;
+    /* Scrollable if content overflows */
+}
+.main-content h4{
+    font-size: 1em;
+    font-weight:400;
 }
 
 /* Right sidebar occupies the third column */
-.right-sidebar {
-    grid-column: 3; /* Third column */
-    grid-row: 2 / 5; /* Spans rows 2 to 4 */
-    background-color: #fff;
-    padding: 20px; /* Padding for sidebar */
+.right-sidebar {/* Spans rows 2 to 4 */
+    background-color: #ffffff; /* Softer background for better contrast */
     height: calc(100vh - 60px); /* Adjust for navbar height */
-    overflow-y: auto;
-    border-radius: 8px;
+    overflow-y: auto; /* Make sidebar scrollable if content exceeds height */
+    border-radius: 12px; /* Slightly more rounded corners for a modern look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border: 1px solid #e0e0e0; /* Light border for separation */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    gap: 15px; /* Space between elements */
+    transition: all 0.3s ease-in-out; /* Smooth hover or interaction effects */
+    padding:20px;
+    width:20em;
+    /* margin-right:60px; */
 }
 
+.right-sidebar h2{
+    font-size: 1.5rem;
+    font-weight: 400;
+}
 /* First additional item */
 .additional-item-1 {
-    grid-column: 2; /* Second column */
-    grid-row: 2; /* First additional item in the second row */
     background-color: #fff;
     padding: 20px;
-    border-radius: 8px;
+    height: 8em;
+    border-radius: 12px; /* Slightly more rounded corners for a modern look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position:static;
+    margin-top: 0; /* Attach it to the top */
+    z-index: 10; /* Ensure it appears above other elements if overlapping */
 }
 
+
 /* Second additional item */
-.additional-item-2 {
-    grid-column: 2; /* Second column */
-    grid-row: 3; /* Second additional item in the third row */
+.additional-item-2 {/* Second additional item in the third row */
     background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
+    max-height: 10em;
+    border-radius: 12px; /* Slightly more rounded corners for a modern look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding:0;
 }

@@ -1,23 +1,59 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './css/Register.css';
+import Loading from "./Loading.jsx";
+import { register } from "../actions/UserActions.jsx";
+import { useDispatch, useSelector } from "react-redux";
+
 const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [agreeTerms, setAgreeTerms] = useState(false); // Track checkbox state
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const userRegister = useSelector((state) => state.userRegister);
+  const { loading, userInfo } = userRegister;
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/home");
+    }
+  }, [userInfo, navigate]);
+
+  const validateForm = () => {
+    if (!username || !email || !password || !confirmPassword) {
+      alert('All fields are required.');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Please enter a valid email.');
+      return false;
+    }
+    if (password !== confirmPassword) {
+      alert('Passwords do not match.');
+      return false;
+    }
+    if (!agreeTerms) {
+      alert('You must agree to the terms and conditions.');
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    try {
-      await axios.post('http://localhost:5000/register', { username, email, password });
-      alert('Registered successfully');
-    } catch (error) {
-      console.error(error);
+    if (validateForm()) {
+      try {
+        dispatch(register(username, email, password));
+        alert('Registered successfully! Please login to your account.');
+      } catch (error) {
+        console.error(error);
+        alert('Registration failed. Please try again.');
+      }
     }
   };
 
@@ -25,6 +61,7 @@ const Register = () => {
     <section className="vh-100 bg-image" style={{ backgroundImage: "url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp')" }}>
       <div className="mask d-flex align-items-center h-100 gradient-custom-3">
         <div className="container h-100">
+          {loading && <Loading />}
           <div className="row d-flex justify-content-center align-items-center h-100">
             <div className="col-12 col-md-9 col-lg-6 col-xl-6">
               <div className="card" style={{ borderRadius: "15px" }}>
@@ -33,52 +70,57 @@ const Register = () => {
 
                   <form onSubmit={handleSubmit}>
                     <div className="form-outline mb-2">
-                      <input 
-                        type="text" 
-                        id="form3Example1cg" 
-                        className="form-control form-control-lg" 
+                      <input
+                        type="text"
+                        id="form3Example1cg"
+                        className="form-control form-control-lg"
                         placeholder="Your Name"
-                        onChange={(e) => setUsername(e.target.value)} 
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                       />
-                      
                     </div>
 
                     <div className="form-outline mb-2">
-                      <input 
-                        type="email" 
-                        id="form3Example3cg" 
-                        className="form-control form-control-lg" 
+                      <input
+                        type="email"
+                        id="form3Example3cg"
+                        className="form-control form-control-lg"
                         placeholder="Your Email"
-                        onChange={(e) => setEmail(e.target.value)} 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
 
                     <div className="form-outline mb-2">
-                      <input 
-                        type="password" 
-                        id="form3Example4cg" 
-                        className="form-control form-control-lg" 
+                      <input
+                        type="password"
+                        id="form3Example4cg"
+                        className="form-control form-control-lg"
                         placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)} 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
 
                     <div className="form-outline mb-2">
-                      <input 
-                        type="password" 
-                        id="form3Example4cdg" 
-                        className="form-control form-control-lg" 
+                      <input
+                        type="password"
+                        id="form3Example4cdg"
+                        className="form-control form-control-lg"
                         placeholder="Repeat your password"
-                        onChange={(e) => setConfirmPassword(e.target.value)} 
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                     </div>
 
                     <div className="form-check d-flex justify-content-center mt-4 mb-3">
-                      <input 
-                        className="form-check-input me-2" 
-                        type="checkbox" 
-                        value="" 
-                        id="form2Example3cg" 
+                      <input
+                        className="form-check-input me-2"
+                        type="checkbox"
+                        value={agreeTerms}
+                        id="form2Example3cg"
+                        checked={agreeTerms}
+                        onChange={(e) => setAgreeTerms(e.target.checked)}
                       />
                       <label className="form-check-label" htmlFor="form2Example3cg">
                         I agree to all statements in <a href="#!" className="text-body"><u>Terms of service</u></a>
