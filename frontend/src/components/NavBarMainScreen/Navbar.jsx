@@ -11,9 +11,9 @@ import {
   faLock,
   faRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
-import "./css/Navbar.css";
+import "./Navbar.css";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../actions/UserActions.jsx";
+import { logout } from "../../actions/UserActions.jsx";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

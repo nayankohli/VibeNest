@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Register.css';
-import Loading from "./Loading.jsx";
-import { register } from "../actions/UserActions.jsx";
+import './Register.css';
+import Loading from "../Loading.jsx";
+import { register } from "../../actions/UserActions.jsx";
 import { useDispatch, useSelector } from "react-redux";
 
 const Register = () => {

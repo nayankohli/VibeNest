@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom'; 
-import './css/Login.css'; // Import your CSS file
+import './Login.css'; // Import your CSS file
 import React, { useEffect, useState } from 'react';
-import Loading from "./Loading.jsx";
+import Loading from "../Loading.jsx";
 import { Link } from "react-router-dom";
-import { login } from "../actions/UserActions.jsx";
+import { login } from "../../actions/UserActions.jsx";
 import { useDispatch, useSelector } from "react-redux";
 const Login = () => {
     const [email, setEmail] = useState('');

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import ProfileNavBar from './ProfileNavBar';
-import ProfileContent from './ProfileContent';
-import Navbar from './Navbar';
-import './css/ProfilePage.css';
+import ProfileNavBar from '../navbar/ProfileNavBar';
+import ProfileContent from '../content/ProfileContent';
+import Navbar from '../../NavBarMainScreen/Navbar';
+import './ProfilePage.css';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
 
@@ -47,7 +47,7 @@ function ProfilePage() {
                     <div className="profile-details">
                         <h2>{userInfo.name || 'Anonymous User'}</h2>
                         <div className="stats">
-                            <span>Connections: {userInfo.connections || 0}</span> | <span>Posts: {userInfo.posts || 0}</span>
+                            <span>Followers: {userInfo.followers.length }</span> | <span>Posts: {userInfo.posts.length}</span>
                         </div>
                         <p className="profile-bio">{userInfo.bio || 'No bio available.'}</p>
                     </div>

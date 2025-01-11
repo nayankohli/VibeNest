@@ -1,10 +1,10 @@
 import React from 'react';
-import './css/ProfileNavBar.css';
+import './ProfileNavBar.css';
 
 function ProfileNavBar({ activeTab, setActiveTab }) {
     return (
         <div className="profile-nav-bar">
-            {['posts', 'about', 'connections', 'media', 'videos'].map(tab => (
+            {['posts', 'about', 'followers', 'media', 'videos'].map(tab => (
                 <button
                     key={tab}
                     className={`nav-button ${activeTab === tab ? 'active' : ''}`}

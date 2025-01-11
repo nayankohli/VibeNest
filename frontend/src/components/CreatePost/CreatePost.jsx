@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import "./css/CreatePost.css";
+import "./CreatePost.css";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage,faVideo, faFaceSmile} from "@fortawesome/free-solid-svg-icons";
+import { faImage, faVideo, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
+import { createPost } from "../../actions/PostActions"; // Import createPost action
+
 const CreatePost = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -45,7 +48,10 @@ const CreatePost = () => {
 
   const handlePost = () => {
     console.log("Post created:", postData);
-    // Add API call or logic for handling the post here
+
+    // Dispatch the createPost action with caption and media
+    dispatch(createPost(postData.caption, postData.media));
+
     closePopup();
   };
 
@@ -54,32 +60,45 @@ const CreatePost = () => {
       {/* Collapsed State */}
       {!isPopupOpen && (
         <div className="create-post-box">
-            <div className="first-row">
-                <div className="profileImage" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-                <img
-            src={
-              "http://localhost:5000" + userInfo?.profileImage ||
-              defaultProfileImage
-            }
-            alt="Profile"
-            className="profile-photo"
-          />
-                </div>
-          <input
-            type="text"
-            name="caption"
-            value={postData.caption}
-            onChange={handleInputChange}
-            placeholder="What's on your mind?"
-            className={`caption-input ${isInputFocused ? "active" : ""}`}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          />
+          <div className="first-row">
+            <div
+              className="profileImage"
+              onClick={() => navigate('/profile')}
+              style={{ cursor: 'pointer' }}
+            >
+              <img
+                src={
+                  "http://localhost:5000" + userInfo?.profileImage ||
+                  defaultProfileImage
+                }
+                alt="Profile"
+                className="profile-photo"
+              />
             </div>
+            <input
+              type="text"
+              name="caption"
+              value={postData.caption}
+              onChange={handleInputChange}
+              placeholder="What's on your mind?"
+              className={`caption-input ${isInputFocused ? "active" : ""}`}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />
+          </div>
           <div className="button-group">
-            <button onClick={openPopup}><FontAwesomeIcon icon={faImage} style={{ color: "green" }}/>Photo</button>
-            <button onClick={openPopup}><FontAwesomeIcon icon={faVideo} style={{ color: "red" }} />Video</button>
-            <button onClick={openPopup}><FontAwesomeIcon icon={faFaceSmile} style={{ color: "blue" }}/>Feeling/Activity</button>
+            <button onClick={openPopup}>
+              <FontAwesomeIcon icon={faImage} style={{ color: "green" }} />
+              Photo
+            </button>
+            <button onClick={openPopup}>
+              <FontAwesomeIcon icon={faVideo} style={{ color: "red" }} />
+              Video
+            </button>
+            <button onClick={openPopup}>
+              <FontAwesomeIcon icon={faFaceSmile} style={{ color: "blue" }} />
+              Feeling/Activity
+            </button>
           </div>
         </div>
       )}

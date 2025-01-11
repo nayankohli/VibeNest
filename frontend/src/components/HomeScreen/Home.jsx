@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import "./css/Home.css";
+import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Navbar from "./Navbar";
-import CreatePost from './CreatePost';
+import Navbar from "../NavBarMainScreen/Navbar";
+import CreatePost from '../CreatePost/CreatePost';
 
 const Home = () => {
   const navigate = useNavigate();

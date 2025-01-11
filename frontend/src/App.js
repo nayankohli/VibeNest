@@ -1,10 +1,10 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Register from './components/Register'; 
-import Login from './components/Login'; 
-import Home from './components/Home';
-import ProfilePage from './components/ProfilePage';
-import EditProfile from './components/EditProfile';
+import Register from './components/registerScreen/Register'; 
+import Login from './components/loginScreen/Login'; 
+import Home from './components/HomeScreen/Home';
+import ProfilePage from './components/Profile/profilePage/ProfilePage';
+import EditProfile from './components/Profile/editProfile/EditProfile';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+
 const UserSchema = new mongoose.Schema({
     name:{ type: String, required: false },
     username: { type: String, required: true },
@@ -10,12 +11,13 @@ const UserSchema = new mongoose.Schema({
     bio:{ type: String, required: false },
     followers:{type:[String],required:false},
     following:{type:[String],required:false},
-    posts:{type:[String],required:false}
+    posts:{type:[mongoose.Schema.Types.ObjectId],ref:'Post',required:false}
 },
 {
     timestamps:true,
 }
 );
+
 UserSchema.pre("save",async function(next){
     if(!this.isModified("password")){
         next();
@@ -29,5 +31,5 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
   };
 
 module.exports = {
-    User:mongoose.model('User', UserSchema)
+    User: mongoose.model('User', UserSchema)
 }

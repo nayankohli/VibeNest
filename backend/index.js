@@ -49,6 +49,9 @@ if (process.env.NODE_ENV === "production") {
 const userRoutes=require("./routes/userRoutes.js");
 app.use("/api/users",userRoutes);
 
+const postRoutes=require("./routes/postRoutes.js");
+app.use("/api/posts",postRoutes);
+
 //Middlewares
 
 const { notFound,errorHandler } = require('./middlewares/errorMiddleware.js');

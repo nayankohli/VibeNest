@@ -1,7 +1,7 @@
 import React from 'react';
 import {useSelector } from "react-redux";
-import './css/ProfileContent.css';
-
+import './ProfileContent.css';
+import DisplayPosts from '../displayPosts/DisplayPosts';
 function ProfileContent({ activeTab }) {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin; // Access the user data from context
@@ -9,11 +9,11 @@ function ProfileContent({ activeTab }) {
     const renderContent = () => {
         switch (activeTab) {
             case 'posts':
-                return <div>Displaying {userInfo.username}'s posts...</div>;
+                return <DisplayPosts/>;
             case 'about':
-                return <div>About {userInfo.username}: {userInfo.bio}</div>;
-            case 'connections':
-                return <div>{userInfo.username}'s connections: {userInfo.connections}</div>;
+                return <div> {userInfo.bio}</div>;
+            case 'followers':
+                return <div> {userInfo.followers}</div>;
             case 'media':
                 return <div>Media shared by {userInfo.username}...</div>;
             case 'videos':

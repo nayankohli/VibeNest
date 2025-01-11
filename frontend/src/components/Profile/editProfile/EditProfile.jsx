@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Loading from "./Loading";
-import './css/EditProfile.css';
+import Loading from "../../Loading";
+import './EditProfile.css';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfile } from "../actions/UserActions";
+import { updateProfile } from "../../../actions/UserActions";
 
 function EditProfilePage() {
     const navigate = useNavigate();
