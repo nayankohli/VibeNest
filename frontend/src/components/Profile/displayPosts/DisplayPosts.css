@@ -1,101 +1,100 @@
-/* postsPage.css */
+/* Scoped styles for DisplayPosts */
+.display-posts-container {
+  padding: 20px;
+}
 
-.posts-page-container {
-    padding: 20px;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .posts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .post-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .post-header {
-    display: flex;
-    align-items: center;
-  }
-  
-  .profile-image img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .post-info {
-    margin-left: 10px;
-  }
-  
-  .post-body h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-  
-  .post-body p {
-    font-size: 16px;
-    margin-bottom: 15px;
-  }
-  
-  .post-media {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .post-media img {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-  
-  .post-footer {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  
-  button {
-    padding: 10px 15px;
-    border: none;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  .comments-section {
-    margin-top: 15px;
-  }
-  
-  .comment {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .comment-author img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .comment p {
-    font-size: 14px;
-  }
-  
+.display-posts-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.display-posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.display-posts-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.display-posts-header {
+  display: flex;
+  align-items: center;
+}
+
+.display-posts-profile-image img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.display-posts-info {
+  margin-left: 10px;
+}
+
+.display-posts-body h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.display-posts-body p {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.display-posts-media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.display-posts-media img,
+.display-posts-media video {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.display-posts-footer {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.display-posts-footer button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.display-posts-footer button:hover {
+  background-color: #0056b3;
+}
+
+.display-posts-comments-section {
+  margin-top: 15px;
+}
+
+.display-posts-comment {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.display-posts-comment-author img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.display-posts-comment p {
+  font-size: 14px;
+}

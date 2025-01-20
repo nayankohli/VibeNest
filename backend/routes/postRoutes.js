@@ -4,7 +4,7 @@ const { createPost, likePost, addComment, getAllPosts, deletePost, upload} = req
 const { protect } = require('../middlewares/authMiddleware.js');
 
 // Route for creating a post (uploading up to 5 media files)
-router.post('/create',protect, upload.array('media', 5), createPost ); // Accepts up to 5 media files
+router.post('/create',protect, createPost ); // Accepts up to 5 media files
 
 router.post('/like/:id', protect, likePost);
 

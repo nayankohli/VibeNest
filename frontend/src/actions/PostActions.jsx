@@ -18,7 +18,7 @@ import {
   import axios from "axios";
   
   // Create Post
-  export const createPost = (title, content) => async (dispatch, getState) => {
+  export const createPost = (caption, mediaFiles) => async (dispatch, getState) => {
     try {
       dispatch({ type: POST_CREATE_REQUEST });
   
@@ -28,14 +28,18 @@ import {
   
       const config = {
         headers: {
-          "Content-type": "application/json",
+          "Content-type": "multipart/form-data",
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
   
+      const formData = new FormData();
+      formData.append('caption', caption);
+      mediaFiles.forEach((file) => formData.append('media', file));
+  
       const { data } = await axios.post(
         "http://localhost:5000/api/posts/create",
-        { title, content },
+        formData,
         config
       );
   
@@ -47,6 +51,7 @@ import {
       });
     }
   };
+  
   
   // Like Post
   export const likePost = (postId) => async (dispatch, getState) => {
@@ -110,20 +115,33 @@ import {
   };
   
   // Fetch All Posts
-  export const fetchAllPosts = () => async (dispatch) => {
-    try {
-      dispatch({ type: POST_FETCH_ALL_REQUEST });
-  
-      const { data } = await axios.get("http://localhost:5000/api/posts");
-  
-      dispatch({ type: POST_FETCH_ALL_SUCCESS, payload: data });
-    } catch (error) {
-      dispatch({
-        type: POST_FETCH_ALL_FAIL,
-        payload: error.response?.data?.message || error.message,
-      });
-    }
-  };
+  // Fetch All Posts
+export const fetchAllPosts = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: POST_FETCH_ALL_REQUEST });
+
+    // Access the user token from state
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.get("http://localhost:5000/api/posts/all", config);
+
+    dispatch({ type: POST_FETCH_ALL_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: POST_FETCH_ALL_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
   
   // Delete Post
   export const deletePost = (postId) => async (dispatch, getState) => {

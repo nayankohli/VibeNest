@@ -47,10 +47,15 @@ const CreatePost = () => {
   };
 
   const handlePost = () => {
-    console.log("Post created:", postData);
+    if (!postData.caption && !postData.media) {
+      alert("Please add some content to your post.");
+      return;
+    }
+
+    const mediaFiles = postData.media ? Array.from(postData.media) : [];
 
     // Dispatch the createPost action with caption and media
-    dispatch(createPost(postData.caption, postData.media));
+    dispatch(createPost(postData.caption, mediaFiles));
 
     closePopup();
   };
@@ -68,8 +73,9 @@ const CreatePost = () => {
             >
               <img
                 src={
-                  "http://localhost:5000" + userInfo?.profileImage ||
-                  defaultProfileImage
+                  userInfo?.profileImage
+                    ? `http://localhost:5000${userInfo.profileImage}`
+                    : defaultProfileImage
                 }
                 alt="Profile"
                 className="profile-photo"
