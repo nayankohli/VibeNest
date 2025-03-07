@@ -101,6 +101,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.name = req.body.name || user.name;
     user.username = req.body.username || user.username;
     user.bio = req.body.bio || user.bio;
+    user.dob = req.body.dob || user.dob;
+    user.gender = req.body.gender || user.gender;
+    user.jobProfile = req.body.jobProfile || user.jobProfile;
+    user.location = req.body.location || user.location;
 
     // Update profileImage if uploaded
     if (req.files && req.files.profileImage) {
@@ -119,6 +123,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       username: updatedUser.username,
       bio: updatedUser.bio,
+      dob: updatedUser.dob,
+      gender: updatedUser.gender,
+      jobProfile: updatedUser.jobProfile,
+      location: updatedUser.location,
       profileImage: updatedUser.profileImage,
       banner: updatedUser.banner,
       followers: updatedUser.followers,
@@ -132,4 +140,141 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser, updateUserProfile, upload };
+
+// Search users by username
+const searchUsers = asyncHandler(async (req, res) => {
+  try {
+    // Get the search query from the request
+    const query = req.query.query;
+
+    // Validate the query
+    if (!query || query.trim() === "") {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    // Search for users whose username matches the query (case-insensitive)
+    const users = await User.find({
+      username: { $regex: query, $options: "i" }, // "i" makes the search case-insensitive
+    }).select("username profileImage name"); // Return only the required fields
+
+    // Respond with the search results
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error searching users:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+const fetchProfile = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  console.log(userId);
+  try {
+    const userProfile = await User.findById(userId); // Fetch user data from DB
+    if (!userProfile) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log(userProfile);
+    res.json(userProfile);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+const allUsers = asyncHandler(async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  res.send(users);
+});
+
+const followOrUnfollow = async (req, res) => {
+  try {
+      const followKrneWala = req.user._id; // patel
+      const jiskoFollowKrunga = req.params.id; // shivani
+      if (followKrneWala === jiskoFollowKrunga) {
+          return res.status(400).json({
+              message: 'You cannot follow/unfollow yourself',
+              success: false
+          });
+      }
+
+      const user = await User.findById(followKrneWala);
+      const targetUser = await User.findById(jiskoFollowKrunga);
+
+      if (!user || !targetUser) {
+          return res.status(400).json({
+              message: 'User not found',
+              success: false
+          });
+      }
+      // mai check krunga ki follow krna hai ya unfollow
+      const isFollowing = user.following.includes(jiskoFollowKrunga);
+      if (isFollowing) {
+          // unfollow logic ayega
+          await Promise.all([
+              User.updateOne({ _id: followKrneWala }, { $pull: { following: jiskoFollowKrunga } }),
+              User.updateOne({ _id: jiskoFollowKrunga }, { $pull: { followers: followKrneWala } }),
+          ])
+          return res.status(200).json({ message: 'Unfollowed successfully', success: true });
+      } else {
+          // follow logic ayega
+          await Promise.all([
+              User.updateOne({ _id: followKrneWala }, { $push: { following: jiskoFollowKrunga } }),
+              User.updateOne({ _id: jiskoFollowKrunga }, { $push: { followers: followKrneWala } }),
+          ])
+          return res.status(200).json({ message: 'followed successfully', success: true });
+      }
+  } catch (error) {
+      console.log(error);
+  }
+}
+
+const getFollowers = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.params.id; // Get userId from the request parameters
+    console.log(userId);
+
+    // Fetch the user by ID and get the array of followers' IDs
+    const user = await User.findById(userId).populate('followers'); // This just gives us the IDs of followers
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Create an empty array to store the follower details
+    const people = [];
+
+    // Use for...of loop to handle async/await properly
+    for (const id of user.followers) {
+      // Fetch each follower's details by ID and populate the required fields
+      const follower = await User.findById(id).select('name profileImage username jobTitle');
+
+      // Check if the follower exists and push to the people array
+      if (follower) {
+        people.push(follower);
+      }
+    }
+
+    // Check if followers exist
+    if (people.length === 0) {
+      return res.status(404).json({ message: 'No followers found for this user' });
+    }
+
+    // Send back the list of followers' details
+    console.log(people);
+    res.json(people);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+
+
+module.exports = { registerUser, authUser, updateUserProfile, upload ,searchUsers,fetchProfile,allUsers,followOrUnfollow,getFollowers};

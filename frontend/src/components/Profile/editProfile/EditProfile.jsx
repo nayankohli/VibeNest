@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Loading from "../../Loading";
-import './EditProfile.css';
+
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfile } from "../../../actions/UserActions";
+import { updateProfile, resetUserUpdate } from "../../../actions/UserActions";
 
 function EditProfilePage() {
     const navigate = useNavigate();
@@ -19,6 +19,10 @@ function EditProfilePage() {
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
+    const [dob, setDob] = useState('');
+    const [location, setLocation] = useState('');
+    const [gender, setGender] = useState('');
+    const [jobProfile, setJobProfile] = useState('');
 
     const [bannerPreview, setBannerPreview] = useState(null);
     const [profilePreview, setProfilePreview] = useState(null);
@@ -29,6 +33,10 @@ function EditProfilePage() {
         } else {
             setName(userInfo.name || '');
             setBio(userInfo.bio || '');
+            setDob(userInfo.dob ? userInfo.dob.split('T')[0] : '');
+            setLocation(userInfo.location || '');
+            setGender(userInfo.gender || '');
+            setJobProfile(userInfo.jobProfile || '');
             setBannerPreview(userInfo.banner || null);
             setProfilePreview(userInfo.profileImage || null);
         }
@@ -37,9 +45,10 @@ function EditProfilePage() {
     useEffect(() => {
         if (success) {
             alert("Profile updated successfully");
-            navigate("/profile");
+            navigate("/profile/" + userInfo._id);
+            dispatch(resetUserUpdate()); 
         }
-    }, [success, navigate]);
+    }, [success, navigate, dispatch]);
 
     useEffect(() => {
         return () => {
@@ -68,71 +77,73 @@ function EditProfilePage() {
         e.preventDefault();
 
         const formData = new FormData();
-        formData.append('userId', userInfo._id); // Backend should expect `userId`
+        formData.append('userId', userInfo._id); 
         if (bannerPhoto) formData.append('banner', bannerPhoto);
         if (profilePhoto) formData.append('profileImage', profilePhoto);
         formData.append('name', name);
         formData.append('bio', bio);
+        formData.append('dob', dob);
+        formData.append('location', location);
+        formData.append('gender', gender);
+        formData.append('jobProfile', jobProfile);
 
         dispatch(updateProfile(formData));
     };
 
     return (
-        <div className="edit-profile-page">
-            <h2>Edit Profile</h2>
-            <form onSubmit={handleSubmit} className="edit-profile-form">
-                {loading && <Loading />}
-                {error && <p className="error-message">{error}</p>}
-
-                <div className="form-group">
-                    <label htmlFor="bannerPhoto">Banner Photo</label>
-                    <input
-                        type="file"
-                        id="bannerPhoto"
-                        accept="image/jpeg, image/png"
-                        onChange={handleBannerPhotoChange}
-                    />
-                    {bannerPreview && (
-                        <img src={bannerPreview} alt="Banner Preview" className="preview-image" />
-                    )}
+        <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
+            {loading && <Loading />}
+            <h2 className="text-2xl font-bold mb-4 text-green-600">Edit Profile</h2>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+                {loading && <div className="loading"></div>}
+                {error && <p className="text-red-500">{error}</p>}
+                <div className="flex space-x-4">
+                    <div className="w-1/2">
+                        <label htmlFor="bannerPhoto" className="font-semibold text-gray-700">Banner Photo</label>
+                        <input type="file" id="bannerPhoto" accept="image/jpeg, image/png" onChange={handleBannerPhotoChange} className="block w-full text-sm text-gray-600 border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-green-500" />
+                        {bannerPreview && <img src={bannerPreview} className="w-full max-h-40 object-cover rounded-md mt-2" />}
+                    </div>
+                    <div className="w-1/2">
+                        <label htmlFor="profilePhoto" className="font-semibold text-gray-700">Profile Photo</label>
+                        <input type="file" id="profilePhoto" accept="image/jpeg, image/png" onChange={handleProfilePhotoChange} className="block w-full text-sm text-gray-600 border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-green-500" />
+                        {profilePreview && <img src={profilePreview}  className="w-24 h-24 rounded-full object-cover mt-2" />}
+                    </div>
                 </div>
-
-                <div className="form-group">
-                    <label htmlFor="profilePhoto">Profile Photo</label>
-                    <input
-                        type="file"
-                        id="profilePhoto"
-                        accept="image/jpeg, image/png"
-                        onChange={handleProfilePhotoChange}
-                    />
-                    {profilePreview && (
-                        <img src={profilePreview} alt="Profile Preview" className="preview-image" />
-                    )}
+                <div className="flex space-x-4">
+                    <div className="w-1/3">
+                        <label htmlFor="name" className="font-semibold text-gray-700">Name</label>
+                        <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-green-500" />
+                    </div>
+                    <div className="w-1/3">
+                        <label htmlFor="dob" className="font-semibold text-gray-700">Date of Birth</label>
+                        <input type="date" id="dob" value={dob} onChange={(e) => setDob(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-green-500" />
+                    </div>
+                    <div className="w-1/3">
+                        <label htmlFor="gender" className="font-semibold text-gray-700">Gender</label>
+                        <select id="gender" value={gender} onChange={(e) => setGender(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
                 </div>
-
-                <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Enter your name"
-                    />
+                <div className="flex space-x-4">
+                    <div className="w-1/2">
+                        <label htmlFor="location" className="font-semibold text-gray-700">Location</label>
+                        <input type="text" id="location" value={location} onChange={(e) => setLocation(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-green-500" />
+                    </div>
+                    <div className="w-1/2">
+                        <label htmlFor="jobProfile" className="font-semibold text-gray-700">Job Profile</label>
+                        <input type="text" id="jobProfile" value={jobProfile} onChange={(e) => setJobProfile(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-green-500" />
+                    </div>
                 </div>
-
-                <div className="form-group">
-                    <label htmlFor="bio">Bio</label>
-                    <textarea
-                        id="bio"
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                        placeholder="Tell us about yourself"
-                        rows="4"
-                    />
+                <div>
+                    <label htmlFor="bio" className="font-semibold text-gray-700">Bio</label>
+                    <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows="4" className="w-full p-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-green-500"></textarea>
                 </div>
-
-                <button type="submit" className="save-button">Save Changes</button>
+                <button type="submit" className="w-full bg-green-300 hover:bg-green-400 font-bold py-2 rounded-md">
+                    Save Changes
+                </button>
             </form>
         </div>
     );

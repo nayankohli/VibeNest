@@ -1,8 +1,10 @@
 const { Post } = require('../models/posts.js');
+const {User}=require("../models/user.js");
 const asyncHandler = require('express-async-handler');
 const multer = require('multer');
 const path = require('path');
-
+const cloudinary =require("../utils/cloudinary.js");
+const Comment = require("../models/comment.js");
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
@@ -30,80 +32,180 @@ const createPost = [
   asyncHandler(async (req, res) => {
     console.log('Create Post Endpoint Hit');
     const { caption } = req.body;
-console.log(caption);
-console.log(req.files);
+
+    console.log(caption);
+    console.log(req.files);
+
     if (!req.files || req.files.length > 5) {
       res.status(400);
       throw new Error('You can upload a maximum of 5 media items per post.');
     }
 
-    const mediaPaths = req.files.map((file) => `/uploads/${file.filename}`);
+    try {
+      const mediaPaths = req.files.map((file) => `/uploads/${file.filename}`);
+      if (mediaPaths.length > 5) {
+        return res.status(400).json({ message: 'Exceeds the limit of 5 media files per post' });
+      }
 
-    const post = await Post.create({
-      caption,
-      media: mediaPaths,
-      postedBy: req.user._id,
-      comments: [],
-      likes: [],
-    });
-console.log(post);
-    if (post) {
+      // Create a new post
+      const post = await Post.create({
+        caption,
+        media: mediaPaths,
+        postedBy: req.user._id,
+        comments: [],
+        likes: [],
+      });
+
+      console.log('Post Created:', post);
+
+      // Add the post ID to the user's schema
+      const user = await User.findById(req.user._id);
+      if (user) {
+        user.posts.unshift(post._id);
+        await user.save();
+        console.log('Post added to user:', user);
+      }
+
       res.status(201).json(post);
-    } else {
-      res.status(400);
-      throw new Error('Invalid post data');
+    } catch (error) {
+      console.error('Error creating post:', error);
+      res.status(500).json({ message: 'Server error' });
     }
   }),
 ];
 
+
 // Like or unlike a post
 const likePost = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  try {
+    const likeKrneWalaUserKiId = req.user._id;
+    const postId = req.params.id; 
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-  if (post) {
-    if (!post.likes.includes(req.user._id)) {
-      post.likes.push(req.user._id);
-    } else {
-      post.likes = post.likes.filter((id) => id.toString() !== req.user._id.toString());
+    // like logic started
+    await post.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } });
+    await post.save();
+
+    // implement socket io for real time notification
+    const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
+     
+    const postOwnerId = post.postedBy.toString();
+    if(postOwnerId !== likeKrneWalaUserKiId){
+        // emit a notification event
+        const notification = {
+            type:'like',
+            userId:likeKrneWalaUserKiId,
+            userDetails:user,
+            postId,
+            message:'Your post was liked'
+        }
+        const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+        io.to(postOwnerSocketId).emit('notification', notification);
     }
 
-    await post.save();
-    res.json(post);
-  } else {
-    res.status(404);
-    throw new Error('Post not found');
-  }
+    return res.status(200).json({message:'Post liked', success:true});
+} catch (error) {
+
+}
 });
+
+ const dislikePost = async (req, res) => {
+  try {
+      const likeKrneWalaUserKiId = req.user._id;
+      const postId = req.params.id;
+      const post = await Post.findById(postId);
+      if (!post) return res.status(404).json({ message: 'Post not found', success: false });
+
+      // like logic started
+      await post.updateOne({ $pull: { likes: likeKrneWalaUserKiId } });
+      await post.save();
+
+      // implement socket io for real time notification
+      const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
+      const postOwnerId = post.postedBy.toString();
+      if(postOwnerId !== likeKrneWalaUserKiId){
+          // emit a notification event
+          const notification = {
+              type:'dislike',
+              userId:likeKrneWalaUserKiId,
+              userDetails:user,
+              postId,
+              message:'Your post was liked'
+          }
+          const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+          io.to(postOwnerSocketId).emit('notification', notification);
+      }
+
+
+
+      return res.status(200).json({message:'Post disliked', success:true});
+  } catch (error) {
+
+  }
+}
 
 // Add a comment to a post
-const addComment = asyncHandler(async (req, res) => {
-  const { text } = req.body;
+const addComment = async (req,res) =>{
+    try {
+        const postId = req.params.id;
+        const commentKrneWalaUserKiId = req.user._id;
 
-  const post = await Post.findById(req.params.id);
+        const {text} = req.body;
 
-  if (post) {
-    const comment = {
-      text,
-      commentedBy: req.user._id,
-      createdAt: new Date(),
-    };
+        const post = await Post.findById(postId);
 
-    post.comments.push(comment);
-    await post.save();
-    res.json(post);
-  } else {
-    res.status(404);
-    throw new Error('Post not found');
+        if(!text) return res.status(400).json({message:'text is required', success:false});
+
+        const comment = await Comment.create({
+            text,
+            commentedBy:commentKrneWalaUserKiId,
+            post:postId
+        })
+
+        await comment.populate({
+            path:'commentedBy',
+            select:"username profileImage jobProfile"
+        });
+        
+        post.comments.push(comment._id);
+        await post.save();
+
+        return res.status(201).json({
+            message:'Comment Added',
+            comment,
+            success:true
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+ const getCommentsOfPost = async (req,res) => {
+  try {
+      const postId = req.params.id;
+
+      const comments = await Comment.find({post:postId}).populate('commentedBy', 'username profileImage jobProfile');
+
+      if(!comments) return res.status(404).json({message:'No comments found for this post', success:false});
+
+      return res.status(200).json({success:true,comments});
+
+  } catch (error) {
+      console.log(error);
   }
-});
+}
 
 // Fetch all posts
 const getAllPosts = asyncHandler(async (req, res) => {
+  const userId=req.params.id;
+  console.log(userId);
   console.log('Get All Posts Endpoint Hit');
   try {
-    const posts = await Post.find()
-      .populate('postedBy', 'username profileImage')
-      .populate('comments.commentedBy', 'username profileImage');
+    const posts = await Post.find({ postedBy: userId })
+      .populate('postedBy', 'username profileImage jobProfile')
+      .populate('comments.commentedBy', 'username profileImage jobProfile');
     console.log(posts);
 
     if (posts.length > 0) {
@@ -120,29 +222,44 @@ const getAllPosts = asyncHandler(async (req, res) => {
 
 // Delete a post
 const deletePost = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  try {
+    const post = await Post.findById(req.params.id);
 
-  if (post) {
-    // Check if the logged-in user is the one who created the post or an admin
-    if (post.postedBy.toString() === req.user._id.toString() || req.user.isAdmin) {
-      await post.remove(); // Delete the post
-      res.json({ message: 'Post deleted successfully' });
+    if (post) {
+      if (post.postedBy.toString() === req.user._id.toString() || req.user.isAdmin) {
+        const user = await User.findById(post.postedBy);
+        if (user) {
+          user.posts = user.posts.filter((postId) => postId.toString() !== req.params.id);
+          await user.save();
+        }
+        await Post.deleteOne({ _id: req.params.id });
+        
+        res.json({ message: 'Post deleted successfully' });
+      } else {
+        res.status(401);
+        throw new Error('You are not authorized to delete this post');
+      }
     } else {
-      res.status(401);
-      throw new Error('You are not authorized to delete this post');
+      res.status(404);
+      throw new Error('Post not found');
     }
-  } else {
-    res.status(404);
-    throw new Error('Post not found');
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+  
 
 // Export all controllers
 module.exports = {
   createPost,
   likePost,
+  dislikePost,
   addComment,
   getAllPosts,
   deletePost,
-  upload, // Exporting upload middleware for potential direct usage
+  upload,
+  getCommentsOfPost // Exporting upload middleware for potential direct usage
 };

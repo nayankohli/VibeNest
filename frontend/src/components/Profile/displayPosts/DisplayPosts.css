@@ -8,93 +8,85 @@
   margin-bottom: 20px;
 }
 
-.display-posts-list {
+.display-posts-container .display-posts-list {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.display-posts-card {
-  background-color: #fff;
+.display-posts-container .display-posts-card {
+  background-color: #f8f8f8;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 50em;
 }
 
-.display-posts-header {
+.display-posts-container .display-posts-header {
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 
-.display-posts-profile-image img {
+.display-posts-container .display-posts-header .display-posts-profile-image img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.display-posts-info {
-  margin-left: 10px;
+.display-posts-container .display-posts-body {
+  margin-top: 10px;
 }
 
-.display-posts-body h3 {
-  font-size: 20px;
-  margin-bottom: 10px;
-}
-
-.display-posts-body p {
-  font-size: 16px;
-  margin-bottom: 15px;
-}
-
-.display-posts-media {
+.display-posts-container .display-posts-body .display-posts-media {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.display-posts-media img,
-.display-posts-media video {
+.display-posts-container .display-posts-body .display-posts-media img,
+.display-posts-container .display-posts-body .display-posts-media video {
   max-width: 100%;
   border-radius: 8px;
 }
 
-.display-posts-footer {
+.display-posts-container .display-posts-footer {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
 }
 
-.display-posts-footer button {
-  padding: 10px 15px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
+.display-posts-container .display-posts-footer .like-button {
+  color: gray;
   cursor: pointer;
-  border-radius: 5px;
+  transition: color 0.3s;
 }
 
-.display-posts-footer button:hover {
-  background-color: #0056b3;
+.display-posts-container .display-posts-footer .like-button:hover {
+  color: red;
 }
 
-.display-posts-comments-section {
+.display-posts-container .display-posts-comments-section {
   margin-top: 15px;
 }
 
-.display-posts-comment {
+.display-posts-container .display-posts-comments-section .display-posts-comment {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.display-posts-comment-author img {
+.display-posts-container .display-posts-comments-section .display-posts-comment img {
   width: 30px;
   height: 30px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.display-posts-comment p {
+.display-posts-container .display-posts-comments-section .display-posts-comment p {
   font-size: 14px;
 }

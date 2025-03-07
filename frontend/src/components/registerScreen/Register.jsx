@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Register.css';
 import Loading from "../Loading.jsx";
 import { register } from "../../actions/UserActions.jsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -58,91 +57,71 @@ const Register = () => {
   };
 
   return (
-    <section className="vh-100 bg-image" style={{ backgroundImage: "url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp')" }}>
-      <div className="mask d-flex align-items-center h-100 gradient-custom-3">
-        <div className="container h-100">
-          {loading && <Loading />}
-          <div className="row d-flex justify-content-center align-items-center h-100">
-            <div className="col-12 col-md-9 col-lg-6 col-xl-6">
-              <div className="card" style={{ borderRadius: "15px" }}>
-                <div className="card-body p-5">
-                  <h2 className="text-uppercase text-center mt-4 mb-4">Create an account</h2>
-
-                  <form onSubmit={handleSubmit}>
-                    <div className="form-outline mb-2">
-                      <input
-                        type="text"
-                        id="form3Example1cg"
-                        className="form-control form-control-lg"
-                        placeholder="Your Name"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="form-outline mb-2">
-                      <input
-                        type="email"
-                        id="form3Example3cg"
-                        className="form-control form-control-lg"
-                        placeholder="Your Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="form-outline mb-2">
-                      <input
-                        type="password"
-                        id="form3Example4cg"
-                        className="form-control form-control-lg"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="form-outline mb-2">
-                      <input
-                        type="password"
-                        id="form3Example4cdg"
-                        className="form-control form-control-lg"
-                        placeholder="Repeat your password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="form-check d-flex justify-content-center mt-4 mb-3">
-                      <input
-                        className="form-check-input me-2"
-                        type="checkbox"
-                        value={agreeTerms}
-                        id="form2Example3cg"
-                        checked={agreeTerms}
-                        onChange={(e) => setAgreeTerms(e.target.checked)}
-                      />
-                      <label className="form-check-label" htmlFor="form2Example3cg">
-                        I agree to all statements in <a href="#!" className="text-body"><u>Terms of service</u></a>
-                      </label>
-                    </div>
-
-                    <div className="d-flex justify-content-center">
-                      <button type="submit" className="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
-                        Register
-                      </button>
-                    </div>
-
-                    <p className="text-center text-muted mt-4 mb-0">
-                      Already have an account? <a href="/login" className="fw-bold text-body"><u>Login here</u></a>
-                    </p>
-                  </form>
-
-                </div>
-              </div>
-            </div>
+    <section className="min-h-screen bg-green-100 flex items-center justify-center lg:py-12">
+      <div className="w-full max-w-sm sm:max-w-md bg-white rounded-lg shadow-lg p-8 mx-4">
+        {loading && <Loading />}
+        <h2 className="text-2xl font-bold text-center mb-6">Create an Account</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <input
+              type="text"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Your Name"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
-        </div>
+          <div>
+            <input
+              type="email"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Repeat your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="terms"
+              className="mr-2"
+              checked={agreeTerms}
+              onChange={(e) => setAgreeTerms(e.target.checked)}
+            />
+            <label htmlFor="terms" className="text-sm text-gray-600">
+              I agree to all statements in <a href="#!" className="text-green-500 underline">Terms of Service</a>
+            </label>
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition"
+            >
+              Register
+            </button>
+          </div>
+          <p className="text-center text-sm text-gray-600">
+            Already have an account? <a href="/login" className="text-green-500 underline">Login here</a>
+          </p>
+        </form>
       </div>
     </section>
   );

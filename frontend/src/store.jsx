@@ -1,14 +1,24 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import {thunk} from 'redux-thunk'; // Fix: Default import
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { userLoginReducer, userRegisterReducer, userUpdateReducer } from './reducers/UserReducers';
-import { postFetchAllReducer } from './reducers/PostReducers'; // Import post reducer
-
+import { composeWithDevTools } from "@redux-devtools/extension";
+import { userLoginReducer, userRegisterReducer, userUpdateReducer,userSearchReducer,fetchProfileReducer,followUnfollowReducer,followerFetchReducer,selectedUser } from './reducers/UserReducer';
+import PostSlice from './reducers/PostReducers'; // Import post reducer
+import ChatSlice from './reducers/ChatSlice'; // Import ChatSlice reducer
+import SocketSlice from './reducers/SocketSlice';
+import StorySlice from './reducers/StorySlice';
 const reducer = combineReducers({
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userUpdate: userUpdateReducer,
-  postList: postFetchAllReducer, // Add post reducer
+  post: PostSlice, // Add post reducer
+  userSearch: userSearchReducer,
+  fetchProfile: fetchProfileReducer,
+  followUnfollow: followUnfollowReducer,
+  followersList: followerFetchReducer,
+  selectedUser,
+  chat: ChatSlice,
+  socketio:SocketSlice,
+  stories:StorySlice // Added chat reducer
 });
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

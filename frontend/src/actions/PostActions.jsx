@@ -116,7 +116,7 @@ import {
   
   // Fetch All Posts
   // Fetch All Posts
-export const fetchAllPosts = () => async (dispatch, getState) => {
+export const fetchAllPosts = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: POST_FETCH_ALL_REQUEST });
 
@@ -131,7 +131,7 @@ export const fetchAllPosts = () => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.get("http://localhost:5000/api/posts/all", config);
+    const { data } = await axios.get(`http://localhost:5000/api/posts/all/${id}`, config);
 
     dispatch({ type: POST_FETCH_ALL_SUCCESS, payload: data });
   } catch (error) {

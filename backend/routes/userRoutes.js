@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, authUser, updateUserProfile, upload } = require('../controllers/userControllers');
+const { registerUser, authUser, updateUserProfile, upload,searchUsers ,fetchProfile,allUsers,followOrUnfollow,getFollowers} = require('../controllers/userControllers');
 const { protect } = require('../middlewares/authMiddleware.js');
 
 router.post('/register', registerUser);
@@ -14,5 +14,9 @@ router.put(
   ]),
   updateUserProfile
 );
-
+router.get('/search',protect,searchUsers);
+router.get('/profile/:id',protect,fetchProfile);
+router.get("/",protect, allUsers);
+router.post("/followUnfollow/:id",protect,followOrUnfollow);
+router.get("/followers/:id",protect, getFollowers);
 module.exports = router;

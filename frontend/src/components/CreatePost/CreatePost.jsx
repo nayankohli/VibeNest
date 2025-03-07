@@ -4,79 +4,83 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faVideo, faFaceSmile } from "@fortawesome/free-solid-svg-icons";
-import { createPost } from "../../actions/PostActions"; // Import createPost action
+import axios from "axios"; // Ensure this is correctly imported
 
 const CreatePost = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
-
-  const defaultProfileImage =
-    "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
-
+  
+  const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+  
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const [postData, setPostData] = useState({
-    caption: "",
-    media: null,
-  });
+  const [postData, setPostData] = useState({ caption: "", media: [] });
+  const [loading, setLoading] = useState(false);
+  
+  const {posts,setPosts} = useSelector((store) => store.post);
+  const error = useSelector((store) => store.post.error);
 
   const handleInputChange = (e) => {
-    setPostData({
-      ...postData,
-      [e.target.name]: e.target.value,
-    });
+    setPostData({ ...postData, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
-    setPostData({
-      ...postData,
-      media: e.target.files,
-    });
+    setPostData({ ...postData, media: Array.from(e.target.files) }); // Convert FileList to Array
   };
 
   const handleFocus = () => setIsInputFocused(true);
   const handleBlur = () => setIsInputFocused(false);
-
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => {
     setIsPopupOpen(false);
-    setPostData({ caption: "", media: null }); // Reset form data
+    setPostData({ caption: "", media: [] }); // Reset form data
   };
 
-  const handlePost = () => {
-    if (!postData.caption && !postData.media) {
-      alert("Please add some content to your post.");
-      return;
+  const handlePost = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      const formData = new FormData();
+      formData.append("caption", postData.caption);
+      postData.media.forEach((file) => formData.append("media", file));
+
+      const res = await axios.post("http://localhost:5000/api/posts/create", formData, config);
+
+      if (res.data.success) {
+        dispatch(setPosts([res.data.post, ...posts]));
+        alert(res.data.message);
+        navigate("/");
+      }
+    } catch (error) {
+      alert(error);
+    } finally {
+      setLoading(false);
+      closePopup();
     }
-
-    const mediaFiles = postData.media ? Array.from(postData.media) : [];
-
-    // Dispatch the createPost action with caption and media
-    dispatch(createPost(postData.caption, mediaFiles));
-
-    closePopup();
   };
 
   return (
     <div className="create-post-container">
-      {/* Collapsed State */}
       {!isPopupOpen && (
         <div className="create-post-box">
           <div className="first-row">
             <div
               className="profileImage"
-              onClick={() => navigate('/profile')}
-              style={{ cursor: 'pointer' }}
+              onClick={() => navigate("/profile")}
+              style={{ cursor: "pointer" }}
             >
               <img
-                src={
-                  userInfo?.profileImage
-                    ? `http://localhost:5000${userInfo.profileImage}`
-                    : defaultProfileImage
-                }
+                src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage}
                 alt="Profile"
                 className="profile-photo"
               />
@@ -109,7 +113,6 @@ const CreatePost = () => {
         </div>
       )}
 
-      {/* Expanded State (Popup) */}
       {isPopupOpen && (
         <div className="create-post-popup">
           <div className="popup-content">
@@ -120,14 +123,11 @@ const CreatePost = () => {
               onChange={handleInputChange}
               placeholder="What's on your mind?"
             ></textarea>
-            <input
-              type="file"
-              multiple
-              accept="image/*,video/*"
-              onChange={handleFileChange}
-            />
+            <input type="file" multiple accept="image/*,video/*" onChange={handleFileChange} />
             <div className="popup-actions">
-              <button onClick={handlePost}>Post</button>
+              <button onClick={handlePost} disabled={loading}>
+                {loading ? "Posting..." : "Post"}
+              </button>
               <button onClick={closePopup}>Cancel</button>
             </div>
           </div>

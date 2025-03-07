@@ -1,30 +1,46 @@
 import React from 'react';
-import {useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import './ProfileContent.css';
 import DisplayPosts from '../displayPosts/DisplayPosts';
+import CreatePost from "../../CreatePost/CreatePost";
+import AboutSection from './AboutSec/AboutSection';
+import Followers from './FollowersList/Followers';
+import Media from './Media/Media';
 function ProfileContent({ activeTab }) {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin; // Access the user data from context
-
+    const fetchProfileState = useSelector((state) => state.fetchProfile);
+    const { loading, error, profile } = fetchProfileState || {}; 
     const renderContent = () => {
         switch (activeTab) {
             case 'posts':
-                return <DisplayPosts/>;
+                return (
+                    <div className='flex flex-col gap-2'>
+                        {userInfo?._id === profile?._id && (
+                        <div className="bg-white rounded-lg py-0 w-full px-3">
+                            <CreatePost />
+                        </div>
+                )}
+                        <div className='bg-white rounded-lg'>
+                            <DisplayPosts />
+                        </div>
+                    </div>
+                );
             case 'about':
-                return <div> {userInfo.bio}</div>;
+                return <AboutSection profile={profile} loggedInUserId={userInfo._id}/>
             case 'followers':
-                return <div> {userInfo.followers}</div>;
+                return<Followers profile={profile}/>;
             case 'media':
-                return <div>Media shared by {userInfo.username}...</div>;
+                return <Media/>;
             case 'videos':
-                return <div>{userInfo.username}'s videos...</div>;
+                return <div>{profile.username}'s videos...</div>;
             default:
                 return <div>Loading...</div>;
         }
     };
 
     return (
-        <div className="profile-content">
+        <div className="flex flex-col  p-0">
             {renderContent()}
         </div>
     );

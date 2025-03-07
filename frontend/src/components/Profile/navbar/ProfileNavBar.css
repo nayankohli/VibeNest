@@ -1,19 +1,19 @@
 .profile-nav-bar {
     display: flex;
     gap: 16px;
-    padding: 16px;
-    background-color: #f0f0f0;
+    margin-top: 12px;
+    padding:0;
 }
 
 .nav-button {
     padding: 10px 20px;
-    margin: 5px;
+    /* margin: 5px; */
     border: none;
-    background: #f1f1f1;
     cursor: pointer;
 }
 
 .nav-button.active { /* Example active color */
-    color: white;
+    color: rgb(88, 150, 86);
+    border-bottom:3px rgb(88, 150, 86) solid;
 }
 

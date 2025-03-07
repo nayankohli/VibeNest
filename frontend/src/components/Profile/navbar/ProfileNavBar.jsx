@@ -3,7 +3,7 @@ import './ProfileNavBar.css';
 
 function ProfileNavBar({ activeTab, setActiveTab }) {
     return (
-        <div className="profile-nav-bar">
+        <div className="profile-nav-bar ">
             {['posts', 'about', 'followers', 'media', 'videos'].map(tab => (
                 <button
                     key={tab}

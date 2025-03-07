@@ -24,7 +24,8 @@
 
 .create-post-box .first-row img{
     width:3em;
-    height: 3em;
+    height:3em;
+    border-radius: 100%;
 }
 
 .caption-input {

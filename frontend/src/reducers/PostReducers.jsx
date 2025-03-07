@@ -1,87 +1,66 @@
-import {
-  POST_CREATE_REQUEST,
-  POST_CREATE_SUCCESS,
-  POST_CREATE_FAIL,
-  POST_LIKE_REQUEST,
-  POST_LIKE_SUCCESS,
-  POST_LIKE_FAIL,
-  POST_COMMENT_REQUEST,
-  POST_COMMENT_SUCCESS,
-  POST_COMMENT_FAIL,
-  POST_FETCH_ALL_REQUEST,
-  POST_FETCH_ALL_SUCCESS,
-  POST_FETCH_ALL_FAIL,
-  POST_DELETE_REQUEST,
-  POST_DELETE_SUCCESS,
-  POST_DELETE_FAIL,
-} from "../constants/PostConstants";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-// Reducer for creating a post
-export const postCreateReducer = (state = {}, action) => {
-  switch (action.type) {
-    case POST_CREATE_REQUEST:
-      return { loading: true };
-    case POST_CREATE_SUCCESS:
-      return { loading: false, postInfo: action.payload, success: true };
-    case POST_CREATE_FAIL:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
+export const fetchAllPosts = createAsyncThunk(
+  "post/fetchAllPosts",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      console.log(id);
+      const {
+        userLogin: { userInfo },
+      } = getState(); // Get user token from state
 
-// Reducer for liking a post
-export const postLikeReducer = (state = {}, action) => {
-  switch (action.type) {
-    case POST_LIKE_REQUEST:
-      return { loading: true };
-    case POST_LIKE_SUCCESS:
-      return { loading: false, success: true, postInfo: action.payload };
-    case POST_LIKE_FAIL:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
 
-// Reducer for adding a comment to a post
-export const postCommentReducer = (state = {}, action) => {
-  switch (action.type) {
-    case POST_COMMENT_REQUEST:
-      return { loading: true };
-    case POST_COMMENT_SUCCESS:
-      return { loading: false, success: true, commentInfo: action.payload };
-    case POST_COMMENT_FAIL:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
+      const { data } = await axios.get(`http://localhost:5000/api/posts/all/${id}`, config);
+      return data; // Return data for fulfilled case
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
   }
-};
+);
 
-// Reducer for fetching all posts
-export const postFetchAllReducer = (state = { posts: [] }, action) => {
-  switch (action.type) {
-    case POST_FETCH_ALL_REQUEST:
-      return { loading: true, posts: [] };
-    case POST_FETCH_ALL_SUCCESS:
-      return { loading: false, posts: action.payload }; // Success returns an array of posts
-    case POST_FETCH_ALL_FAIL:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
 
-// Reducer for deleting a post
-export const postDeleteReducer = (state = {}, action) => {
-  switch (action.type) {
-    case POST_DELETE_REQUEST:
-      return { loading: true };
-    case POST_DELETE_SUCCESS:
-      return { loading: false, success: true }; // Success indicates the post was deleted
-    case POST_DELETE_FAIL:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
+const PostSlice = createSlice({
+    name: 'post',
+    initialState: {
+        posts: [],
+        selectedPost: null,
+        comments: [],
+        loading: false,
+        error: null,
+    },
+    reducers: {
+      setPosts:(state,action) => {
+        state.posts = action.payload;
+    },
+        setSelectedPost: (state, action) => {
+            state.selectedPost = action.payload;
+        },
+        setComments: (state, action) => {
+          state.comments = action.payload;
+      }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchAllPosts.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchAllPosts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.posts = action.payload; // Store fetched posts
+            })
+            .addCase(fetchAllPosts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+    }
+});
+
+export const { setSelectedPost,setPosts,setComments } = PostSlice.actions;
+export default PostSlice.reducer;
