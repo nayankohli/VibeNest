@@ -75,14 +75,14 @@ const CreatePost = () => {
         <div className="create-post-box">
           <div className="first-row">
             <div
-              className="profileImage"
+              className="rounded-full"
               onClick={() => navigate("/profile")}
               style={{ cursor: "pointer" }}
             >
               <img
                 src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage}
                 alt="Profile"
-                className="profile-photo"
+                className="h-10 w-10 object-cover rounded-full"
               />
             </div>
             <input
@@ -98,15 +98,15 @@ const CreatePost = () => {
           </div>
           <div className="button-group">
             <button onClick={openPopup}>
-              <FontAwesomeIcon icon={faImage} style={{ color: "green" }} />
+              <FontAwesomeIcon icon={faImage} className="text-green-500" />
               Photo
             </button>
             <button onClick={openPopup}>
-              <FontAwesomeIcon icon={faVideo} style={{ color: "red" }} />
+              <FontAwesomeIcon icon={faVideo} className="text-red-500" />
               Video
             </button>
             <button onClick={openPopup}>
-              <FontAwesomeIcon icon={faFaceSmile} style={{ color: "blue" }} />
+              <FontAwesomeIcon icon={faFaceSmile} className="text-yellow-500" />
               Feeling/Activity
             </button>
           </div>

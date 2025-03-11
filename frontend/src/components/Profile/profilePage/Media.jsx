@@ -1,8 +1,7 @@
-
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useEffect} from "react";
 import { fetchAllPosts } from "../../../reducers/PostReducers";
+import { setActiveTab } from "../../../reducers/ProfileSlice";
 const Media = () => {
     const dispatch = useDispatch();
   
@@ -20,7 +19,12 @@ const Media = () => {
     <div className="bg-white p-4 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Photos</h1>
-        <Link to="/media" className="text-blue-500 hover:underline">See all photo</Link>
+        <span 
+            className="text-blue-500 hover:underline cursor-pointer"
+            onClick={() => dispatch(setActiveTab("media"))}
+        >
+            See all photos
+        </span>
       </div>
       <div className="grid grid-cols-2 gap-2">
     {posts.slice(0, 5).map((post, index) => (

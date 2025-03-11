@@ -6,6 +6,7 @@ import CreatePost from "../../CreatePost/CreatePost";
 import AboutSection from './AboutSec/AboutSection';
 import Followers from './FollowersList/Followers';
 import Media from './Media/Media';
+import Following from './FollowingList/Following';
 function ProfileContent({ activeTab }) {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin; // Access the user data from context
@@ -30,6 +31,8 @@ function ProfileContent({ activeTab }) {
                 return <AboutSection profile={profile} loggedInUserId={userInfo._id}/>
             case 'followers':
                 return<Followers profile={profile}/>;
+            case 'following':
+                return<Following profile={profile}/>;
             case 'media':
                 return <Media/>;
             case 'videos':

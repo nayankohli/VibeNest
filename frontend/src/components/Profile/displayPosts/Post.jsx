@@ -154,9 +154,13 @@ const Post=({post})=>{
                     className="w-12 h-12 rounded-full object-cover border border-gray-300"
                   />
                 </div>
-                <h4 className="font-bold text-gray-900">
+                <div>
+                <h4 className="font-bold text-lg text-gray-900">
                   {post.postedBy.username}
                 </h4>
+                <p className="text-sm text-gray-500">{post.postedBy.jobProfile}</p>
+                </div>
+                
               </div>
 
               <div className="mb-3">
@@ -246,17 +250,21 @@ const Post=({post})=>{
                     }} className='cursor-pointer text-sm text-gray-400 p-4 mb-5'>View all {comment.length} comments</span>
                 )
             }
-            <CommentDialog open={open} setOpen={setOpen} />
-            <div className='flex items-center justify-between mt-2'>
+            <CommentDialog open={open} setOpen={setOpen} post={post}/>
+            <div className='flex items-center gap-2 justify-between mt-2'>
+              <div className="rounded-full">
+                <img src={"http://localhost:5000"+userInfo.profileImage} alt="" 
+                className="rounded-full object-cover w-10 h-10"/>
+              </div>
                 <input
                     type="text"
                     placeholder='Add a comment...'
                     value={text}
                     onChange={changeEventHandler}
-                    className='outline-none text-sm w-full'
+                    className='outline-none text-sm text-gray-500 w-full bg-gray-100 p-2.5 rounded-lg border '
                 />
                 {
-                    text && <span onClick={commentHandler} className='text-[#3BADF8] cursor-pointer'>Post</span>
+                    text && <span onClick={commentHandler} onKeyDown={(e) => e.key === "Enter" && commentHandler()} className='text-green-600 cursor-pointer'>Post</span>
                 }
 
             </div>

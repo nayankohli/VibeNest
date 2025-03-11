@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchFollowers } from "../../../actions/UserActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck,faMessage } from "@fortawesome/free-solid-svg-icons";
+import { setActiveTab } from "../../../reducers/ProfileSlice";
 const Followers = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -22,8 +23,13 @@ const Followers = () => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
-        <h1 className=" font-bold"><span className="text-2xl">Followers</span> <span className="text-green-500 text-lg bg-green-100 p-2 rounded-lg ">{followers.length}</span></h1>
-        <button className="text-blue-500 hover:underline">See all friends</button>
+        <h1 className=" font-bold"><span className="text-2xl">Followers</span> <span className="text-green-600 text-lg  bg-green-100 p-2 rounded-lg ">{followers.length}</span></h1>
+        <span 
+                    className="text-blue-500 hover:underline cursor-pointer"
+                    onClick={() => dispatch(setActiveTab("followers"))}
+                >
+                    See all followers
+                </span>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -33,11 +39,14 @@ const Followers = () => {
             onClick={()=>{
                 navigate(`/profile/${follower._id}`);
               }}>
-              <img
+                <div className="rounded-full">
+                <img
                 src={"http://localhost:5000"+follower.profileImage || "/default-avatar.png"}
                 alt={follower.username}
-                className="w-16 h-16 rounded-full border-2 border-blue-500"
+                className="w-16 h-16 object-cover rounded-full border-2 border-blue-500"
               />
+                </div>
+              
               <h2 className="mt-2 font-semibold">{follower.name}</h2>
               <p className="text-sm text-center text-gray-600">{follower.mutualConnections} mutual connections</p>
               <div className="flex gap-2 mt-2">

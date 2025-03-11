@@ -56,9 +56,6 @@ const createPost = [
         likes: [],
       });
 
-      console.log('Post Created:', post);
-
-      // Add the post ID to the user's schema
       const user = await User.findById(req.user._id);
       if (user) {
         user.posts.unshift(post._id);
@@ -200,13 +197,18 @@ const addComment = async (req,res) =>{
 // Fetch all posts
 const getAllPosts = asyncHandler(async (req, res) => {
   const userId=req.params.id;
-  console.log(userId);
   console.log('Get All Posts Endpoint Hit');
   try {
     const posts = await Post.find({ postedBy: userId })
+    .sort({ createdAt: -1 })
       .populate('postedBy', 'username profileImage jobProfile')
-      .populate('comments.commentedBy', 'username profileImage jobProfile');
-    console.log(posts);
+      .populate({
+        path: 'comments',
+        populate: {
+            path: 'commentedBy',
+            select: 'username profileImage jobProfile'
+        }
+    });
 
     if (posts.length > 0) {
       res.json(posts);
@@ -249,6 +251,39 @@ const deletePost = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteComment = asyncHandler(async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    console.log("Comment to be deleted: ", comment);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Ensure only the comment owner or an admin can delete the comment
+    if (comment.commentedBy.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+      return res.status(401).json({ message: 'You are not authorized to delete this comment' });
+    }
+
+    // Fetch the post using the correct model
+    const post = await Post.findById(req.params.postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Remove the comment ID from the post's comments array
+    post.comments = post.comments.filter((id) => id.toString() !== req.params.commentId);
+    await post.save(); // Save the post after removing the comment ID
+
+    // Delete the comment from the Comment collection
+    await Comment.deleteOne({ _id: req.params.commentId });
+
+    res.json({ message: 'Comment deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
   
 
@@ -261,5 +296,6 @@ module.exports = {
   getAllPosts,
   deletePost,
   upload,
-  getCommentsOfPost // Exporting upload middleware for potential direct usage
+  getCommentsOfPost,
+  deleteComment // Exporting upload middleware for potential direct usage
 };

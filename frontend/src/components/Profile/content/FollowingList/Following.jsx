@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 const Following = ({ profile }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const followersList = useSelector((state) => state.followersList);
-  const { followers } = followersList || { followers: [] }; // Ensure it's always an array
+  const followingList = useSelector((state) => state.followingList);
+  const { following } = followingList || { following: [] }; // Ensure it's always an array
   const { userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
@@ -16,30 +16,30 @@ const Following = ({ profile }) => {
     }
   }, [dispatch, profile]);
 
-  if (!followers || followers.length === 0) {
+  if (!following || following.length === 0) {
     return (
       <div className="p-5 bg-white">
-        <div className="text-center text-gray-400">No followers yet...</div>
+        <div className="text-center text-gray-400">No following yet...</div>
       </div>
     );
   }
 
   // Find if logged-in user is in the following list
-  const isUserFollower = followers.some((user) => user._id === userInfo?._id);
+  const isUserFollowing = following.some((user) => user._id === userInfo?._id);
 
   // Create a new sorted list where userInfo comes first if they are in the list
-  const sortedFollowers = isUserFollower
+  const sortedFollowing = isUserFollowing
     ? [
-        followers.find((user) => user._id === userInfo?._id), // Logged-in user at top
-        ...followers.filter((user) => user._id !== userInfo?._id), // Other users
+        following.find((user) => user._id === userInfo?._id), // Logged-in user at top
+        ...following.filter((user) => user._id !== userInfo?._id), // Other users
       ]
-    : followers;
+    : following;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">Followers</h2>
+      <h2 className="text-2xl font-semibold mb-4">Following</h2>
 
-      {sortedFollowers.map((user) => (
+      {sortedFollowing.map((user) => (
         <div key={user?._id} className="flex items-center justify-between p-4 border-t">
           {/* Clickable Profile Section */}
           <div
@@ -63,7 +63,7 @@ const Following = ({ profile }) => {
 
           {/* Follow/Unfollow Buttons */}
           {userInfo?._id !== user?._id && (
-            userInfo?.followers?.includes(user?._id) ? (
+            userInfo?.following?.includes(user?._id) ? (
               <div className="flex gap-2">
                 <button className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white">Remove</button>
                 <button className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-600 hover:text-white">Message</button>

@@ -42,6 +42,7 @@ const authUser = asyncHandler(async (req, res) => {
       followers: user.followers,
       following: user.following,
       posts: user.posts,
+      jobProfile:user.jobProfile,
       token: generateToken(user._id),
     });
   } else {
@@ -85,6 +86,7 @@ const registerUser = asyncHandler(async (req, res) => {
       followers: user.followers,
       following: user.following,
       posts: user.posts,
+      jobProfile:user.jobProfile,
       token: generateToken(user._id),
     });
   } else {
@@ -166,13 +168,11 @@ const searchUsers = asyncHandler(async (req, res) => {
 });
 const fetchProfile = asyncHandler(async (req, res) => {
   const userId = req.params.id;
-  console.log(userId);
   try {
     const userProfile = await User.findById(userId); // Fetch user data from DB
     if (!userProfile) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log(userProfile);
     res.json(userProfile);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -237,7 +237,7 @@ const followOrUnfollow = async (req, res) => {
 const getFollowers = asyncHandler(async (req, res) => {
   try {
     const userId = req.params.id; // Get userId from the request parameters
-    console.log(userId);
+
 
     // Fetch the user by ID and get the array of followers' IDs
     const user = await User.findById(userId).populate('followers'); // This just gives us the IDs of followers
@@ -253,7 +253,7 @@ const getFollowers = asyncHandler(async (req, res) => {
     // Use for...of loop to handle async/await properly
     for (const id of user.followers) {
       // Fetch each follower's details by ID and populate the required fields
-      const follower = await User.findById(id).select('name profileImage username jobTitle');
+      const follower = await User.findById(id).select('name profileImage username jobProfile');
 
       // Check if the follower exists and push to the people array
       if (follower) {
@@ -266,8 +266,6 @@ const getFollowers = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: 'No followers found for this user' });
     }
 
-    // Send back the list of followers' details
-    console.log(people);
     res.json(people);
   } catch (error) {
     console.error(error);
@@ -275,6 +273,45 @@ const getFollowers = asyncHandler(async (req, res) => {
   }
 });
 
+const getFollowing = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).populate('following');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const people = [];
+    for (const id of user.following) {
+      const follow = await User.findById(id).select('name profileImage username jobProfile');
+      if (follow) {
+        people.push(follow);
+      }
+    }
+    if (people.length === 0) {
+      return res.status(404).json({ message: 'No followers found for this user' });
+    }
+    res.json(people);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
+const getSuggestedUsers = async (req, res) => {
+  try {
+      const suggestedUsers = await User.find({ _id: { $ne: req.user._id } }).select("-password");
+      if (!suggestedUsers) {
+          return res.status(400).json({
+              message: 'Currently do not have any users',
+          })
+      };
+      return res.status(200).json({
+          success: true,
+          users: suggestedUsers
+      })
+  } catch (error) {
+      console.log(error);
+  }
+};
 
-module.exports = { registerUser, authUser, updateUserProfile, upload ,searchUsers,fetchProfile,allUsers,followOrUnfollow,getFollowers};
+module.exports = { registerUser, authUser, updateUserProfile, upload,getSuggestedUsers ,searchUsers,fetchProfile,allUsers,followOrUnfollow,getFollowers,getFollowing};

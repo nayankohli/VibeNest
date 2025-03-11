@@ -7,8 +7,16 @@ import Comment from "./Comment";
 import UseGetAllComments from "./UseGetAllComments";
 import "./CommentDialog.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComment, faShare, faCircleDot, faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { FaPaperPlane } from "react-icons/fa";
+import { toast } from "sonner";
+import EmojiPicker from "emoji-picker-react";
+import { FaSmile } from "react-icons/fa";
+import {
+  faHeart,
+  faComment,
+  faShare,
+  faCircleDot,
+  faEllipsis,
+} from "@fortawesome/free-solid-svg-icons";
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -25,9 +33,9 @@ const getRelativeTime = (createdAt) => {
   if (diffInWeeks < 4) return `${diffInWeeks} weeks ago`;
 
   // Format date as '2 Jan' or '2 Jan 2025' if not the current year
-  const options = { day: 'numeric', month: 'short' };
-  const formattedDate = postTime.toLocaleDateString('en-US', options);
-  
+  const options = { day: "numeric", month: "short" };
+  const formattedDate = postTime.toLocaleDateString("en-US", options);
+
   if (postTime.getFullYear() !== currentTime.getFullYear()) {
     return `${formattedDate} ${postTime.getFullYear()}`;
   }
@@ -35,31 +43,68 @@ const getRelativeTime = (createdAt) => {
   return formattedDate;
 };
 
-const CommentDialog = ({ open, setOpen }) => {
+const CommentDialog = ({ open, setOpen, post }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
-  const { comments, posts, selectedPost } = useSelector((store) => store.post);
+  const { comments, posts } = useSelector((store) => store.post);
   const [text, setText] = useState("");
   const dispatch = useDispatch();
   const dialogRef = useRef(null);
   const commentsEndRef = useRef(null);
   const [slideDirection, setSlideDirection] = useState("none");
-  const [liked, setLiked] = useState(selectedPost?.likes?.includes(userInfo?._id) || false);
+  const [liked, setLiked] = useState(post.likes.includes(userInfo?._id) || false);
+  const [postLike, setPostLike] = useState(post.likes?.length);
   UseGetAllComments();
-
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   useEffect(() => {
     if (commentsEndRef.current) {
       commentsEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [comments]);
 
+  const addEmoji = (emojiObject) => {
+    setText((prev) => prev + emojiObject.emoji);
+  };
   const changeEventHandler = (e) => setText(e.target.value);
+  const likeOrDislikeHandler = async () => {
+    // Optimistically update UI
+    setLiked(!liked);
+    setPostLike(liked ? postLike - 1 : postLike + 1);
+
+    try {
+        const action = liked ? 'dislike' : 'like';
+        const res = await axios.get(`http://localhost:5000/api/posts/${post._id}/${action}`, { 
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`,
+            },
+            withCredentials: true
+        });
+
+        console.log(res.data);
+        if (!res.data.success) {
+            // If API fails, revert UI changes
+            setLiked(liked);
+            setPostLike(liked ? postLike + 1 : postLike - 1);
+            toast.error("Failed to update like status.");
+        }
+        else{
+          toast.success(`You ${action} this post`);
+        }
+    } catch (error) {
+        console.error(error);
+        // Revert UI in case of an error
+        setLiked(liked);
+        setPostLike(liked ? postLike + 1 : postLike - 1);
+    }
+};
+
 
   const sendMessageHandler = async () => {
     if (!text.trim()) return;
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/posts/comment/${selectedPost?._id}`,
+        `http://localhost:5000/api/posts/comment/${post?._id}`,
         { text },
         {
           headers: {
@@ -73,10 +118,13 @@ const CommentDialog = ({ open, setOpen }) => {
         const newComment = res.data.comment;
         dispatch(setComments([...comments, newComment]));
         const updatedPosts = posts.map((p) =>
-          p._id === selectedPost._id ? { ...p, comments: [...p.comments, newComment] } : p
+          p._id === post._id
+            ? { ...p, comments: [...p.comments, newComment] }
+            : p
         );
         dispatch(setPosts(updatedPosts));
         setText("");
+        setShowEmojiPicker(false);
       }
     } catch (error) {
       console.log(error);
@@ -84,7 +132,7 @@ const CommentDialog = ({ open, setOpen }) => {
   };
 
   const navigatePost = (direction) => {
-    const currentIndex = posts.findIndex((p) => p._id === selectedPost?._id);
+    const currentIndex = posts.findIndex((p) => p._id === post?._id);
     if (direction === "next" && currentIndex < posts.length - 1) {
       setSlideDirection("next");
       setTimeout(() => dispatch(setPosts(posts[currentIndex + 1])), 300);
@@ -95,6 +143,23 @@ const CommentDialog = ({ open, setOpen }) => {
     }
   };
 
+  const emojiPickerRef = useRef(null);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+      setShowEmojiPicker(false);
+    }
+  };
+
+  if (showEmojiPicker) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [showEmojiPicker]);
   return (
     open && (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
@@ -116,7 +181,7 @@ const CommentDialog = ({ open, setOpen }) => {
         >
           ▶
         </button>
-        
+
         <div
           className="bg-white shadow-lg w-full max-w-5xl h-[90vh] flex flex-row relative"
           ref={dialogRef}
@@ -124,7 +189,7 @@ const CommentDialog = ({ open, setOpen }) => {
           {/* Left Side - Post Image */}
           <div className="w-7/12 h-full flex justify-center items-center bg-black">
             <img
-              src={"http://localhost:5000" + selectedPost?.media}
+              src={"http://localhost:5000" + post?.media}
               alt="Post"
               className="max-w-full max-h-full object-contain"
             />
@@ -133,74 +198,84 @@ const CommentDialog = ({ open, setOpen }) => {
           {/* Right Side - Post Details & Comments */}
           <div className="w-5/12 flex flex-col h-full">
             {/* User Info Header */}
-            <div className="flex items-center p-4 border-b">
-              <Link to="#" className="flex items-center">
-                <img
-                  src={"http://localhost:5000" + selectedPost?.postedBy?.profileImage}
-                  alt="avatar"
-                  className="w-12 h-12 rounded-full mr-3"
-                />
-                <div className="flex flex-col gap-0">
-                  <div className="flex items-center gap-3">
-                  <h4 className="font-semibold text-lg">
-                  {selectedPost?.postedBy?.username}
-                </h4>
-                <div className="flex items-center gap-1">
-                <FontAwesomeIcon icon={faCircleDot}
-                className="text-xs flex text-gray-400"/>
-                <p className="text-xs flex text-gray-700 ">  {getRelativeTime(selectedPost.createdAt)}</p>
-                </div>
-                  </div>
-                
-                <span className="font-normal text-sm text-gray-500">{selectedPost?.postedBy?.jobProfile}</span>
-                </div>
-                <FontAwesomeIcon icon={faEllipsis}
-                className="text-lg ml-40 text-gray-500 bg-gray-200 p-1 rounded-lg px-2"/>
+            <div className="flex items-center p-4 border-b gap-1 bg-white">
+  <Link to="#" className="flex items-center w-full">
+    {/* Avatar */}
+    <div className="rounded-full ">
+      <img
+        src={"http://localhost:5000" + post?.postedBy?.profileImage}
+        alt="avatar"
+        className="w-12 h-12 object-cover mr-4 rounded-full"
+      />
+    </div>
 
-              </Link>
-            </div>
+    {/* User Info */}
+    <div className="flex flex-col ml-2 w-full">
+      <div className="flex items-center gap-3 whitespace-nowrap overflow-hidden">
+        {/* Username (Prevents Wrapping) */}
+        <h4 className="font-semibold text-lg text-gray-900 truncate">
+          {post?.postedBy?.username}
+        </h4>
+
+        {/* Time and Status (Prevents Wrapping) */}
+        <div className="flex items-center gap-1 text-gray-500 text-sm flex-nowrap">
+          <FontAwesomeIcon icon={faCircleDot} className="text-xs" />
+          <p className="text-xs">{getRelativeTime(post?.createdAt)}</p>
+        </div>
+      </div>
+
+      {/* Job Profile */}
+      <span className="text-sm text-gray-500">{post?.postedBy?.jobProfile}</span>
+    </div>
+
+    {/* More Options Icon */}
+    <FontAwesomeIcon
+      icon={faEllipsis}
+      className="text-gray-500 hover:text-gray-700 transition-all bg-gray-100 hover:bg-gray-200 p-2 rounded-lg cursor-pointer ml-auto"
+    />
+  </Link>
+</div>
+
 
             {/* Comments Section */}
             <div className="flex-1 overflow-y-auto p-4">
               {/* Original Post Caption */}
               <div className="flex mb-4">
-                
-                  <span className="text-sm">{selectedPost?.caption}</span>
+                <span className="text-sm">{post?.caption}</span>
               </div>
               <div className="">
-              <div className="flex  gap-4 mb-2">
-                <div className="flex flex-col items-center mb-4">
-                <FontAwesomeIcon
-                  icon={faHeart}
-                  className={`cursor-pointer text-2xl ${
-                    liked ? 'text-red-600' : 'text-black'
-                  }`}
-                  onClick={() => setLiked(!liked)}
-                />
-                <div className="font-semibold text-xs mb-1">
-                {selectedPost?.likes?.length} likes
-              </div>
+                <div className="flex  gap-4 mb-2">
+                  <div className="flex flex-col items-center mb-4">
+                    <FontAwesomeIcon
+                      icon={faHeart}
+                      className={`cursor-pointer text-2xl ${liked ? 'text-red-600' : 'text-black hover:text-gray-600'}`}
+                      onClick={likeOrDislikeHandler} 
+                    />
+                    <div className="font-semibold text-xs mb-1">
+                    {postLike} likes
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <FontAwesomeIcon
+                      icon={faComment}
+                      className="cursor-pointer text-2xl"
+                    />
+                    <div className="font-semibold text-xs mb-1">
+                      {post?.comments?.length} comments
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <FontAwesomeIcon
+                      icon={faShare}
+                      className="cursor-pointer text-2xl"
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col items-center">
-                <FontAwesomeIcon
-                  icon={faComment}
-                  className="cursor-pointer text-2xl"
-                />
-                <div className="font-semibold text-xs mb-1">
-                {selectedPost?.comments?.length} comments
               </div>
-                </div>
-                <div className="flex flex-col items-center">
-                <FontAwesomeIcon
-                  icon={faShare}
-                  className="cursor-pointer text-2xl"
-                />
-                </div>
-              </div>
-            </div>
               {/* Comments */}
               {comments.map((c) => (
-                <Comment key={c._id} comment={c} />
+                <Comment key={c._id} comment={c} currentUserId={userInfo._id} 
+                postOwnerId={post?.postedBy?._id} postId={post._id}  />
               ))}
               <div ref={commentsEndRef} />
             </div>
@@ -218,8 +293,24 @@ const CommentDialog = ({ open, setOpen }) => {
                 onKeyDown={(e) => e.key === "Enter" && sendMessageHandler()}
               />
               <button
+        type="button"
+        className="text-gray-500 hover:text-gray-700 mx-2"
+        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+      >
+        <FaSmile size={20} className="text-gray-300 hover:text-gray-500"/>
+      </button>
+      
+      {/* Emoji Picker Dropdown */}
+      <div ref={emojiPickerRef} className="relative">
+      {showEmojiPicker && (
+        <div className="absolute bottom-12 right-2 bg-white shadow-md rounded-lg">
+          <EmojiPicker onEmojiClick={addEmoji} className="bg-gray-100" />
+        </div>
+      )}
+      </div>
+              <button
                 className={`font-semibold ${
-                  text.trim() ? 'text-green-500' : 'text-green-200'
+                  text.trim() ? "text-green-500" : "text-green-200"
                 }`}
                 disabled={!text.trim()}
                 onClick={sendMessageHandler}

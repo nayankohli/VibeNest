@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Loading from "../Loading.jsx";
 import { register } from "../../actions/UserActions.jsx";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from 'sonner';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -24,20 +25,32 @@ const Register = () => {
 
   const validateForm = () => {
     if (!username || !email || !password || !confirmPassword) {
-      alert('All fields are required.');
+      toast.error("All fields are required", {
+        duration: 5000,  // Toast will stay for 5 seconds
+        position: "top-center", // Default is 'bottom-right'
+      });
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      alert('Please enter a valid email.');
+      toast.error("Please enter a valid email", {
+        duration: 5000,  // Toast will stay for 5 seconds
+        position: "top-center", // Default is 'bottom-right'
+      });
       return false;
     }
     if (password !== confirmPassword) {
-      alert('Passwords do not match.');
+      toast.error("Password do not match", {
+        duration: 5000,  // Toast will stay for 5 seconds
+        position: "top-center", // Default is 'bottom-right'
+      });
       return false;
     }
     if (!agreeTerms) {
-      alert('You must agree to the terms and conditions.');
+      toast.error("You must agree to the terms and conditions", {
+        duration: 5000,  // Toast will stay for 5 seconds
+        position: "top-center", // Default is 'bottom-right'
+      });
       return false;
     }
     return true;
@@ -48,7 +61,7 @@ const Register = () => {
     if (validateForm()) {
       try {
         dispatch(register(username, email, password));
-        alert('Registered successfully! Please login to your account.');
+        toast.success('Registered successfully! Please login to your account.');
       } catch (error) {
         console.error(error);
         alert('Registration failed. Please try again.');

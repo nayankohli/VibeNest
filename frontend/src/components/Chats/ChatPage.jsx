@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaSearch,
@@ -10,31 +10,33 @@ import {
 } from "react-icons/fa";
 import Navbar from "../NavBarMainScreen/Navbar";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedUser, fetchFollowers } from "../../actions/UserActions";
+import { setSelectedUser, fetchFollowing } from "../../actions/UserActions";
 import Loading from "../Loading";
 import { setMessages } from "../../reducers/ChatSlice";
 import axios from "axios";
 import Message from "./Message";
 import './ChatPage.css';
+import EmojiPicker from "emoji-picker-react";
 function ChatPage() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { onlineUsers, messages } = useSelector(store => store.chat);
   const selectedUser = useSelector((state) => state.selectedUser?.selectedUser);
-  const followersList = useSelector((state) => state.followersList);
-  const { followers = [], loading } = followersList;
+  const followingList = useSelector((state) => state.followingList);
+  const { following = [], followingLoading } = followingList;
   const { userInfo } = useSelector((state) => state.userLogin);
   const [message, setMessage] = useState("");
 
   const defaultProfileImage =
     "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
-
+const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   useEffect(() => {
     if (userInfo && userInfo._id) {
-      dispatch(fetchFollowers(userInfo._id));
+      dispatch(fetchFollowing(userInfo._id));
     }
   }, [dispatch, userInfo]);
-
+  const addEmoji = (emojiObject) => {
+    setMessage((prev) => prev + emojiObject.emoji);
+  };
   const sendMessage = async (receiverId) => {
     try {
       
@@ -50,12 +52,28 @@ function ChatPage() {
           ...res.data.newMessage, senderId: userInfo._id 
         }]));
           setMessage("");
+          setShowEmojiPicker(false);
       }
   } catch (error) {
       console.log(error);
   }
   };
-
+  const emojiPickerRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+  
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
   useEffect(() => {
     return () => {
       dispatch(setSelectedUser(null));
@@ -73,7 +91,7 @@ function ChatPage() {
           <h2 className="text-xl font-bold mb-4">
             Active chats {" "}
             <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
-              {followers.length}
+              {following.length}
             </span>
           </h2>
           <div className="relative mb-4">
@@ -84,10 +102,10 @@ function ChatPage() {
             />
             <FaSearch className="absolute top-3 right-3 text-gray-400" />
           </div>
-          {loading ? (
+          {followingLoading ? (
             <Loading />
           ) : (
-              followers.map((user, index) => {
+              following.map((user, index) => {
                 const isOnline = onlineUsers.includes(user?._id);
                 return (
                   <div
@@ -98,11 +116,14 @@ function ChatPage() {
                   onClick={() => dispatch(setSelectedUser(user))}
                 >
                   <div className="relative">
+                    <div className="rounded-full">
                     <img
                       src={user?.profileImage ? "http://localhost:5000" + user.profileImage : defaultProfileImage}
                       alt=""
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10 object-cover rounded-full"
                     />
+                    </div>
+                    
                     {
                     isOnline ?
                     (
@@ -125,13 +146,21 @@ function ChatPage() {
           <div className="flex-1 flex flex-col bg-white overflow-hidden rounded-r-lg">
             <div className="flex items-center justify-between p-4 border-b">
               <div className="relative flex items-center gap-2">
+                <div className="rounded-full">
                 <img
                   src={selectedUser?.profileImage ? "http://localhost:5000" + selectedUser.profileImage : defaultProfileImage}
                   alt=""
-                  className="w-10 h-10 rounded-full"
+                  className="w-10 h-10 object-cover rounded-full"
                 />
-                {selectedUser.active && <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></span>}
+                </div>
+                <div>
                 <h2 className="font-semibold">{selectedUser.name}</h2>
+                {selectedUser.active? (<span className=" text-green-500">Online</span>):(
+                  <span className=" text-red-500">Offline</span>
+                )}
+                </div>
+                
+                
               </div>
               <div className="flex gap-4">
                 <FaPhone className="text-gray-500 cursor-pointer" />
@@ -147,7 +176,7 @@ function ChatPage() {
 
 
 
-            <div className="p-4 border-t flex items-center gap-3">
+            <div className="p-4 border-t flex items-end gap-3">
               <input
                 type="text"
                 className="flex-1 p-2 border rounded focus:ring-2 focus:ring-green-500"
@@ -156,13 +185,29 @@ function ChatPage() {
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMessage(selectedUser?._id)}
               />
-              <FaSmile className="text-gray-500 cursor-pointer" />
+              <div className="flex gap-1 items-center">
+              <div className="text-red-600 bg-red-100 p-2 px-3 rounded hover:text-white hover:bg-red-600 cursor-pointer"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)} >
+              <FaSmile />
+              </div>
+              <div ref={emojiPickerRef} className="relative">
+                    {showEmojiPicker && (
+                      <div className="absolute bottom-12 right-2 bg-white shadow-md rounded-lg">
+                        <EmojiPicker onEmojiClick={addEmoji} className="bg-gray-100" />
+                      </div>
+                    )}
+                    </div>
+              <div className="text-black p-1 px-3 rounded hover:bg-black hover:text-white bg-gray-200 cursor-pointer" >
               <input type="file" name="" id="image" accept='image/png , image/jpeg, image/jpg' hidden />
               <label htmlFor="image">
-              <FaPaperclip className="text-gray-500 cursor-pointer" />
+              <FaPaperclip />
               </label>
+              </div>
+              <div className="text-blue-500 bg-blue-100 p-2 rounded hover:bg-blue-500 hover:text-white px-3 cursor-pointer" onClick={() => sendMessage(selectedUser?._id)} >
+              <FaPaperPlane />
+              </div>
+              </div>
               
-              <FaPaperPlane className="text-blue-500 cursor-pointer" onClick={() => sendMessage(selectedUser?._id)} />
             </div>
           </div>
         ) : (

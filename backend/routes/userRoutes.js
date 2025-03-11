@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, authUser, updateUserProfile, upload,searchUsers ,fetchProfile,allUsers,followOrUnfollow,getFollowers} = require('../controllers/userControllers');
+const { registerUser, authUser, updateUserProfile, upload,searchUsers ,fetchProfile,allUsers,followOrUnfollow,getFollowers,getFollowing,getSuggestedUsers} = require('../controllers/userControllers');
 const { protect } = require('../middlewares/authMiddleware.js');
 
 router.post('/register', registerUser);
@@ -19,4 +19,6 @@ router.get('/profile/:id',protect,fetchProfile);
 router.get("/",protect, allUsers);
 router.post("/followUnfollow/:id",protect,followOrUnfollow);
 router.get("/followers/:id",protect, getFollowers);
+router.get("/following/:id",protect, getFollowing);
+router.get("/suggested",protect, getSuggestedUsers);
 module.exports = router;

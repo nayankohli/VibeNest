@@ -5,7 +5,11 @@ import Navbar from "../NavBarMainScreen/Navbar";
 import CreatePost from '../CreatePost/CreatePost';
 import Story from "./Stories/Story";
 import UploadStory from "./Stories/UploadStory";
+import Sidebar from "./LeftSideBar/Sidebar";
+import RightSidebar from "./RightSideBar/RightSideBar";
+import useGetSuggestedUsers from "./hooks/UseGetAllSuggestedUsers";
 const Home = () => {
+  useGetSuggestedUsers();
   const navigate = useNavigate();
 
   const userLogin = useSelector((state) => state.userLogin);
@@ -30,44 +34,13 @@ const Home = () => {
       </div>
 
       {/* Main Grid Container */}
-      <div className="flex flex-grow gap-5 p-5 mt-16">
+      <div className="flex flex-grow gap-3 p-5 mx-20 mt-16">
         {/* Left Sidebar */}
-        <div className="flex flex-col bg-white rounded-lg shadow-md p-0 w-80 h-full overflow-auto">
-          <div>
-            <img
-              src={"http://localhost:5000" + userInfo?.banner || defaultBannerImage}
-              alt="Banner"
-              className="w-full h-20  object-cover -mt-4"
-            />
-          </div>
-          <div className="flex flex-col items-center -mt-5">
-            <img
-              src={"http://localhost:5000" + userInfo?.profileImage || defaultProfileImage}
-              alt="Profile"
-              className="w-20 h-20 rounded-lg border-4 border-white"
-            />
-            <h2 className="mt-2 text-lg font-semibold">{userInfo?.name || "Anonymous User"}</h2>
-            <p className="text-gray-500 text-sm">{userInfo?.bio || "No bio available."}</p>
-          </div>
-          <div className="flex justify-between m-5 border-t pt-4 ">
-            <div className="text-center">
-              <h4 className="text-lg font-bold">{userInfo?.posts?.length || 0}</h4>
-              <p className="text-gray-500 text-sm">Posts</p>
-            </div>
-            <div className="text-center">
-              <h4 className="text-lg font-bold">{userInfo?.followers?.length || 0}</h4>
-              <p className="text-gray-500 text-sm">Followers</p>
-            </div>
-            <div className="text-center">
-              <h4 className="text-lg font-bold">{userInfo?.following?.length || 0}</h4>
-              <p className="text-gray-500 text-sm">Following</p>
-            </div>
-          </div>
-        </div>
+        <Sidebar/>
 
         {/* Center Content */}
-        <div className="flex-grow flex flex-col gap-5">
-          <div className="bg-white rounded-lg shadow-md p-5">
+        <div className="flex-grow flex flex-col gap-2">
+          <div className="bg-white rounded-lg shadow-md">
             <UploadStory/>
             <Story></Story>
           </div>
@@ -80,9 +53,7 @@ const Home = () => {
         </div>
 
         {/* Right Sidebar */}
-        <div className="flex flex-col bg-white rounded-lg shadow-md p-5 w-80 h-full overflow-auto">
-          <h2 className="text-lg font-semibold">People you may know</h2>
-        </div>
+        <RightSidebar/>
       </div>
     </div>
   );

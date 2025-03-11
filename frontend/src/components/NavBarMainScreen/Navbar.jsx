@@ -101,36 +101,38 @@ const Navbar = () => {
               <img
                 src={"http://localhost:5000" + userInfo?.profileImage || defaultProfileImage}
                 alt="Profile"
-                className="h-8 w-8 md:h-10 md:w-10 rounded-full"
+                className="w-10 h-10 object-cover rounded-full"
               />
             </button>
             {isDropdownOpen && (
-            <div ref={dropdownRef} className="absolute right-0 mt-2 w-60 bg-white shadow-lg rounded-lg border border-gray-200">
-              <div className="flex items-center p-4 gap-3">
+            <div ref={dropdownRef} className="absolute right-0 mt-2 w-60 p-2 bg-white shadow-lg rounded-lg border border-gray-200">
+              <div className="flex items-center p-3 gap-2 relative">
+                <div className="rounded-full absolute">
                 <img
                   src={
                     "http://localhost:5000" + userInfo?.profileImage ||
                     defaultProfileImage
                   }
                   alt="Profile"
-                  className="h-12 w-12 rounded-full"
+                  className="w-12 h-12 object-cover rounded-full"
                 />
-                <div>
+                </div>
+                <div className="ml-[4rem]">
                   <h4 className="font-bold text-lg">
                     {userInfo?.name || "Anonymous User"}
                   </h4>
                   <p className="text-sm text-gray-500">
-                    {userInfo?.bio || "No bio available."}
+                    {userInfo?.jobProfile || "No bio available."}
                   </p>
                 </div>
               </div>
               <button
-                className="w-full px-4 py-2 bg-green-100 text-green-600 font-medium hover:bg-green-600 hover:text-white transition"
+                className="w-full px-4 py-2 bg-green-100 text-green-600 text-sm font-medium hover:bg-green-600 hover:text-white transition"
                 onClick={handleViewProfile}
               >
                 View Profile
               </button>
-              <ul className="mt-2">
+              <ul className="mt-2 text-gray-500 text-md">
                 <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
                   <FontAwesomeIcon icon={faBookmark} className="mr-3" /> Your
                   Saved
@@ -143,7 +145,7 @@ const Navbar = () => {
                   Privacy
                 </li>
                 <li
-                  className="flex items-center px-4 py-2 text-red-500 hover:bg-red-100 cursor-pointer"
+                  className="flex items-center px-4 py-2 text-red-500 hover:bg-red-100 cursor-pointer "
                   onClick={handleLogout}
                 >
                   <FontAwesomeIcon icon={faRightFromBracket} className="mr-3" />

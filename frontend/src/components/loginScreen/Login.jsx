@@ -4,26 +4,56 @@ import Loading from "../Loading.jsx";
 import { Link } from "react-router-dom";
 import { login } from "../../actions/UserActions.jsx";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
 
   const userLogin = useSelector((state) => state.userLogin);
-  const { loading, userInfo } = userLogin;
+  const { loading, userInfo, error } = userLogin;
 
+  // ✅ Show toast when userInfo is available (Login successful)
   useEffect(() => {
     if (userInfo) {
+      toast.success("🎉 Login Successful!", {
+        style: {
+          background: "linear-gradient(135deg, #16a34a, #15803d)", // Gradient green
+          color: "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          boxShadow: "0px 6px 15px rgba(22, 163, 74, 0.3)", // Smooth shadow
+          borderRadius: "12px",
+          border: "2px solid #38bdf8", // Light blue border
+          textAlign: "center",
+          letterSpacing: "0.5px",
+          transition: "transform 0.3s ease-in-out", // Smooth animation
+        },
+        position: "bottom-right",
+        duration: 3000,
+      });
+      
       navigate("/home");
     }
-  }, [navigate, userInfo]);
+  }, [userInfo, navigate]);
 
-  const handleSubmit = async (e) => {
+  // ✅ Show error toast if login fails
+  useEffect(() => {
+    if (error) {
+      toast.error("❌ Login Failed! Check your credentials.", {
+        className:
+          "bg-red-600 text-white font-semibold px-4 py-3 shadow-lg rounded-lg border-2 border-red-400",
+        position: "bottom-center",
+        duration: 3000,
+      });
+    }
+  }, [error]);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(login(email, password));
+    dispatch(login(email, password)); // Toast now happens *after* successful login
   };
 
   return (
@@ -56,19 +86,6 @@ const Login = () => {
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none"
               onChange={(e) => setPassword(e.target.value)}
             />
-          </div>
-
-          <div className="flex items-center justify-between mb-6">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="h-4 w-4 text-green-500 border-gray-300 rounded focus:ring-green-400"
-              />
-              <span className="ml-2 text-gray-700">Remember me</span>
-            </label>
-            <a href="#!" className="text-sm text-green-500 hover:underline">
-              Forgot password?
-            </a>
           </div>
 
           <button

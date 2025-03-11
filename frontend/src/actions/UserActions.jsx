@@ -25,6 +25,9 @@ import {
     FOLLOWER_FETCH_REQUEST,
     FOLLOWER_FETCH_SUCCESS,
     FOLLOWER_FETCH_FAIL,
+    FOLLOWING_FETCH_REQUEST,
+    FOLLOWING_FETCH_SUCCESS,
+    FOLLOWING_FETCH_FAIL,
     SET_SELECTED_USER 
   } from "../constants/UserConstants";
   import axios from "axios";
@@ -253,6 +256,29 @@ import {
         }
       };
 
+      export const fetchFollowing= (id) => async (dispatch,getState) => {
+        try {
+          dispatch({ type:FOLLOWING_FETCH_REQUEST});
+              const {
+                userLogin: { userInfo },
+              } = getState();
+      
+          const config = {
+              headers: {
+                Authorization: `Bearer ${userInfo.token}`, // Include token if the route is protected
+              },
+            };
+          const { data } = await axios.get("http://localhost:5000/api/users/following/"+id,
+              config
+          ); // Your API route
+          dispatch({ type: FOLLOWING_FETCH_SUCCESS, payload: data });
+            } catch (error) {
+              dispatch({
+                type: FOLLOWING_FETCH_FAIL,
+                payload: error.response?.data?.message || error.message,
+              });
+            }
+          };
       export const setSelectedUser = (user) => ({
         type: SET_SELECTED_USER,
         payload: user,

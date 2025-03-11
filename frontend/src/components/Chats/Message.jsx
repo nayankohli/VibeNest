@@ -86,11 +86,14 @@ const Message = () => {
     return (
         <div className="flex flex-col gap-3 px-4 h-screen overflow-y-auto custom-scrollbar relative">
             <div className="flex flex-col justify-center items-center gap-2 mb-40 mt-10">
+                <div className='rounded-full'>
                 <img 
                     src={selectedUser?.profileImage ? "http://localhost:5000" + selectedUser.profileImage : defaultProfileImage}
                     alt={selectedUser?.name} 
-                    className="w-40 h-40 rounded-full"
+                    className="w-40 h-40 rounded-full object-cover"
                 />
+                </div>
+                
                 <h2 className="font-bold text-3xl">{selectedUser?.name}</h2>
                 <p className="text-gray-600">{selectedUser?.username}</p>
                 <Link to={`/profile/${selectedUser?._id}`}>
@@ -117,11 +120,14 @@ const Message = () => {
                                 
                             >
                                 {!isSentByCurrentUser && (
-                                    <img 
+                                    <div className='mr-2 rounded-full'>
+                                        <img 
                                         src={selectedUser?.profileImage ? `http://localhost:5000${selectedUser.profileImage}` : defaultProfileImage} 
                                         alt="Sender Profile" 
-                                        className="w-8 h-8 rounded-full mr-2"
+                                        className="w-8 h-8 rounded-full "
                                     />
+                                    </div>
+                                    
                                 )}
 
                                 <div className="flex flex-col max-w-[70%] mb-3">
@@ -137,7 +143,7 @@ const Message = () => {
                                     ) : (
                                         <div className={`p-2 px-3 rounded-lg break-words shadow-md ${
                                             isSentByCurrentUser
-                                                ? "bg-blue-500 text-white"
+                                                ? "bg-green-500 text-white"
                                                 : "bg-gray-300 text-black"
                                         }`}
                                         onClick={() => handleMessageClick(msg)}>
@@ -150,11 +156,14 @@ const Message = () => {
                                 </div>
 
                                 {isSentByCurrentUser && (
-                                    <img 
-                                        src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage} 
-                                        alt="Your Profile" 
-                                        className="w-8 h-8 rounded-full ml-2"
-                                    />
+                                    
+                                    <div className="ml-2 rounded-full">
+        <img 
+            src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage} 
+            alt="Your Profile" 
+            className="w-8 h-8 object-cover rounded-full"
+        />
+    </div>
                                 )}
                             </div>
                         );
@@ -168,7 +177,7 @@ const Message = () => {
 
             {selectedMessage && (
     <div className={`p-2 px-3 rounded-lg break-words text-center shadow-md w-auto ${
-        selectedMessage.senderId === userInfo._id ? "bg-blue-500 text-white" : "bg-gray-300 text-black"
+        selectedMessage.senderId === userInfo._id ? "bg-green-500 text-white" : "bg-gray-300 text-black"
     }`}>
         {selectedMessage.message}
     </div>
@@ -177,7 +186,7 @@ const Message = () => {
 
             <div className="flex flex-col w-80 font-7 justify-center text-left rounded-lg p-3 gap-0 mt-4">
                 <button className="px-4 py-2  hover:bg-green-300 hover:text-white"><div className='flex gap-3'><FontAwesomeIcon icon={faCheckToSlot} className="text-xl" /><p>Select</p></div></button>
-                <button className="px-4 py-2  hover:bg-green-300 hover:text-white border-b-2 border-t-2 border-gray-400"><div className='flex gap-3'><FontAwesomeIcon icon={faTrash} className="text-xl" /><p>Delete</p></div></button>
+                <button className="px-4 py-2  hover:bg-green-300 hover:text-white border-b border-t border-gray-400"><div className='flex gap-3'><FontAwesomeIcon icon={faTrash} className="text-xl" /><p>Delete</p></div></button>
                 <button className="px-4 py-2  hover:bg-green-300 hover:text-white"><div className='flex gap-3'><FontAwesomeIcon icon={faPenToSquare} className="text-xl" /><p>Edit</p></div></button>
             </div>
         </div>
