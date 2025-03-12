@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useContext} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   likePost,
@@ -9,6 +9,7 @@ import { faHeart as solidHeart, faComment } from "@fortawesome/free-solid-svg-ic
 import axios from 'axios'
 import Post from "./Post";
 import { fetchAllPosts } from "../../../reducers/PostReducers";
+import { ThemeContext } from "../../../context/ThemeContext";
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -32,7 +33,7 @@ const DisplayPosts = () => {
   
   // Get posts from Redux store
   const { posts, loading, error } = useSelector((store) => store.post);
-
+  const { isDarkMode} = useContext(ThemeContext);
   
   const fetchProfileState = useSelector((state) => state.fetchProfile);
   const { profile } = fetchProfileState || {};
@@ -44,7 +45,7 @@ const DisplayPosts = () => {
   if (posts && posts.length > 0) {
     return (
       <div className="">
-        <div className="flex flex-col gap-2 ">
+        <div className={`flex flex-col gap-2 ${isDarkMode? "bg-gray-800 text-white" : "bg-white text-black"}  rounded-lg `}>
           {posts?.map((post) => (
             <Post post={post} key={post._id}/>
           ))}
@@ -54,7 +55,7 @@ const DisplayPosts = () => {
   } else {
     return (
       <div className="p-5">
-        <div className="text-center text-gray-400">No posts yet...</div>
+        <div className={`text-center ${isDarkMode? "bg-gray-800 text-white" : "bg-white text-black"} text-gray-400`}>No posts yet...</div>
       </div>
     );
   }

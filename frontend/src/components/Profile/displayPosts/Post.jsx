@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useContext} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setPosts,setSelectedPost
@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart , faComment} from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios'
 import CommentDialog from "./CommentDialog";
+import { ThemeContext } from "../../../context/ThemeContext";
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -29,13 +30,14 @@ const Post=({post})=>{
     const [open, setOpen] = useState(false);
     const { posts, loading, error,comments } = useSelector((store) => store.post);
     const fetchProfileState = useSelector((state) => state.fetchProfile);
-      const { profile } = fetchProfileState || {};
-      const userLogin = useSelector((state) => state.userLogin);
-      const { userInfo } = userLogin;
+    const { profile } = fetchProfileState || {};
+    const userLogin = useSelector((state) => state.userLogin);
+    const { userInfo } = userLogin;
     const [liked, setLiked] = useState(post.likes.includes(userInfo?._id) || false);
     const [postLike, setPostLike] = useState(post.likes.length);
     const [comment, setComment] = useState(post.comments);
     const dispatch = useDispatch();
+    const { isDarkMode} = useContext(ThemeContext);
 
     const changeEventHandler = (e) => {
         const inputText = e.target.value;
@@ -142,8 +144,8 @@ const Post=({post})=>{
         }
     }
     return (
-        <div key={post._id} className=" rounded-lg p-5 shadow-md w-full">
-              <div className="flex items-center mb-3">
+        <div key={post._id} className={` rounded-lg p-5 shadow-md w-full ${isDarkMode? "bg-gray-800 text-white" : "bg-white text-black"} border-b`}>
+              <div className="flex items-center mb-3 border-b pb-2">
                 <div className="mr-3">
                   <img
                     src={
@@ -155,10 +157,10 @@ const Post=({post})=>{
                   />
                 </div>
                 <div>
-                <h4 className="font-bold text-lg text-gray-900">
+                <h4 className="font-bold text-lg ">
                   {post.postedBy.username}
                 </h4>
-                <p className="text-sm text-gray-500">{post.postedBy.jobProfile}</p>
+                <p className={`text-sm ${isDarkMode? " text-gray-400" : " text-gray-500"}`}>{post.postedBy.jobProfile}</p>
                 </div>
                 
               </div>
@@ -237,10 +239,10 @@ const Post=({post})=>{
                 ))}
               </div> */}
               <div className="flex items-center gap-3 my-2">
-                <p className="font-bold text-gray-900">
+                <p className={`font-bold ${isDarkMode? " text-white" : " text-black"}`}>
                   {post.postedBy.username}
                 </p>
-                <p className="text-gray-700">{post.caption}</p>
+                <p className={`${isDarkMode? " text-white" : " text-black"}`}>{post.caption}</p>
               </div>
               {
                 comment.length > 0 && (
@@ -261,14 +263,14 @@ const Post=({post})=>{
                     placeholder='Add a comment...'
                     value={text}
                     onChange={changeEventHandler}
-                    className='outline-none text-sm text-gray-500 w-full bg-gray-100 p-2.5 rounded-lg border '
+                    className={`outline-none text-sm text-gray-500 w-full ${isDarkMode ? "bg-gray-600" : "bg-gray-100"} p-2.5 rounded-lg border `}
                 />
                 {
                     text && <span onClick={commentHandler} onKeyDown={(e) => e.key === "Enter" && commentHandler()} className='text-green-600 cursor-pointer'>Post</span>
                 }
 
             </div>
-              <p className="text-sm text-gray-600 mt-3">
+              <p className={`text-sm ${isDarkMode? " text-gray-400" : " text-gray-600"} mt-3`}>
                 {getRelativeTime(post.createdAt)}
               </p>
             </div>

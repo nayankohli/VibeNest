@@ -7,22 +7,25 @@ import AboutSection from './AboutSec/AboutSection';
 import Followers from './FollowersList/Followers';
 import Media from './Media/Media';
 import Following from './FollowingList/Following';
+import { useContext } from 'react';
+import { ThemeContext } from "../../../context/ThemeContext";
 function ProfileContent({ activeTab }) {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin; // Access the user data from context
     const fetchProfileState = useSelector((state) => state.fetchProfile);
     const { loading, error, profile } = fetchProfileState || {}; 
+    const { isDarkMode } = useContext(ThemeContext);
     const renderContent = () => {
         switch (activeTab) {
             case 'posts':
                 return (
                     <div className='flex flex-col gap-2'>
                         {userInfo?._id === profile?._id && (
-                        <div className="bg-white rounded-lg py-0 w-full px-3">
+                        <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg w-full`}>
                             <CreatePost />
                         </div>
                 )}
-                        <div className='bg-white rounded-lg'>
+                        <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg`}>
                             <DisplayPosts />
                         </div>
                     </div>
@@ -36,9 +39,9 @@ function ProfileContent({ activeTab }) {
             case 'media':
                 return <Media/>;
             case 'videos':
-                return <div>{profile.username}'s videos...</div>;
+                return <div className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} p-6 rounded-lg shadow-md`}>{profile.username}'s videos...</div>;
             default:
-                return <div>Loading...</div>;
+                return <div className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} p-6 rounded-lg shadow-md text-center`}>Loading...</div>;
         }
     };
 

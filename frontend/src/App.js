@@ -8,10 +8,12 @@ import EditProfile from "./components/Profile/editProfile/EditProfile";
 import ChatPage from "./components/Chats/ChatPage";
 import Settings from "./components/NavBarMainScreen/Settings/Settings";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "./context/ThemeContext"; // ✅ Correct import
+// ✅ Import ThemeProvider
 
 function App() {
   return (
-    <>
+    <ThemeProvider> {/* ✅ Wrap everything inside ThemeProvider */}
       <Toaster /> {/* ✅ Place Toaster outside of Routes */}
       <Routes>
         <Route path="/register" element={<Register />} />
@@ -23,7 +25,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/chats" element={<ChatPage />} />
       </Routes>
-    </>
+    </ThemeProvider>
   );
 }
 

@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { setComments } from "../../../reducers/PostReducers";
+import { ThemeContext } from "../../../context/ThemeContext";
 import './Comment.css';
+
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -23,6 +25,7 @@ const getRelativeTime = (createdAt) => {
 };
 
 const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
+  const { isDarkMode } = useContext(ThemeContext);
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
   const fetchProfileState = useSelector((state) => state.fetchProfile);
@@ -63,24 +66,21 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
     }
   };
   
-  
-
   // Determine if the current user can delete the comment
   const isOwner =
     comment.commentedBy._id === currentUserId || postOwnerId === currentUserId;
 
   return (
     <AnimatePresence>
-  {!isDeleted && (
-    <motion.div
-      initial={{ opacity: 1, x: 0 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }} // Sliding animation
-      transition={{ duration: 0.3 }}
-      className="flex mb-3"
-      id={`comment-${comment._id}`} 
-    >
-
+      {!isDeleted && (
+        <motion.div
+          initial={{ opacity: 1, x: 0 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }} // Sliding animation
+          transition={{ duration: 0.3 }}
+          className="flex mb-3"
+          id={`comment-${comment._id}`} 
+        >
           {/* Profile Image */}
           <div className="mr-3">
             <img
@@ -92,25 +92,42 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
 
           {/* Comment Container */}
           <div className="max-w-[80%] w-fit">
-            {/* Username and Time in one line */}
-            <div className="bg-gray-100 shadow-md p-3 rounded-lg">
+            {/* Comment bubble with dark/light mode support */}
+            <div className={`${
+                isDarkMode 
+                  ? 'bg-gray-700 shadow-gray-900' 
+                  : 'bg-gray-100 shadow-gray-200'
+              } shadow-md p-3 rounded-lg`}
+            >
               <div className="flex items-center justify-between w-full">
-                <p className="font-semibold text-sm text-gray-900">
+                <p className={`font-semibold text-sm ${
+                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                  }`}
+                >
                   {comment?.commentedBy?.username}
                 </p>
-                <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
+                <span className={`text-xs ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  } ml-2 whitespace-nowrap`}
+                >
                   {getRelativeTime(comment.createdAt)}
                 </span>
               </div>
 
               {/* Comment Text */}
-              <p className="text-sm text-gray-700 break-words">
+              <p className={`text-sm ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                } break-words`}
+              >
                 {comment?.text}
               </p>
             </div>
 
             {/* Reply, Like, Delete (if owner) Options */}
-            <div className="flex text-xs text-gray-600 mt-1 space-x-3">
+            <div className={`flex text-xs ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              } mt-1 space-x-3`}
+            >
               <span className="cursor-pointer hover:underline">Like</span>
               <span className="cursor-pointer hover:underline">Reply</span>
               {isOwner && (

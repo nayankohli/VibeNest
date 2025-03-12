@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "sonner";
 import EmojiPicker from "emoji-picker-react";
 import { FaSmile } from "react-icons/fa";
+import { ThemeContext } from "../../../context/ThemeContext";
 import {
   faHeart,
   faComment,
@@ -17,6 +18,7 @@ import {
   faCircleDot,
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
+
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -44,6 +46,7 @@ const getRelativeTime = (createdAt) => {
 };
 
 const CommentDialog = ({ open, setOpen, post }) => {
+  const { isDarkMode } = useContext(ThemeContext);
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
   const { comments, posts } = useSelector((store) => store.post);
@@ -56,6 +59,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
   const [postLike, setPostLike] = useState(post.likes?.length);
   UseGetAllComments();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  
   useEffect(() => {
     if (commentsEndRef.current) {
       commentsEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -65,7 +69,9 @@ const CommentDialog = ({ open, setOpen, post }) => {
   const addEmoji = (emojiObject) => {
     setText((prev) => prev + emojiObject.emoji);
   };
+  
   const changeEventHandler = (e) => setText(e.target.value);
+  
   const likeOrDislikeHandler = async () => {
     // Optimistically update UI
     setLiked(!liked);
@@ -97,8 +103,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
         setLiked(liked);
         setPostLike(liked ? postLike + 1 : postLike - 1);
     }
-};
-
+  };
 
   const sendMessageHandler = async () => {
     if (!text.trim()) return;
@@ -145,21 +150,22 @@ const CommentDialog = ({ open, setOpen, post }) => {
 
   const emojiPickerRef = useRef(null);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
-      setShowEmojiPicker(false);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  };
 
-  if (showEmojiPicker) {
-    document.addEventListener("mousedown", handleClickOutside);
-  }
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [showEmojiPicker]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
+  
   return (
     open && (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
@@ -183,7 +189,7 @@ useEffect(() => {
         </button>
 
         <div
-          className="bg-white shadow-lg w-full max-w-5xl h-[90vh] flex flex-row relative"
+          className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} shadow-lg w-full max-w-5xl h-[90vh] flex flex-row relative`}
           ref={dialogRef}
         >
           {/* Left Side - Post Image */}
@@ -196,78 +202,81 @@ useEffect(() => {
           </div>
 
           {/* Right Side - Post Details & Comments */}
-          <div className="w-5/12 flex flex-col h-full">
+          <div className={`w-5/12 flex flex-col h-full ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
             {/* User Info Header */}
-            <div className="flex items-center p-4 border-b gap-1 bg-white">
-  <Link to="#" className="flex items-center w-full">
-    {/* Avatar */}
-    <div className="rounded-full ">
-      <img
-        src={"http://localhost:5000" + post?.postedBy?.profileImage}
-        alt="avatar"
-        className="w-12 h-12 object-cover mr-4 rounded-full"
-      />
-    </div>
+            <div className={`flex items-center p-4 border-b gap-1 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+              <Link to="#" className="flex items-center w-full">
+                {/* Avatar */}
+                <div className="rounded-full">
+                  <img
+                    src={"http://localhost:5000" + post?.postedBy?.profileImage}
+                    alt="avatar"
+                    className="w-12 h-12 object-cover mr-4 rounded-full"
+                  />
+                </div>
 
-    {/* User Info */}
-    <div className="flex flex-col ml-2 w-full">
-      <div className="flex items-center gap-3 whitespace-nowrap overflow-hidden">
-        {/* Username (Prevents Wrapping) */}
-        <h4 className="font-semibold text-lg text-gray-900 truncate">
-          {post?.postedBy?.username}
-        </h4>
+                {/* User Info */}
+                <div className="flex flex-col ml-2 w-full">
+                  <div className="flex items-center gap-3 whitespace-nowrap overflow-hidden">
+                    {/* Username (Prevents Wrapping) */}
+                    <h4 className={`font-semibold text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate`}>
+                      {post?.postedBy?.username}
+                    </h4>
 
-        {/* Time and Status (Prevents Wrapping) */}
-        <div className="flex items-center gap-1 text-gray-500 text-sm flex-nowrap">
-          <FontAwesomeIcon icon={faCircleDot} className="text-xs" />
-          <p className="text-xs">{getRelativeTime(post?.createdAt)}</p>
-        </div>
-      </div>
+                    {/* Time and Status (Prevents Wrapping) */}
+                    <div className="flex items-center gap-1 text-gray-500 text-sm flex-nowrap">
+                      <FontAwesomeIcon icon={faCircleDot} className="text-xs" />
+                      <p className="text-xs">{getRelativeTime(post?.createdAt)}</p>
+                    </div>
+                  </div>
 
-      {/* Job Profile */}
-      <span className="text-sm text-gray-500">{post?.postedBy?.jobProfile}</span>
-    </div>
+                  {/* Job Profile */}
+                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+                    {post?.postedBy?.jobProfile}
+                  </span>
+                </div>
 
-    {/* More Options Icon */}
-    <FontAwesomeIcon
-      icon={faEllipsis}
-      className="text-gray-500 hover:text-gray-700 transition-all bg-gray-100 hover:bg-gray-200 p-2 rounded-lg cursor-pointer ml-auto"
-    />
-  </Link>
-</div>
-
+                {/* More Options Icon */}
+                <FontAwesomeIcon
+                  icon={faEllipsis}
+                  className={`${isDarkMode ? 'text-gray-300 hover:text-white bg-gray-700 hover:bg-gray-600' : 'text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200'} transition-all p-2 rounded-lg cursor-pointer ml-auto`}
+                />
+              </Link>
+            </div>
 
             {/* Comments Section */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className={`flex-1 overflow-y-auto p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
               {/* Original Post Caption */}
               <div className="flex mb-4">
-                <span className="text-sm">{post?.caption}</span>
+                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {post?.caption}
+                </span>
               </div>
               <div className="">
-                <div className="flex  gap-4 mb-2">
+                <div className="flex gap-4 mb-2">
                   <div className="flex flex-col items-center mb-4">
                     <FontAwesomeIcon
                       icon={faHeart}
-                      className={`cursor-pointer text-2xl ${liked ? 'text-red-600' : 'text-black hover:text-gray-600'}`}
+                      className={`cursor-pointer text-2xl ${liked ? 'text-red-600' : isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
                       onClick={likeOrDislikeHandler} 
                     />
-                    <div className="font-semibold text-xs mb-1">
-                    {postLike} likes
+                    <div className={`font-semibold text-xs mb-1 ${isDarkMode ? 'text-gray-300' : ''}`}>
+                      {postLike} likes
                     </div>
                   </div>
                   <div className="flex flex-col items-center">
                     <FontAwesomeIcon
                       icon={faComment}
-                      className="cursor-pointer text-2xl"
+                      className={`cursor-pointer text-2xl ${isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
                     />
-                    <div className="font-semibold text-xs mb-1">
+                    <div className={`font-semibold text-xs mb-1 ${isDarkMode ? 'text-gray-300' : ''}`}>
                       {post?.comments?.length} comments
                     </div>
                   </div>
                   <div className="flex flex-col items-center">
                     <FontAwesomeIcon
                       icon={faShare}
-                      className="cursor-pointer text-2xl"
+                      className={`cursor-pointer text-2xl ${isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
                     />
                   </div>
                 </div>
@@ -275,42 +284,44 @@ useEffect(() => {
               {/* Comments */}
               {comments.map((c) => (
                 <Comment key={c._id} comment={c} currentUserId={userInfo._id} 
-                postOwnerId={post?.postedBy?._id} postId={post._id}  />
+                postOwnerId={post?.postedBy?._id} postId={post._id} />
               ))}
               <div ref={commentsEndRef} />
             </div>
 
-            {/* Action Buttons */}
-
             {/* Add Comment Input */}
-            <div className="p-4 flex items-center border-t">
+            <div className={`p-4 flex items-center border-t ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
               <input
                 type="text"
                 value={text}
                 onChange={changeEventHandler}
                 placeholder="Add a comment..."
-                className="flex-1 text-sm border-none outline-none"
+                className={`flex-1 text-sm border-none outline-none ${isDarkMode ? 'bg-gray-800 text-white placeholder-gray-400' : 'bg-white'}`}
                 onKeyDown={(e) => e.key === "Enter" && sendMessageHandler()}
               />
               <button
-        type="button"
-        className="text-gray-500 hover:text-gray-700 mx-2"
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-      >
-        <FaSmile size={20} className="text-gray-300 hover:text-gray-500"/>
-      </button>
-      
-      {/* Emoji Picker Dropdown */}
-      <div ref={emojiPickerRef} className="relative">
-      {showEmojiPicker && (
-        <div className="absolute bottom-12 right-2 bg-white shadow-md rounded-lg">
-          <EmojiPicker onEmojiClick={addEmoji} className="bg-gray-100" />
-        </div>
-      )}
-      </div>
+                type="button"
+                className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'} mx-2`}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <FaSmile size={20} className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-300 hover:text-gray-500'}`} />
+              </button>
+              
+              {/* Emoji Picker Dropdown */}
+              <div ref={emojiPickerRef} className="relative">
+                {showEmojiPicker && (
+                  <div className={`absolute bottom-12 right-2 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md rounded-lg`}>
+                    <EmojiPicker onEmojiClick={addEmoji} theme={isDarkMode ? 'dark' : 'light'} />
+                  </div>
+                )}
+              </div>
               <button
                 className={`font-semibold ${
-                  text.trim() ? "text-green-500" : "text-green-200"
+                  text.trim() 
+                    ? 'text-green-500' 
+                    : isDarkMode 
+                      ? 'text-green-800' 
+                      : 'text-green-200'
                 }`}
                 disabled={!text.trim()}
                 onClick={sendMessageHandler}
