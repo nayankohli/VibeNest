@@ -2,7 +2,8 @@ import React, { useState, useContext } from "react";
 import EditProfile from "../../Profile/editProfile/EditProfile";
 import Navbar from "../Navbar";
 import { ThemeContext } from "../../../context/ThemeContext";
-
+import NotificationSettings from "./NotificationSetting";
+import PrivacySecuritySettings from "./PrivacySecuritySettings";
 function Settings() {
     const [activeTab, setActiveTab] = useState("account");
     const { isDarkMode } = useContext(ThemeContext);
@@ -17,8 +18,8 @@ function Settings() {
             {/* Sidebar & Content Wrapper */}
             <div className="flex  pt-16 p-6 mt-6 px-20">
 
-                {/* Sidebar */}
-                <div className={`w-full md:w-1/4 shadow-lg rounded-lg p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                {/* Sidebar - Added self-start, h-fit, and sticky classes */}
+                <div className={`w-full md:w-1/4 shadow-lg rounded-lg p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} self-start sticky top-20 h-fit`}>
                     <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-green-300' : 'text-green-600'}`}>Settings</h2>
                     <div className="flex flex-col gap-2">
                         <div
@@ -52,16 +53,10 @@ function Settings() {
                 <div className={`w-full md:w-3/4 shadow-lg rounded-lg mt-6 md:mt-0 md:ml-6 p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                     {activeTab === "account" && <EditProfile />}
                     {activeTab === "privacy" && (
-                        <div>
-                            <h2 className={`text-2xl font-semibold mb-3 ${isDarkMode ? 'text-green-300' : 'text-green-600'}`}>Privacy Settings</h2>
-                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Manage your privacy settings here...</p>
-                        </div>
+                        <PrivacySecuritySettings/>
                     )}
                     {activeTab === "notifications" && (
-                        <div>
-                            <h2 className={`text-2xl font-semibold mb-3 ${isDarkMode ? 'text-green-300' : 'text-green-600'}`}>Notification Settings</h2>
-                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Manage your notification preferences...</p>
-                        </div>
+                        <NotificationSettings/>
                     )}
                 </div>
             </div>

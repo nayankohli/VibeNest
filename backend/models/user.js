@@ -21,7 +21,8 @@ const UserSchema = new mongoose.Schema({
     followers: { type: [String], required: false },
     following: { type: [String], required: false },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: false }],
-    bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
+    bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+    privacy:{type: String, required:true, default:"public"}
 },
 {
     timestamps:true,

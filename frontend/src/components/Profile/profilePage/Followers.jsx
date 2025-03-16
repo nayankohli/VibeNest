@@ -49,10 +49,10 @@ const Followers = () => {
             >
               <div 
                 className="flex flex-col items-center"
-                onClick={() => {
-                  navigate(`/profile/${follower._id}`);
-                }}
-              >
+                
+              ><div
+              className="flex flex-col items-center"
+              onClick={()=>navigate(`profile/${follower._id}`)}>
                 <div className="rounded-full">
                   <img
                     src={"http://localhost:5000" + follower.profileImage || "/default-avatar.png"}
@@ -65,8 +65,11 @@ const Followers = () => {
                 <p className={`text-sm text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {follower.mutualConnections} mutual connections
                 </p>
+              </div>
+                
                 <div className="flex gap-2 mt-2">
-                  <button className="bg-blue-500 hover:bg-blue-800 text-white p-2 px-3 rounded">
+                  <button className="bg-green-500 hover:bg-green-800 text-white p-2 px-3 rounded"
+                  onClick={()=>navigate("/chats")}>
                     <FontAwesomeIcon icon={faMessage} />
                   </button>
                   <button className="bg-red-500 text-white p-2 px-3 hover:bg-red-800 rounded">

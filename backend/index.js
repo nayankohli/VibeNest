@@ -21,7 +21,6 @@ app.use(
 
 app.use(express.static('../frontend/build')); 
 
-const server = http.createServer(app);
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
@@ -55,13 +54,16 @@ app.use("/api/message", messageRoutes);
 
 const storyRoutes = require("./routes/storyRoutes.js");
 app.use("/api/stories", storyRoutes);
+
+const chatRoutes = require("./routes/chatRoutes.js");
+app.use("/api/chat", chatRoutes);
 //Middlewares
 
 const { notFound,errorHandler } = require('./middlewares/errorMiddleware.js');
 app.use(notFound);
 app.use(errorHandler);
 
-server.listen(5000, () => console.log(  'Server running on port 5000'));
+const server=app.listen(5000, () => console.log(  'Server running on port 5000'));
 
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
@@ -88,10 +90,10 @@ io.on("connection", (socket) => {
   socket.on("new message", (newMessageRecieved) => {
     var chat = newMessageRecieved.chat;
 
-    if (!chat.users) return console.log("chat.users not defined");
+    if (!chat.participants) return console.log("chat.users not defined");
 
-    chat.users.forEach((user) => {
-      if (user._id == newMessageRecieved.sender._id) return;
+    chat.participants.forEach((user) => {
+      if (user._id == newMessageRecieved.senderId._id) return;
 
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });

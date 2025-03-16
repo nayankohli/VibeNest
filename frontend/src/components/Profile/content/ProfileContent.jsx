@@ -21,11 +21,11 @@ function ProfileContent({ activeTab }) {
                 return (
                     <div className='flex flex-col gap-2'>
                         {userInfo?._id === profile?._id && (
-                        <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg w-full`}>
+                        <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg w-full`}>
                             <CreatePost />
                         </div>
                 )}
-                        <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg`}>
+                        <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg`}>
                             <DisplayPosts />
                         </div>
                     </div>

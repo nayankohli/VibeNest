@@ -51,10 +51,16 @@ const Login = () => {
     }
   }, [error]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(login(email, password)); // Toast now happens *after* successful login
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await dispatch(login(email, password));
+    // Only navigate after the login action is complete
+    navigate('/home', { replace: true });
+  } catch (error) {
+    console.error("Login failed:", error);
+  }
+};
 
   return (
     <section className="min-h-screen bg-green-100 flex items-center justify-center lg:py-12">

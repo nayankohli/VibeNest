@@ -136,7 +136,13 @@ const AboutSection = ({ profile, loggedInUserId }) => {
         <div className={`p-3 ${isDarkMode ? 'border-gray-700 border' : 'border'} rounded-md flex justify-between items-center ${isDarkMode ? 'bg-gray-700' : ''}`}>
           <div>
             <FontAwesomeIcon icon={faCalendar} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`} />
-            <span>Joined on: <strong>{profile.joinDate || "N/A"}</strong></span>
+            <span>
+  Joined on: <strong>
+    {profile.joinedOn && !isNaN(new Date(profile.joinedOn).getTime()) 
+      ? format(new Date(profile.joinedOn), "dd MMM yyyy") 
+      : "N/A"}
+  </strong>
+</span>
           </div>
         </div>
 

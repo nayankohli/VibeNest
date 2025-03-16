@@ -81,10 +81,14 @@ export const isSameSenderMargin = (messages, m, i, userId) => {
   export const isSameUser = (messages, m, i) => {
     return i > 0 && messages[i - 1].sender._id === m.sender._id;
   };
+  export const getSender = (loggedUser, participants) => {
+    if (!participants || participants.length < 2) return { name: "Unknown", profileImage: "" };
   
-  export const getSender = (loggedUser, users) => {
-    return users[0]?._id === loggedUser?._id ? users[1].name : users[0].name;
+    return participants[0]?._id === loggedUser?._id
+      ? { name: participants[1].name, profileImage: participants[1].profileImage }
+      : { name: participants[0].name, profileImage: participants[0].profileImage };
   };
+  
   
   export const getSenderFull = (loggedUser, users) => {
     return users[0]._id === loggedUser._id ? users[1] : users[0];

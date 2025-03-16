@@ -28,7 +28,11 @@ import {
     FOLLOWING_FETCH_REQUEST,
     FOLLOWING_FETCH_SUCCESS,
     FOLLOWING_FETCH_FAIL,
-    SET_SELECTED_USER 
+    SET_SELECTED_USER ,
+    USER_UPDATE_PRIVACY_REQUEST,
+  USER_UPDATE_PRIVACY_SUCCESS,
+  USER_UPDATE_PRIVACY_FAIL,
+  USER_UPDATE_PRIVACY_RESET
   } from "../constants/UserConstants";
   import axios from "axios";
   
@@ -59,10 +63,11 @@ import {
     }
   };
   
-  export const logout = () => (dispatch) => {
-    localStorage.removeItem("userInfo");
-    dispatch({ type: USER_LOGOUT });
-  };
+  // In your UserActions.jsx file
+export const logout = () => (dispatch) => {
+  localStorage.removeItem('userInfo'); // Make sure you're removing user info from localStorage
+  dispatch({ type: USER_LOGOUT });
+};
   
   export const register = (username, email, password) => async (dispatch) => {
     try {
@@ -284,3 +289,46 @@ import {
         payload: user,
       });
       
+      export const updatePrivacy = (privacyStatus) => async (dispatch, getState) => {
+        try {
+          dispatch({ type: USER_UPDATE_PRIVACY_REQUEST });
+      
+          // Get the user info from state to access the token
+          const {
+            userLogin: { userInfo },
+          } = getState();
+      
+          // Configure headers with authorization token
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          };
+      
+          // Make API request to update privacy
+          const { data } = await axios.put(
+            "http://localhost:5000/api/users/privacy",
+            { privacy: privacyStatus },
+            config
+          );
+      
+          dispatch({ type: USER_UPDATE_PRIVACY_SUCCESS, payload: data });
+          
+          localStorage.setItem("userInfo", JSON.stringify(data));
+          dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
+      
+        } catch (error) {
+          dispatch({
+            type: USER_UPDATE_PRIVACY_FAIL,
+            payload:
+              error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message,
+          });
+        }
+      };
+    
+      export const resetPrivacyUpdate = () => (dispatch) => {
+        dispatch({ type: USER_UPDATE_PRIVACY_RESET });
+      };

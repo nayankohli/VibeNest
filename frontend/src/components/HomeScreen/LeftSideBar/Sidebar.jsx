@@ -3,7 +3,7 @@ import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ThemeContext } from "../../../context/ThemeContext"; // Make sure this path is correct
-
+import defaultBanner from '../defaultBanner.jpg';
 const Sidebar = () => {
     const navigate = useNavigate();
     const userLogin = useSelector((state) => state.userLogin);
@@ -13,7 +13,6 @@ const Sidebar = () => {
     // Fallback values for profile image and banner
     const defaultProfileImage =
       "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
-    const defaultBannerImage = "/default-banner.jpg";
   
     useEffect(() => {
       if (!userInfo) {
@@ -26,14 +25,22 @@ const Sidebar = () => {
       {/* Banner Section */}
       <div className="relative flex flex-col top-0">
         <img
-          src={"http://localhost:5000"+userInfo?.banner || defaultBannerImage}
+          src={
+            userInfo.banner?
+            "http://localhost:5000" + userInfo?.banner :
+            defaultBanner
+          }
           alt="Banner"
           className="w-full h-24 object-cover rounded-t-lg mt-[-16px]"
         />
         {/* Profile Image */}
         <div className={`absolute left-1/2 transform -translate-x-1/2 -bottom-10 border-4 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-lg`}>
           <img
-            src={"http://localhost:5000"+userInfo?.profileImage || defaultProfileImage}
+            src={
+              userInfo.profileImage?
+              "http://localhost:5000" + userInfo?.profileImage :
+              defaultProfileImage
+            }
             alt="Profile"
             className="w-20 h-20 rounded-lg object-cover"
           />

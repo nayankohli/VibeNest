@@ -10,21 +10,16 @@ import Media from "./Media";
 import Followers from "./Followers";
 import { FaBirthdayCake, FaUser, FaEnvelope, FaUserPlus } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserPen,
-  faBriefcase,
-  faLocationDot,
-  faCalendar,
-} from "@fortawesome/free-solid-svg-icons";
+import defaultBanner from "./defaultBanner.jpg";
+import {faUserPen,faBriefcase,faLocationDot,faCalendar} from "@fortawesome/free-solid-svg-icons";
 import { format } from "date-fns";
 import { ThemeContext } from "../../../context/ThemeContext";
-
+import PrivateProfileCheck from "./PrivateProfileCheck";
 function ProfilePage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isDarkMode } = useContext(ThemeContext);
-
   const followUnfollowState = useSelector((state) => state.followUnfollow);
   const { userInfo } = useSelector((state) => state.userLogin);
   const fetchProfileState = useSelector((state) => state.fetchProfile);
@@ -38,20 +33,43 @@ function ProfilePage() {
   useEffect(() => {
     if (!userInfo) {
       navigate("/login");
-    } else if (id || userInfo._id) {
-      dispatch(fetchProfile(id || userInfo._id));
+    } else if (id || userInfo?._id) {
+      dispatch(fetchProfile(id || userInfo?._id));
     }
   }, [dispatch, id, navigate, userInfo]);
 
   useEffect(() => {
     if (profile && userInfo) {
-      setIsFollowing(profile?.followers?.includes(userInfo._id));
+      setIsFollowing(profile?.followers?.includes(userInfo?._id));
     }
   }, [profile, userInfo]);
 
   const handleFollowUnfollow = () => {
-    dispatch(followUnfollow(profile._id, isFollowing));
+    dispatch(followUnfollow(profile?._id, isFollowing));
+    window.location.reload();
   };
+
+  useEffect(() => {
+    // Only apply if profile has loaded
+    if (profile) {
+      const shouldShowModal = 
+        profile.privacy === "private" &&
+        userInfo._id !== profile._id &&
+        !profile.followers.some(follower => follower === userInfo._id);
+      
+      // Prevent background scrolling when modal is open
+      if (shouldShowModal) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    }
+    
+    // Clean up effect
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [profile, userInfo]);
 
   useEffect(() => {
     if (followUnfollowState.success) {
@@ -69,10 +87,34 @@ function ProfilePage() {
         isDarkMode ? "bg-gray-900 text-white" : "bg-green-100 text-black"
       }`}
     >
-      {profileLoading && <Loading />}
-      <div className="sticky top-0 z-10 bg-white shadow">
+      <div className="sticky top-0 z-50 bg-white shadow">
         <Navbar />
       </div>
+      {profileLoading && <Loading />}
+      <div>
+      {profile && (
+  <div className={`fixed inset-0 flex items-center justify-center z-40 ${
+    profile.privacy === "private" &&
+    userInfo._id !== profile._id &&
+    !profile.followers.some(follower => follower === userInfo._id)
+      ? 'visible bg-black bg-opacity-90'
+      : 'hidden'
+  }`}>
+    {profile.privacy === "private" &&
+     userInfo._id !== profile._id &&
+     !profile.followers.some(follower => follower === userInfo._id) && (
+      <div className="w-full max-w-md"> {/* Control width here */}
+        <PrivateProfileCheck 
+          profile={profile} 
+          loggedInUser={userInfo}
+          onFollow={handleFollowUnfollow}
+        />
+      </div>
+     )
+    }
+  </div>
+)}
+      
       <div className="grid grid-cols-11 gap-4 max-w-7xl mx-auto my-8">
         <div className="col-span-7 rounded-t-lg pb-0 w-70">
           <div className="pb-0">
@@ -81,7 +123,7 @@ function ProfilePage() {
                 src={
                   profile?.banner
                     ? "http://localhost:5000" + profile?.banner
-                    : "/default-banner.jpg"
+                    : defaultBanner
                 }
                 alt="Banner"
                 className="w-full max-h-40 object-cover rounded-t-lg"
@@ -153,40 +195,62 @@ function ProfilePage() {
                       isDarkMode
                         ? "bg-red-900 text-red-200 hover:bg-red-700 hover:text-white"
                         : "bg-red-100 text-red-500 hover:bg-red-500 hover:text-white"
-                    } 
-      py-2 px-4 rounded-lg transition`}
+                    } py-2 px-4 rounded-lg transition`}
                     onClick={handleEditClick}
                   >
                     <FontAwesomeIcon icon={faUserPen} className="mr-2" />
                     Edit Profile
                   </button>
                 ) : (
-                  <button
-                    className={`py-2 px-4 rounded-lg transition ${
-                      isFollowing
-                        ? `${
-                            isDarkMode ? "bg-red-700" : "bg-red-500"
-                          } text-white hover:bg-green-600`
-                        : `${
-                            isDarkMode
-                              ? "bg-green-900 text-green-200 hover:bg-green-700"
-                              : "bg-green-100 text-green-600 hover:bg-green-600 hover:text-white"
-                          }`
-                    }`}
-                    onClick={handleFollowUnfollow}
-                  >
-                    <FontAwesomeIcon className="mr-2" />
-                    {isFollowing ? "Unfollow" : "Follow"}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      className={`py-2 px-4 rounded-lg transition ${
+                        isFollowing
+                          ? `${
+                              isDarkMode
+                                ? "bg-green-900 text-green-200 hover:bg-green-700"
+                                : "bg-green-100 text-green-600 hover:bg-green-600 hover:text-white"
+                            }`
+                          : ``
+                      }`}
+                      onClick={() => navigate("/chats")}
+                    >
+                      <FontAwesomeIcon className="mr-2" />
+                      {isFollowing ? "Message" : ""}
+                    </button>
+                    <button
+                      className={`py-2 px-4 rounded-lg transition ${
+                        isFollowing
+                          ? `${
+                              isDarkMode
+                                ? "bg-red-900 text-red-200 hover:bg-red-700"
+                                : "bg-red-100 text-red-600 hover:bg-red-600 hover:text-white"
+                            }`
+                          : `${
+                              isDarkMode
+                                ? "bg-green-900 text-green-200 hover:bg-green-700"
+                                : "bg-green-100 text-green-600 hover:bg-green-600 hover:text-white"
+                            }`
+                      }`}
+                      onClick={handleFollowUnfollow}
+                    >
+                      <FontAwesomeIcon className="mr-2" />
+                      {isFollowing ? "Unfollow" : "Follow"}
+                    </button>
+                  </div>
                 )}
               </div>
-              <div className={`flex gap-5 mx-auto justify-between ${isDarkMode?'text-gray-300':"text-gray-600"} font-medium`}>
+              <div
+                className={`flex gap-5 mx-auto justify-between ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                } font-medium`}
+              >
                 <div>
                   <FontAwesomeIcon
                     icon={faBriefcase}
                     className=" mr-2 text-sm"
                   />
-                  <span>{profile?.jobProfile}</span>
+                  <span>Job Profile: {profile?.jobProfile}</span>
                 </div>
 
                 <div>
@@ -199,17 +263,15 @@ function ProfilePage() {
                   </span>
                 </div>
                 <div>
-                  <FontAwesomeIcon
-                    icon={faCalendar}
-                    className="mr-2 text-sm"
-                  />
+                  <FontAwesomeIcon icon={faCalendar} className="mr-2 text-sm" />
                   <span>
-                    Joined on{" "}
-                    {profile?.dob && (
-                      <span>
-                        {format(new Date(profile.dob), "dd MMMM yyyy")}
-                      </span>
-                    )}
+                    Joined on:{" "}
+                    <strong>
+                      {profile.joinedOn &&
+                      !isNaN(new Date(profile.joinedOn).getTime())
+                        ? format(new Date(profile.joinedOn), "dd MMM yyyy")
+                        : "N/A"}
+                    </strong>
                   </span>
                 </div>
               </div>
@@ -229,9 +291,7 @@ function ProfilePage() {
         <div className="col-span-4 space-y-6">
           <div
             className={`${
-              isDarkMode
-                ? "bg-gray-800  text-white"
-                : "bg-white "
+              isDarkMode ? "bg-gray-800  text-white" : "bg-white "
             } p-6 rounded-lg shadow-md  text-md`}
           >
             {/* Header */}
@@ -274,7 +334,7 @@ function ProfilePage() {
               >
                 <FaUser className="text-blue-500" />
                 <span className="font-bold">Gender:</span>{" "}
-                <span>{profile.gender}</span>
+                <span>{profile?.gender}</span>
               </p>
             )}
 
@@ -286,7 +346,7 @@ function ProfilePage() {
             >
               <FaEnvelope className="text-green-500" />
               <span className="font-bold">Email:</span>
-              <span>{profile.email}</span>
+              <span>{profile?.email}</span>
             </p>
           </div>
           <div className="rounded-lg shadow-md">
@@ -297,6 +357,8 @@ function ProfilePage() {
           </div>
         </div>
       </div>
+      </div>
+      
     </div>
   );
 }

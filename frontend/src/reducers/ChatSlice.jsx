@@ -5,7 +5,8 @@ const ChatSlice = createSlice({
     initialState: {
         onlineUsers: [],
         messages: [],
-        conversationDate: null, // Added initial state for conversation date
+        conversationDate: null,
+        users:[] // Added initial state for conversation date
     },
     reducers: {
         setOnlineUsers: (state, action) => {
@@ -16,10 +17,13 @@ const ChatSlice = createSlice({
         },
         setConversationDate: (state, action) => {
             state.conversationDate = action.payload;
-        }
+        },
+        setUsers: (state, action) => {
+            state.users = action.payload;
+        },
     }
 });
 
 // Export all reducers
-export const { setOnlineUsers, setMessages, setConversationDate } = ChatSlice.actions;
+export const { setOnlineUsers, setMessages, setConversationDate,setUsers } = ChatSlice.actions;
 export default ChatSlice.reducer;
