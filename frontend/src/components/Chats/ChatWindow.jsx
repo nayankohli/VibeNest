@@ -21,6 +21,7 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
     chats, 
     setChats, 
     notification,
+    setNotification,
     addNotification, // Use the new function instead of setNotification
   } = ChatState();
   const [messages, setMessages] = useState([]);
@@ -68,24 +69,18 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
       if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
+        !selectedChatCompare || 
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
-        // Check if message is already in notifications
-        const isAlreadyNotified = notification.some(
-          (notif) => 
-            notif.type === 'message' && 
-            notif.data.messageId === newMessageRecieved._id
-        );
         
-        if (!isAlreadyNotified) {
-          // Create a structured notification with the new addNotification function
+        
+        if (!notification.includes(newMessageRecieved)) {
           const senderName = newMessageRecieved.sender.name || 'Someone';
           const notificationContent = `${senderName}: ${newMessageRecieved.content.substring(0, 30)}${newMessageRecieved.content.length > 30 ? '...' : ''}`;
           
-          addNotification(
+          const newNotification = addNotification(
             notificationContent,
-            'message', // Type of notification
+            'message', 
             {
               messageId: newMessageRecieved._id,
               chatId: newMessageRecieved.chat._id,
@@ -95,14 +90,20 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
               senderPic: newMessageRecieved.sender.profileImage || defaultProfileImage
             }
           );
-          
+          console.log("new type is: " + newNotification.type); 
+          const updatedNotifications = [newNotification, ...notification];
+    setNotification(updatedNotifications);
+    localStorage.setItem("chatNotifications", JSON.stringify(updatedNotifications));// Properly access the type property
           setFetchAgain(!fetchAgain);
         }
       } else {
         setMessages([...messages, newMessageRecieved]);
       }
     });
-  });
+    return () => {
+      socket.off("message recieved");
+    };
+  }, [notification, messages, fetchAgain]);
 
   const sendMessage = async (event) => {
     if ((event.key === "Enter" || event === "Enter") && newMessage) {

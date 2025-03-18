@@ -2,12 +2,49 @@ import React, { useState, useEffect, useContext } from "react";
 import { ThemeContext } from "../../../context/ThemeContext";
 import defaultBanner from "./defaultBanner.jpg";
 import { ChatState } from "../../../context/ChatProvider";
+import io from "socket.io-client";
+import axios from "axios";
+const ENDPOINT = "http://localhost:5000";
+let socket;
+
 const PrivateProfileCheck = ({ profile, loggedInUser, onFollow }) => {
   const [canViewProfile, setCanViewProfile] = useState(false);
   const { isDarkMode } = useContext(ThemeContext);
-  const {notification, setNotification}=ChatState();
+  const { notification, setNotification, addNotification } = ChatState();
+  const [socketConnected, setSocketConnected] = useState(false);
+  
   const defaultProfileImage =
     "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+  
+useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.on("connect", () => {
+      console.log("Socket connected with ID:", socket.id);
+    });
+    
+    socket.emit("setup", loggedInUser);
+    
+    socket.on("connected", () => {
+      console.log("Socket confirmed connected for user:", loggedInUser._id);
+      setSocketConnected(true);
+    });
+    socket.on("follow request received", (notification) => {
+      console.log("Received follow request notification:", notification);
+      safeAddNotification(
+        notification.content, 
+        notification.type, 
+        notification.data
+      );
+    });
+    
+    return () => {
+      socket.off("follow request received");
+      socket.off("connected");
+      socket.off("connect");
+      socket.disconnect();
+    };
+  }, [loggedInUser]);
+  
   useEffect(() => {
     if (
       profile.privacy !== "private" ||
@@ -23,15 +60,52 @@ const PrivateProfileCheck = ({ profile, loggedInUser, onFollow }) => {
   if (canViewProfile) {
     return null;
   }
+  
+  const safeAddNotification = (content, type, data) => {
+    if (typeof addNotification === 'function') {
+      console.log(true);
+      addNotification(content, type, data);
+    } else if (setNotification) {
+      setNotification(prev => [
+        {
+          id: Date.now(),
+          content,
+          type,
+          data,
+          timestamp: Date.now(),
+          read: false
+        },
+        ...(prev || [])
+      ]);
+    }
+  };
+  
   const handleFollow = async () => {
     try {
       await onFollow(profile._id);
-      window.location.reload();
-      setCanViewProfile(true);
+      if (socketConnected) {
+        const followRequestData = {
+          sender: loggedInUser,
+          recipient: profile,
+          timestamp: new Date()
+        };
+        socket.emit("follow request", followRequestData);
+        safeAddNotification(
+          `You sent a follow request to ${profile.name || profile.username}`,
+          'follow_request_sent_confirmation',
+          {
+            recipientId: profile._id,
+            recipientName: profile.name || profile.username,
+            recipientPic: profile.profileImage ? profile.profileImage : defaultProfileImage
+          }
+        );
+        setCanViewProfile(true);
+      }
     } catch (error) {
       console.error("Error following user:", error);
     }
   };
+  
   return (
     <div
       className={`${

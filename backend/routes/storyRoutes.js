@@ -1,59 +1,33 @@
 const express = require("express");
 const router = express.Router();
-const Story = require("../models/stories.js");
 const { protect } = require("../middlewares/authMiddleware");
+const { uploadStory, getStories, markStorySeen, deleteStory } = require("../controllers/storyController");
+const multer = require("multer");
+const path = require("path");
 
-// Upload a new story
-router.post("/upload", protect, async (req, res) => {
-  try {
-    console.log("User ID:", req.user?._id);
-    console.log("Media:", req.body.media);
-
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized: User not found" });
-    }
-
-    if (!req.body.media) {
-      return res.status(400).json({ message: "Media file is required" });
-    }
-
-    const story = new Story({
-      user: req.user._id,
-      media: req.body.media,
-    });
-
-    await story.save();
-    res.status(201).json(story);
-  } catch (error) {
-    console.error("Error saving story:", error);
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
-  }
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/stories'),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+    cb(null, uniqueName);
+  },
 });
 
-// Get all stories of users (excluding expired)
-router.get("/", protect, async (req, res) => {
-  try {
-    const stories = await Story.find().populate("user", "username profileImage");
-    res.status(200).json(stories);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch stories" });
-  }
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB size limit
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png|mp4|mov/;
+    const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = fileTypes.test(file.mimetype);
+    if (extName && mimeType) return cb(null, true);
+    cb(new Error('Only .jpeg, .jpg, .png, .mp4, and .mov files are allowed!'));
+  },
 });
 
-// Mark story as seen
-router.post("/:id/seen", protect, async (req, res) => {
-  try {
-    const story = await Story.findById(req.params.id);
-    if (!story) return res.status(404).json({ error: "Story not found" });
-
-    if (!story.seenBy.includes(req.user._id)) {
-      story.seenBy.push(req.user._id);
-      await story.save();
-    }
-    res.json({ success: true, story });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to mark story as seen" });
-  }
-});
+router.post("/", protect, upload.single('media'), uploadStory);
+router.get("/", protect, getStories);
+router.put("/:id/seen", protect, markStorySeen);
+router.delete("/:id", protect, deleteStory);
 
 module.exports = router;

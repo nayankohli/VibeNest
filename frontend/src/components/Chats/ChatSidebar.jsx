@@ -7,7 +7,7 @@ import Loading from "../Loading";
 import SideDrawer from "./SideDrawer";
 import { ChatState } from "../../context/ChatProvider";
 import { getSender } from "../../actions/ChatActions";
-import GroupChatModal from './GroupChatModal'
+import GroupChatModal from "./GroupChatModal";
 function ChatSidebar({ fetchAgain }) {
   const dispatch = useDispatch();
   const { isDarkMode } = useContext(ThemeContext);
@@ -18,7 +18,8 @@ function ChatSidebar({ fetchAgain }) {
   const { following = [], followingLoading } = followingList;
   const { onlineUsers } = useSelector((store) => store.chat);
   const selectedUser = useSelector((state) => state.selectedUser?.selectedUser);
-  const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+  const defaultProfileImage =
+    "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
   // Toast notifications for errors
 
   const fetchChats = async () => {
@@ -34,7 +35,6 @@ function ChatSidebar({ fetchAgain }) {
         config
       );
       setChats(data);
-      console.log(chats);
     } catch (error) {
       console.log(error);
     }
@@ -53,28 +53,27 @@ function ChatSidebar({ fetchAgain }) {
         isDarkMode ? "border-gray-700" : ""
       } p-3 overflow-auto rounded-l-lg`}
     >
-      <div className={`py-2 mb-4 flex items-center justify-between border-b ${
+      <div
+        className={`py-2 mb-4 flex items-center justify-between border-b ${
           isDarkMode ? "border-gray-700" : ""
-        } `}>
-      <h2
-        className={`text-xl font-bold py-3`}
+        } `}
       >
-        My Chats{" "}
-        <span
-          className={`${
-            isDarkMode
-              ? "bg-green-900 text-green-300"
-              : "bg-green-100 text-green-600"
-          } px-2 py-1 rounded-full text-xs`}
-        >
-          {chats.length}
-        </span>
-      </h2>
-      <div>
-        <GroupChatModal/>
+        <h2 className={`text-xl font-bold py-3`}>
+          My Chats{" "}
+          <span
+            className={`${
+              isDarkMode
+                ? "bg-green-900 text-green-300"
+                : "bg-green-100 text-green-600"
+            } px-2 py-1 rounded-full text-xs`}
+          >
+            {chats.length}
+          </span>
+        </h2>
+        <div>
+          <GroupChatModal />
+        </div>
       </div>
-      </div>
-      
 
       <div className="relative mb-4">
         <SideDrawer />
@@ -87,51 +86,58 @@ function ChatSidebar({ fetchAgain }) {
           {chats?.length > 0 ? (
             chats.map((chat) => (
               <div
-  key={chat._id}
-  onClick={() => {
-    setSelectedChat(chat);
-    if(!chat.isGroupChat)
-    dispatch(setSelectedUser(getSender(loggedUser, chat.participants)));
-  }}
-  className={`cursor-pointer flex items-center gap-2 p-2 rounded-lg transition-all duration-200 ${
-    selectedChat === chat
-      ? "bg-green-600/30"
-      : isDarkMode
-      ? "bg-gray-700 text-white hover:bg-gray-600"
-      : "bg-gray-200 hover:bg-gray-300"
-  }`}
->
-  {!chat.isGroupChat ? (
-    <img
-      src={`http://localhost:5000${
-        getSender(loggedUser, chat.participants).profileImage
-      }`||defaultProfileImage}
-      alt={getSender(loggedUser, chat.participants).name}
-      className="w-12 h-12 rounded-full object-cover"
-    />
-  ):(
-    <img
-      src={chat.profileImage?"http://localhost:5000"+chat?.profileImage :defaultProfileImage }
-      className="w-12 h-12 rounded-full object-cover"
-    />
-  )}
-  <div>
-    <div className="font-semibold">
-      {chat.isGroupChat
-        ? chat.chatName
-        : getSender(loggedUser, chat.participants).name}
-    </div>
-    {chat.latestMessage && (
-      <div className="text-xs">
-        <b>{chat.latestMessage.senderId.username}:</b>{" "}
-        {chat.latestMessage.content.length > 50
-          ? chat.latestMessage.content.substring(0, 50) + "..."
-          : chat.latestMessage.content}
-      </div>
-    )}
-  </div>
-</div>
-
+                key={chat._id}
+                onClick={() => {
+                  setSelectedChat(chat);
+                  if (!chat.isGroupChat)
+                    dispatch(
+                      setSelectedUser(getSender(loggedUser, chat.participants))
+                    );
+                }}
+                className={`cursor-pointer flex items-center gap-2 p-2 rounded-lg transition-all duration-200 ${
+                  selectedChat === chat
+                    ? "bg-green-600/30"
+                    : isDarkMode
+                    ? "bg-gray-700 text-white hover:bg-gray-600"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+              >
+                {!chat.isGroupChat ? (
+                  <img
+                    src={
+                      `http://localhost:5000${
+                        getSender(loggedUser, chat.participants).profileImage
+                      }` || defaultProfileImage
+                    }
+                    alt={getSender(loggedUser, chat.participants).name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={
+                      chat.profileImage
+                        ? "http://localhost:5000" + chat?.profileImage
+                        : defaultProfileImage
+                    }
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                )}
+                <div>
+                  <div className="font-semibold">
+                    {chat.isGroupChat
+                      ? chat.chatName
+                      : getSender(loggedUser, chat.participants).name}
+                  </div>
+                  {chat.latestMessage && (
+                    <div className="text-xs">
+                      <b>{chat.latestMessage.senderId.username}:</b>{" "}
+                      {chat.latestMessage.content.length > 50
+                        ? chat.latestMessage.content.substring(0, 50) + "..."
+                        : chat.latestMessage.content}
+                    </div>
+                  )}
+                </div>
+              </div>
             ))
           ) : (
             <p>No chats available</p>

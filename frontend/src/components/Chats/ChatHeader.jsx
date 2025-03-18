@@ -6,7 +6,6 @@ import { ThemeContext } from "../../context/ThemeContext";
 function ChatHeader({ selectedUser,selectedChat}) {
   const { isDarkMode } = useContext(ThemeContext);
   const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
-  console.log(selectedChat.participants);
 if(selectedChat.isGroupChat){
   return (
     

@@ -48,13 +48,16 @@ const Sidebar = () => {
       </div>
 
       {/* Profile Info */}
-      <div className="mt-12 flex flex-col items-center text-center px-4">
-        <h2 className="text-lg font-semibold">{userInfo?.name}</h2>
-        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-500'} text-sm`}>{userInfo?.jobProfile}</p>
-        <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-2`}>
-          {userInfo?.bio}
-        </p>
-      </div>
+      <div className="mt-12 flex flex-col items-center text-center px-4 w-full max-w-[300px] mx-auto">
+  <h2 className="text-lg font-semibold">{userInfo?.name}</h2>
+  <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-500'} text-sm`}>
+    {userInfo?.jobProfile}
+  </p>
+  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-2`}>
+    {userInfo?.bio}
+  </p>
+</div>
+
 
       {/* Stats Section */}
       <div className={`flex items-center justify-center py-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} border-b mt-4`}>

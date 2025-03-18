@@ -75,7 +75,13 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
+  const connectedUsers = new Map();
+  
   socket.on("setup", (userData) => {
+    if (userData && userData._id) {
+      connectedUsers.set(userData._id, socket.id);
+      console.log(`User ${userData._id} connected with socket ID ${socket.id}`);
+    }
     socket.join(userData._id);
     socket.emit("connected");
   });
@@ -99,8 +105,40 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.off("setup", () => {
-    console.log("USER DISCONNECTED");
-    socket.leave(userData._id);
+  socket.on("follow request", (followRequestData) => {
+    const { sender, recipient } = followRequestData;
+    
+    console.log(`Follow request from ${sender.name || sender._id} to ${recipient.name || recipient._id}`);
+    const notification = {
+      id: Date.now(),
+      content: `${sender.name || sender.username || 'Someone'} requested to follow you`,
+      type: 'follow_request',
+      data: {
+        senderId: sender._id,
+        senderName: sender.name || sender.username || 'Someone',
+        senderPic: sender.profileImage || null,
+        timestamp: Date.now()
+      },
+      timestamp: Date.now(),
+      read: false
+    };
+    const recipientSocketId = connectedUsers.get(recipient._id);
+    if (recipientSocketId) {
+      console.log(`Recipient ${recipient._id} is online with socket ID ${recipientSocketId}`);
+      io.to(recipientSocketId).emit("follow request received", notification);
+    } else {
+      console.log(`Recipient ${recipient._id} is not online`);
+    }
+    socket.broadcast.to(recipient._id).emit("follow request received", notification);
+  });
+  
+  socket.on("disconnect", () => {
+    for (const [userId, socketId] of connectedUsers.entries()) {
+      if (socketId === socket.id) {
+        connectedUsers.delete(userId);
+        console.log(`User ${userId} disconnected`);
+        break;
+      }
+    }
   });
 });

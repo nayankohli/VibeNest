@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Navbar from "../NavBarMainScreen/Navbar";
 import CreatePost from '../CreatePost/CreatePost';
-import Story from "./Stories/Story";
+import Stories from "./Stories/Story";
 import UploadStory from "./Stories/UploadStory";
 import Sidebar from "./LeftSideBar/Sidebar";
 import RightSidebar from "./RightSideBar/RightSideBar";
@@ -16,7 +16,7 @@ const Home = () => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
   const { isDarkMode } = useContext(ThemeContext); // Get isDarkMode state
-
+  
   useEffect(() => {
     if (!userInfo) {
       navigate("/login"); // Redirect to login if not logged in
@@ -37,9 +37,8 @@ const Home = () => {
 
         {/* Center Content */}
         <div className="flex-grow flex flex-col gap-2">
-          <div className={`${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} rounded-lg shadow-md`}>
-            <UploadStory />
-            <Story />
+          <div className={"rounded-lg shadow-md"}>
+          <Stories isDarkMode={isDarkMode} />
           </div>
           <div className={` rounded-lg shadow-md p-0`}>
             <CreatePost />

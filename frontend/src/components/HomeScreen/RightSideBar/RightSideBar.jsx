@@ -20,7 +20,7 @@ const RightSidebar = () => {
   ];
 
   return (
-    <div className="w-70 space-y-6">
+    <div className="max-w-[300px] space-y-6">
       {/* Who to Follow Section */}
       <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg p-4 shadow-md`}>
         <h2 className="text-2xl font-bold mb-3">Who to follow</h2>

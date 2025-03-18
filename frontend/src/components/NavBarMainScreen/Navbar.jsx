@@ -19,8 +19,8 @@ import { logout, setSelectedUser } from "../../actions/UserActions.jsx";
 import Search from "./Search/Search.jsx"; // Import the Search component
 import { ThemeContext } from "../../context/ThemeContext";
 import { ChatState } from "../../context/ChatProvider.js";
-import { getSender, setSelectedChat } from "../../actions/ChatActions.jsx";
-import ChatNotifications from "./ChatNotifications.jsx";
+import { getSender} from "../../actions/ChatActions.jsx";
+import Notifications from "./Notifications.jsx";
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotifiDropdownOpen, setIsNotifiDropdownOpen] = useState(false);
@@ -141,12 +141,7 @@ const Navbar = () => {
       ref={dropdownRef}
       className="absolute right-60 mt-2 w-72 shadow-lg z-50"
     >
-      <ChatNotifications
-        notification={notification}
-        setNotification={setNotification}
-        userInfo={userInfo}
-        setSelectedChat={setSelectedChat}
-        getSender={getSender}
+      <Notifications
         isNotifiDropdownOpen={isNotifiDropdownOpen}
         setIsNotifiDropdownOpen={setIsNotifiDropdownOpen}
         isDarkMode={isDarkMode}

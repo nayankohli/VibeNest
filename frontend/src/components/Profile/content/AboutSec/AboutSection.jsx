@@ -12,7 +12,7 @@ const AboutSection = ({ profile, loggedInUserId }) => {
   const navigate = useNavigate();
   
   const handleEditClick = () => {
-    navigate("/edit-profile");
+    navigate("/settings");
   };
 
   const toggleDropdown = (field) => {
