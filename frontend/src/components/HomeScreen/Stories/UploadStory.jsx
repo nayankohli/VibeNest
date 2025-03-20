@@ -113,8 +113,8 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
           <div 
             className={`mb-4 p-4 border-2 border-dashed rounded-lg flex flex-col items-center justify-center ${
               isDarkMode 
-                ? "border-gray-600 bg-gray-700" 
-                : "border-gray-300 bg-gray-50"
+                ? "border-gray-400 bg-gray-700" 
+                : "border-gray-500 bg-gray-50"
             }`}
             style={{ minHeight: "200px" }}
           >
@@ -154,7 +154,7 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
                 <button
                   type="button"
                   onClick={handleChooseFile}
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg flex items-center"
+                  className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg flex items-center"
                 >
                   <FaCloudUploadAlt className="mr-2" />
                   Choose File
@@ -188,7 +188,7 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg flex items-center"
+              className="px-4 py-2 bg-green-500 text-white rounded-lg flex items-center"
               disabled={!file || loading}
             >
               {loading ? (

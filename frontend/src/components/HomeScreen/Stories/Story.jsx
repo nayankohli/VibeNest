@@ -282,13 +282,13 @@ const Stories = ({ isDarkMode }) => {
   return (
     <>
       {/* Stories horizontal list */}
-      <div className="flex gap-1 justify-start items-start overflow-x-auto hide-scrollbar">
+      <div className="flex justify-start items-start overflow-x-auto hide-scrollbar">
         {/* Create story button */}
         <div 
           className="flex flex-col items-center justify-center cursor-pointer mr-4"
           onClick={() => setShowUploadModal(true)}
         >
-          <div className={`w-24 h-28 rounded-lg flex flex-col items-center justify-center ${isDarkMode ? "bg-gray-700" : "bg-gray-100"} `}>
+          <div className={`w-24 h-28 rounded-lg flex flex-col items-center justify-center border-2 border-dashed ${isDarkMode ? "bg-gray-700 border-gray-400" : "bg-gray-100 border-gray-500"} `}>
             <span className={`text-2xl ${isDarkMode ? "bg-gray-800" : "bg-gray-300"} rounded-full p-2 mb-1`}>+</span>
             <span className="text-xs font-medium">Post a Story</span>
           </div>
@@ -297,7 +297,7 @@ const Stories = ({ isDarkMode }) => {
         {/* Story thumbnails */}
         {loading ? (
           <div className="flex justify-center items-center w-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
           </div>
         ) : error ? (
           <div className="text-red-500">{error}</div>
@@ -308,13 +308,13 @@ const Stories = ({ isDarkMode }) => {
             return (
               <div 
                 key={group.user._id} 
-                className={`flex flex-col items-center cursor-pointer mr-4 ${allStoriesSeen ? 'opacity-60' : ''}`}
+                className={`flex flex-col items-center cursor-pointer mr-2 ${allStoriesSeen ? 'opacity-60' : ''}`}
                 onClick={() => openStoryView(index)}
               >
                 <div 
                   className={`w-24 h-28 rounded-lg p-0.5 mb-1 relative ${
                     group.hasUnseenStories 
-                      ? "border-2 border-blue-500" 
+                      ? "border-2 border-green-500" 
                       : isDarkMode 
                         ? "border-2 border-gray-600" 
                         : "border-2 border-gray-300"

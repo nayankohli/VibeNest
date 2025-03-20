@@ -52,7 +52,8 @@ const Navbar = () => {
     localStorage.removeItem("userInfo");
     dispatch(logout());
     if (socket) socket.disconnect();
-    window.location.href = "/login";
+    navigate("/login")
+   // window.location.href = "/login";
   };
   const handleViewProfile = () => {
     navigate(`/profile/${userInfo._id}`);

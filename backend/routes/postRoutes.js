@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { createPost, likePost, addComment, getAllPosts, deletePost, upload,dislikePost,getCommentsOfPost,deleteComment} = require('../controllers/postControllers.js');
+const { createPost, likePost, addComment, getAllPosts, deletePost, upload,dislikePost,getCommentsOfPost,deleteComment,
+fetchFollowing, fetchExplore, getPostsFeed
+} = require('../controllers/postControllers.js');
 const { protect } = require('../middlewares/authMiddleware.js');
 
 // Route for creating a post (uploading up to 5 media files)
@@ -15,5 +17,8 @@ router.get("/:id/comment/all",protect, getCommentsOfPost);
 router.delete('/delete/:id', protect, deletePost);
 router.delete('/delete/:commentId/comment/:postId', protect, deleteComment);
 router.get('/all/:id', protect, getAllPosts);
+router.get('/following', protect, fetchFollowing);
+router.get('/explore', protect, fetchExplore);
+router.get('/', protect, getPostsFeed);
 
 module.exports = router;

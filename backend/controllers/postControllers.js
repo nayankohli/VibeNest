@@ -285,9 +285,123 @@ const deleteComment = asyncHandler(async (req, res) => {
   }
 });
 
-  
+// Fetch posts from users the current user follows
+const fetchFollowing = asyncHandler(async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Get the list of users the current user follows
+    const user = await User.findById(req.user._id);
+    const following = user.following || [];
+    
+    // If following list is empty, return empty result
+    if (following.length === 0) {
+      return res.json({ posts: [] });
+    }
+    
+    // Find posts from these users
+    const posts = await Post.find({
+      postedBy: { $in: following }  // Posts from followed users only
+    })
+      .sort({ createdAt: -1 })      // Most recent first
+      .skip(skip)
+      .limit(limit)
+      .populate('postedBy', 'username profileImage')
+      .populate({
+        path: 'likes',
+        select: '_id'               // Only get IDs to reduce payload size
+      })
+      .populate({
+        path: 'comments',
+        select: '_id'               // Only get IDs to count them
+      });
+    
+    res.json({ posts });
+  } catch (error) {
+    console.error("Following posts error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
-// Export all controllers
+// Fetch posts for the explore feed (public posts from users not followed)
+const fetchExplore = asyncHandler(async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Get the list of users the current user follows
+    const user = await User.findById(req.user._id);
+    const following = user.following || [];
+    
+    // Add current user to exclude their posts too
+    const excludeUsers = [...following];
+    if (!excludeUsers.includes(req.user._id.toString())) {
+      excludeUsers.push(req.user._id);
+    }
+    
+    // Find users with public profiles who are NOT followed by the current user
+    const publicUsers = await User.find({ 
+      _id: { $nin: excludeUsers }, 
+      privacy: 'public' // Only select users with public profiles
+    }).select('_id'); // Get only user IDs
+
+    const publicUserIds = publicUsers.map(user => user._id);
+
+    // Fetch posts only from users with public profiles
+    const posts = await Post.find({
+      postedBy: { $in: publicUserIds } // Only fetch posts from public users
+    })
+      .sort({ createdAt: -1 })        // Most recent first
+      .skip(skip)
+      .limit(limit)
+      .populate('postedBy', 'username profileImage privacy')
+      .populate({ path: 'likes', select: '_id' })
+      .populate({ path: 'comments', select: '_id' });
+
+    console.log("Fetched posts count:", posts.length);
+    
+    res.json({ posts });
+  } catch (error) {
+    console.error("Explore posts error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+const getPostsFeed = asyncHandler(async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    const currentUser = await User.findById(req.user._id);
+    const following = currentUser.following || [];
+    const publicUsers = await User.find({ 
+      _id: { $nin: [req.user._id, ...following] }, 
+      privacy: 'public' 
+    }).select('_id');
+
+    const publicUserIds = publicUsers.map(user => user._id);
+
+    const posts = await Post.find({
+      postedBy: { $in: [...following, ...publicUserIds] }
+    })
+      .sort({ createdAt: -1 })  
+      .skip(skip)          
+      .limit(limit)
+      .populate('postedBy', 'username profileImage privacy')
+      .populate({ path: 'likes', select: '_id' })
+      .populate({ path: 'comments', select: '_id' });
+
+    res.json({ posts });
+  } catch (error) {
+    console.error("Mixed feed error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 module.exports = {
   createPost,
   likePost,
@@ -297,5 +411,8 @@ module.exports = {
   deletePost,
   upload,
   getCommentsOfPost,
-  deleteComment // Exporting upload middleware for potential direct usage
+  deleteComment,
+  fetchFollowing,
+  fetchExplore,
+  getPostsFeed // Exporting upload middleware for potential direct usage
 };

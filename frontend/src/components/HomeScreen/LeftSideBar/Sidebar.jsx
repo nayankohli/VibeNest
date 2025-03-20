@@ -21,7 +21,7 @@ const Sidebar = () => {
     }, [navigate, userInfo]);
     
   return (
-    <div className={`flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} rounded-lg shadow-md w-70 h-full overflow-auto`}>
+    <div className={`flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} rounded-lg shadow-md w-70 h-auto overflow-hidden`}>
       {/* Banner Section */}
       <div className="relative flex flex-col top-0">
         <img
@@ -48,7 +48,7 @@ const Sidebar = () => {
       </div>
 
       {/* Profile Info */}
-      <div className="mt-12 flex flex-col items-center text-center px-4 w-full max-w-[300px] mx-auto">
+      <div className="mt-12 flex flex-col items-center text-center px-4 w-full mx-auto">
   <h2 className="text-lg font-semibold">{userInfo?.name}</h2>
   <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-500'} text-sm`}>
     {userInfo?.jobProfile}

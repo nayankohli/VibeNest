@@ -38,55 +38,58 @@ const markStorySeen = asyncHandler(async (req, res) => {
 
   res.json({ success: true });
 });
-
-// Add this function to your StoryController file if it doesn't exist
 const getStories = asyncHandler(async (req, res) => {
-  // Get all stories that are less than 24 hours old
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  
-  // Find all recent stories
-  const stories = await Story.find({ 
-    createdAt: { $gte: oneDayAgo } 
-  }).populate('user', 'name profileImage');
-  
-  // Group stories by user
-  const storyGroups = [];
-  const userMap = {};
-  
-  for (const story of stories) {
-    const userId = story.user._id.toString();
-    
-    // Check if this is unseen by current user
-    const isUnseen = !story.seenBy.includes(req.user._id);
-    
-    if (!userMap[userId]) {
-      userMap[userId] = {
-        user: story.user,
-        stories: [story],
-        hasUnseenStories: isUnseen
-      };
-    } else {
-      userMap[userId].stories.push(story);
-      if (isUnseen) {
-        userMap[userId].hasUnseenStories = true;
+  try {
+    const currentUser = await User.findById(req.user._id).select("following");
+    const following = currentUser.following || [];
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const stories = await Story.find({
+      user: { $in: following },
+      createdAt: { $gte: oneDayAgo }
+    }).populate("user", "username profileImage");
+
+    // Group stories by user
+    const storyGroups = [];
+    const userMap = {};
+
+    for (const story of stories) {
+      const userId = story.user._id.toString();
+      const isUnseen = !story.seenBy.includes(req.user._id);
+
+      if (!userMap[userId]) {
+        userMap[userId] = {
+          user: story.user,
+          stories: [story],
+          hasUnseenStories: isUnseen
+        };
+      } else {
+        userMap[userId].stories.push(story);
+        if (isUnseen) {
+          userMap[userId].hasUnseenStories = true;
+        }
       }
     }
+
+    // Convert map to array
+    for (const userId in userMap) {
+      storyGroups.push(userMap[userId]);
+    }
+
+    // Sort groups - unseen first
+    storyGroups.sort((a, b) => {
+      if (a.hasUnseenStories && !b.hasUnseenStories) return -1;
+      if (!a.hasUnseenStories && b.hasUnseenStories) return 1;
+      return 0;
+    });
+
+    res.json(storyGroups);
+  } catch (error) {
+    console.error("Error fetching stories:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-  
-  // Convert map to array
-  for (const userId in userMap) {
-    storyGroups.push(userMap[userId]);
-  }
-  
-  // Sort groups - unseen first
-  storyGroups.sort((a, b) => {
-    if (a.hasUnseenStories && !b.hasUnseenStories) return -1;
-    if (!a.hasUnseenStories && b.hasUnseenStories) return 1;
-    return 0;
-  });
-  
-  res.json(storyGroups);
 });
+
 
 const deleteStory = asyncHandler(async (req, res) => {
   const story = await Story.findById(req.params.id);
@@ -95,14 +98,10 @@ const deleteStory = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Story not found");
   }
-
-  // Check if user is authorized to delete
   if (story.user.toString() !== req.user._id.toString()) {
     res.status(401);
     throw new Error("User not authorized");
   }
-
-  // Delete the media file
   if (story.media) {
     const filePath = path.join(__dirname, '..', story.media);
     if (fs.existsSync(filePath)) {
