@@ -26,7 +26,7 @@ const Media = () => {
     <div className={`${isDarkMode ? 'bg-gray-800  text-white' : 'bg-white'} p-6 rounded-lg shadow-md`}>
       {/* Header Section */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold mb-4">Photos</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-green-600">Photos</h2>
       </div>
 
       {/* Photo Grid */}

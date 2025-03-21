@@ -45,7 +45,7 @@ const DisplayPosts = () => {
   if (posts && posts.length > 0) {
     return (
       <div className="">
-        <div className={`flex flex-col gap-2 ${isDarkMode? "bg-gray-800 text-white" : "bg-white text-black"}  rounded-lg `}>
+        <div className={`flex flex-col gap-2 p-4 ${isDarkMode? "bg-gray-800 text-white" : "bg-white text-black"}  rounded-lg `}>
           {posts?.map((post) => (
             <Post post={post} key={post._id}/>
           ))}

@@ -9,6 +9,7 @@ import Settings from "./components/NavBarMainScreen/Settings/Settings";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "./context/ThemeContext";
 import ChatProvider from "./context/ChatProvider"; // ✅ Correct import
+import SavedPosts from "./components/SavedPosts/SavedPosts";
 function App() {
   return (
     <ThemeProvider> {/* ✅ Wrap everything inside ThemeProvider */}
@@ -16,11 +17,12 @@ function App() {
         <Toaster /> {/* ✅ Place Toaster outside of Routes */}
         <Routes>
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/saved" element={<SavedPosts />} />
           <Route path="/chats" element={<ChatPage />} />
         </Routes>
       </ChatProvider>

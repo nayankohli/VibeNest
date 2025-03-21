@@ -22,7 +22,7 @@ const Media = () => {
   return (
     <div className={`${isDarkMode ? 'bg-gray-800  text-white' : 'bg-white'} p-4 rounded-lg shadow-md`}>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">Photos</h1>
+        <h1 className="text-xl font-bold text-green-600">Photos</h1>
         <span
           className={`${isDarkMode ? 'text-blue-300' : 'text-blue-500'} hover:underline cursor-pointer`}
           onClick={() => dispatch(setActiveTab("media"))}

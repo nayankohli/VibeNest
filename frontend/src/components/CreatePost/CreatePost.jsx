@@ -75,7 +75,7 @@ const CreatePost = () => {
               src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage}
               alt="Profile"
               className="w-12 h-12 rounded-full object-cover cursor-pointer"
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(`/profile/${userInfo._id}`)}
             />
             <input
               type="text"

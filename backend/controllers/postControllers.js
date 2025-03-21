@@ -201,7 +201,7 @@ const getAllPosts = asyncHandler(async (req, res) => {
   try {
     const posts = await Post.find({ postedBy: userId })
     .sort({ createdAt: -1 })
-      .populate('postedBy', 'username profileImage jobProfile')
+      .populate('postedBy', 'username profileImage jobProfile bookmarks')
       .populate({
         path: 'comments',
         populate: {
@@ -308,15 +308,19 @@ const fetchFollowing = asyncHandler(async (req, res) => {
       .sort({ createdAt: -1 })      // Most recent first
       .skip(skip)
       .limit(limit)
-      .populate('postedBy', 'username profileImage')
-      .populate({
-        path: 'likes',
-        select: '_id'               // Only get IDs to reduce payload size
-      })
-      .populate({
-        path: 'comments',
-        select: '_id'               // Only get IDs to count them
-      });
+        .populate([
+          {
+            path: 'postedBy',
+            select: 'username profileImage privacy bookmarks'
+          },
+          {
+            path: 'comments',
+            populate: {
+              path: 'commentedBy',
+              select: 'username profileImage'
+            }
+          }
+        ])
     
     res.json({ posts });
   } catch (error) {
@@ -357,9 +361,19 @@ const fetchExplore = asyncHandler(async (req, res) => {
       .sort({ createdAt: -1 })        // Most recent first
       .skip(skip)
       .limit(limit)
-      .populate('postedBy', 'username profileImage privacy')
-      .populate({ path: 'likes', select: '_id' })
-      .populate({ path: 'comments', select: '_id' });
+      .populate([
+        {
+          path: 'postedBy',
+          select: 'username profileImage privacy bookmarks'
+        },
+        {
+          path: 'comments',
+          populate: {
+            path: 'commentedBy',
+            select: 'username profileImage'
+          }
+        }
+      ])
 
     console.log("Fetched posts count:", posts.length);
     
@@ -384,21 +398,91 @@ const getPostsFeed = asyncHandler(async (req, res) => {
     }).select('_id');
 
     const publicUserIds = publicUsers.map(user => user._id);
-
-    const posts = await Post.find({
-      postedBy: { $in: [...following, ...publicUserIds] }
-    })
-      .sort({ createdAt: -1 })  
-      .skip(skip)          
-      .limit(limit)
-      .populate('postedBy', 'username profileImage privacy')
-      .populate({ path: 'likes', select: '_id' })
-      .populate({ path: 'comments', select: '_id' });
+    
+      const posts = await Post.find({
+        postedBy: { $in: [...following, ...publicUserIds] } // Only fetch posts from public users
+      })
+        .sort({ createdAt: -1 })        // Most recent first
+        .skip(skip)
+        .limit(limit)
+        .populate([
+          {
+            path: 'postedBy',
+            select: 'username profileImage privacy bookmarks'
+          },
+          {
+            path: 'comments',
+            populate: {
+              path: 'commentedBy',
+              select: 'username profileImage'
+            }
+          }
+        ])
 
     res.json({ posts });
   } catch (error) {
     console.error("Mixed feed error:", error);
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+const bookmarkPost = asyncHandler(async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user._id;
+
+    // Find the post
+    const post = await Post.findById(postId);
+    
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: 'Post not found'
+      });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check if post is already bookmarked
+    const isBookmarked = user.bookmarks.includes(postId);
+    
+    if (isBookmarked) {
+      // Unbookmark: Remove post from user's bookmarks
+      await User.findByIdAndUpdate(userId, {
+        $pull: { bookmarks: postId }
+      });
+      
+      res.status(200).json({
+        success: true,
+        message: 'Post removed from bookmarks',
+        isBookmarked: false
+      });
+    } else {
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: { bookmarks: postId }
+      });
+      
+      res.status(200).json({
+        success: true,
+        message: 'Post added to bookmarks',
+        isBookmarked: true
+      });
+    }
+  } catch (error) {
+    console.error('Bookmark error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while bookmarking post',
+      error: error.message
+    });
   }
 });
 
@@ -414,5 +498,6 @@ module.exports = {
   deleteComment,
   fetchFollowing,
   fetchExplore,
-  getPostsFeed // Exporting upload middleware for potential direct usage
+  getPostsFeed,
+  bookmarkPost // Exporting upload middleware for potential direct usage
 };

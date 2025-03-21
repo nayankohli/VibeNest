@@ -21,7 +21,7 @@ const AboutSection = ({ profile, loggedInUserId }) => {
 
   return (
     <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} p-4 rounded-lg shadow-md  ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-      <h2 className="text-xl font-bold mb-4">Profile Info</h2>
+      <h2 className="text-xl font-bold mb-4 text-green-600">Profile Info</h2>
 
       <div className={`p-3 ${isDarkMode ? 'bg-gray-700 border' : 'bg-gray-100'} rounded-md relative`}>
         <h3 className="text-md font-semibold mb-2">Overview</h3>

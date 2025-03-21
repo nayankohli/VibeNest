@@ -232,6 +232,7 @@ const Navbar = () => {
                     className={`flex items-center px-4 py-2 cursor-pointer ${
                       isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
                     }`}
+                    onClick={()=>navigate("/saved")}
                   >
                     <FontAwesomeIcon icon={faBookmark} className="mr-3" /> Your
                     Saved

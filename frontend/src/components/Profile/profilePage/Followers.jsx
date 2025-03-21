@@ -30,7 +30,7 @@ const Followers = () => {
       <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} p-4 rounded-lg shadow-md`}>
         <div className="flex justify-between items-center mb-4">
           <h1 className="font-bold">
-            <span className="text-2xl">Followers</span>{" "}
+            <span className="text-2xl text-green-600">Followers</span>{" "}
             <span className={`text-lg ${isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-700'} p-2 rounded-lg`}>{followers.length}</span>
           </h1>
           <span 

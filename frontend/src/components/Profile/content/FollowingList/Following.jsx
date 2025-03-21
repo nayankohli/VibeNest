@@ -39,7 +39,7 @@ const Following = ({ profile }) => {
 
   return (
     <div className={`${isDarkMode ? 'bg-gray-800  text-white' : 'bg-white'} p-6 rounded-lg shadow-md`}>
-      <h2 className="text-2xl font-semibold mb-4">Following</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-green-600">Following</h2>
 
       {sortedFollowing.map((user) => (
         <div key={user?._id} className={`flex items-center justify-between p-4 ${isDarkMode ? 'border-t border-gray-700' : 'border-t'}`}>

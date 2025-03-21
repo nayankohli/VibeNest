@@ -1,11 +1,13 @@
 import { FaHome, FaUserFriends, FaGlobe, FaBookmark, FaUsers, FaBell, FaCog, FaComments } from "react-icons/fa";
 import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ThemeContext } from "../../../context/ThemeContext"; // Make sure this path is correct
 import defaultBanner from '../defaultBanner.jpg';
+import { setActiveTab } from "../../../reducers/ProfileSlice";
 const Sidebar = () => {
     const navigate = useNavigate();
+    const dispatch=useDispatch();
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
     const { isDarkMode } = useContext(ThemeContext);
@@ -34,7 +36,8 @@ const Sidebar = () => {
           className="w-full h-24 object-cover rounded-t-lg mt-[-16px]"
         />
         {/* Profile Image */}
-        <div className={`absolute left-1/2 transform -translate-x-1/2 -bottom-10 border-4 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-lg`}>
+        <div className={`absolute left-1/2 transform -translate-x-1/2 -bottom-10 border-4 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-lg`}
+        onClick={()=>navigate(`/profile/${userInfo._id}`)}>
           <img
             src={
               userInfo.profileImage?
@@ -77,21 +80,34 @@ const Sidebar = () => {
 
       {/* Sidebar Menu */}
       <div className="flex flex-col space-y-4 py-4 px-6">
-        <SidebarItem icon={<FaHome />} text="Feed" isDarkMode={isDarkMode} />
-        <SidebarItem icon={<FaUserFriends />} text="Followers" isDarkMode={isDarkMode} />
-        <SidebarItem icon={<FaUsers />} text="Following" isDarkMode={isDarkMode} />
-        <SidebarItem icon={<FaComments />} text="Chats" isDarkMode={isDarkMode} />
-        <SidebarItem icon={<FaBookmark />} text="Your Saved" isDarkMode={isDarkMode} />
+        <SidebarItem icon={<FaHome />} text="Feed" isDarkMode={isDarkMode} 
+        onClick={()=>navigate("/home")}/>
+        <SidebarItem icon={<FaUserFriends />} text="Followers" isDarkMode={isDarkMode} 
+        onClick={()=>{
+          navigate(`/profile/${userInfo._id}`);
+          dispatch(setActiveTab("followers"));
+        }}/>
+        <SidebarItem icon={<FaUsers />} text="Following" isDarkMode={isDarkMode}
+        onClick={()=>{
+          navigate(`/profile/${userInfo._id}`);
+          dispatch(setActiveTab("following"));
+        }} />
+        <SidebarItem icon={<FaComments />} text="Chats" isDarkMode={isDarkMode}
+        onClick={()=>navigate("/chats")} />
+        <SidebarItem icon={<FaBookmark />} text="Your Saved" isDarkMode={isDarkMode}
+        onClick={()=>navigate("/saved")} />
         <SidebarItem icon={<FaBell />} text="Notifications" isDarkMode={isDarkMode} />
-        <SidebarItem icon={<FaCog />} text="Settings" isDarkMode={isDarkMode} />
+        <SidebarItem icon={<FaCog />} text="Settings" isDarkMode={isDarkMode} 
+        onClick={()=>navigate("/settings")}/>
       </div>
     </div>
   );
 };
 
 // Sidebar Menu Item Component
-const SidebarItem = ({ icon, text, isDarkMode }) => (
-  <div className={`flex items-center space-x-3 ${isDarkMode ? 'text-gray-200 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} cursor-pointer`}>
+const SidebarItem = ({ icon, text, isDarkMode, onClick }) => (
+  <div className={`flex items-center space-x-3 ${isDarkMode ? 'text-gray-200 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} cursor-pointer`}
+  onClick={onClick}>
     <div className={`text-xl ${isDarkMode ? 'text-green-400' : 'text-green-800'}`}>{icon}</div>
     <span className="text-base font-bold">{text}</span>
   </div>

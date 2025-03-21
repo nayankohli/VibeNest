@@ -153,20 +153,13 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // Search users by username
 const searchUsers = asyncHandler(async (req, res) => {
   try {
-    // Get the search query from the request
     const query = req.query.query;
-
-    // Validate the query
     if (!query || query.trim() === "") {
       return res.status(400).json({ message: "Search query is required" });
     }
-
-    // Search for users whose username matches the query (case-insensitive)
     const users = await User.find({
-      username: { $regex: query, $options: "i" }, // "i" makes the search case-insensitive
-    }).select("username profileImage name"); // Return only the required fields
-
-    // Respond with the search results
+      username: { $regex: query, $options: "i" }, 
+    }).select("username profileImage name email"); 
     res.status(200).json(users);
   } catch (error) {
     console.error("Error searching users:", error);
@@ -176,7 +169,7 @@ const searchUsers = asyncHandler(async (req, res) => {
 const fetchProfile = asyncHandler(async (req, res) => {
   const userId = req.params.id;
   try {
-    const userProfile = await User.findById(userId); // Fetch user data from DB
+    const userProfile = await User.findById(userId); 
     if (!userProfile) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -219,10 +212,8 @@ const followOrUnfollow = async (req, res) => {
         success: false,
       });
     }
-    // mai check krunga ki follow krna hai ya unfollow
     const isFollowing = user.following.includes(jiskoFollowKrunga);
     if (isFollowing) {
-      // unfollow logic ayega
       await Promise.all([
         User.updateOne(
           { _id: followKrneWala },
@@ -237,7 +228,6 @@ const followOrUnfollow = async (req, res) => {
         .status(200)
         .json({ message: "Unfollowed successfully", success: true });
     } else {
-      // follow logic ayega
       await Promise.all([
         User.updateOne(
           { _id: followKrneWala },
@@ -259,33 +249,20 @@ const followOrUnfollow = async (req, res) => {
 
 const getFollowers = asyncHandler(async (req, res) => {
   try {
-    const userId = req.params.id; // Get userId from the request parameters
-
-    // Fetch the user by ID and get the array of followers' IDs
-    const user = await User.findById(userId).populate("followers"); // This just gives us the IDs of followers
-
-    // Check if the user exists
+    const userId = req.params.id;
+    const user = await User.findById(userId).populate("followers"); 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Create an empty array to store the follower details
     const people = [];
-
-    // Use for...of loop to handle async/await properly
     for (const id of user.followers) {
-      // Fetch each follower's details by ID and populate the required fields
       const follower = await User.findById(id).select(
         "name profileImage username jobProfile"
       );
-
-      // Check if the follower exists and push to the people array
       if (follower) {
         people.push(follower);
       }
     }
-
-    // Check if followers exist
     if (people.length === 0) {
       return res
         .status(404)
@@ -376,6 +353,48 @@ const updateUserPrivacy = asyncHandler(async (req, res) => {
   }
 });
 
+const getSavedPosts = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId).populate({
+      path: 'bookmarks',
+      populate: [
+        {
+          path: 'postedBy',
+          select: 'username profileImage bookmarks'
+        },
+        {
+          path: 'comments',
+          populate: {
+            path: 'commentedBy',
+            select: 'username profileImage'
+          }
+        }
+      ]
+    });
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      savedPosts: user.bookmarks
+    });
+  } catch (error) {
+    console.error('Error fetching saved posts:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching saved posts',
+      error: error.message
+    });
+  }
+});
+
+
 module.exports = {
   registerUser,
   authUser,
@@ -389,4 +408,5 @@ module.exports = {
   getFollowers,
   getFollowing,
   updateUserPrivacy,
+  getSavedPosts
 };

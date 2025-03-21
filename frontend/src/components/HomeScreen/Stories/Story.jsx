@@ -122,11 +122,8 @@ const Stories = ({ isDarkMode }) => {
           }
         }
       });
-      
-      // Cancel any existing animation frame
       cancelAnimationFrame(animationFrameRef.current);
-      
-      // Start progress animation
+
       animationFrameRef.current = requestAnimationFrame(updateProgressBar);
     }
     
@@ -135,16 +132,12 @@ const Stories = ({ isDarkMode }) => {
     };
   }, [activeGroup, activeStoryIndex, showStoryView, dispatch, isPaused]);
   
-  // Handle pause/unpause effect on progress animation
   useEffect(() => {
     if (isPaused) {
       cancelAnimationFrame(animationFrameRef.current);
     } else if (showStoryView && activeGroup) {
-      // When unpausing, we need to reset the start time accounting for current progress
       const elapsedTime = (progress / 100) * storyDuration;
       startTimeRef.current = performance.now() - elapsedTime;
-      
-      // Restart animation
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = requestAnimationFrame(updateProgressBar);
     }

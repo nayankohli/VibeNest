@@ -97,21 +97,21 @@ const Search = () => {
                 users.map((user) => (
                   <div
                     key={user._id}
-                    className="flex space-x-4 p-2 items-center justify-center hover:bg-green-400/30 cursor-pointer rounded-lg"
+                    className="flex space-x-4 p-2 items-center justify-center hover:bg-green-400/20 cursor-pointer rounded-lg"
                     onClick={()=>{
                       closePopup(); // Close the popup before navigating
                       navigate(`/profile/${user._id}`);
                     }}
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center rounded-full space-x-3">
                       <img
-                        src={`http://localhost:5000${user.profileImage}` || defaultProfileImage}
+                        src={user.profileImage?`http://localhost:5000${user.profileImage}`: defaultProfileImage}
                         alt={user.username}
-                        className="h-10 w-10 rounded-full"
+                        className="h-10 w-10 object-cover rounded-full"
                       />
                       <div>
-                        <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'} text-base`}>{user.username}</span>
-                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user.name}</p>
+                        <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-300'} text-base`}>{user.username}</span>
+                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`}>{user.email}</p>
                       </div>
                     </div>
                   </div>

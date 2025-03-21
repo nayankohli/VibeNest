@@ -305,9 +305,7 @@ function ProfilePage() {
             >
               {/* Header */}
               <h1
-                className={`text-2xl font-bold ${
-                  isDarkMode ? "text-white" : "text-gray-900"
-                } mb-4`}
+                className={`text-2xl font-bold text-green-600 mb-4`}
               >
                 About
               </h1>

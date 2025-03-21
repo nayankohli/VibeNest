@@ -1,13 +1,11 @@
-import React, { useEffect, useState ,useContext} from "react";
+import React, { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setPosts,setSelectedPost
-} from "../../../reducers/PostReducers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart , faComment} from "@fortawesome/free-solid-svg-icons";
-import axios from 'axios'
+import { setPosts, setSelectedPost } from "../../../reducers/PostReducers";
+import axios from "axios";
 import CommentDialog from "./CommentDialog";
 import { ThemeContext } from "../../../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
+
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -25,255 +23,457 @@ const getRelativeTime = (createdAt) => {
 
   return postTime.toLocaleDateString();
 };
-const Post=({post})=>{
-    const [text, setText] = useState("");
-    const [open, setOpen] = useState(false);
-    const { posts, loading, error,comments } = useSelector((store) => store.post);
-    const fetchProfileState = useSelector((state) => state.fetchProfile);
-    const { profile } = fetchProfileState || {};
-    const userLogin = useSelector((state) => state.userLogin);
-    const { userInfo } = userLogin;
-    const [liked, setLiked] = useState(post.likes.includes(userInfo?._id) || false);
-    const [postLike, setPostLike] = useState(post.likes.length);
-    const [comment, setComment] = useState(post.comments);
-    const dispatch = useDispatch();
-    const { isDarkMode} = useContext(ThemeContext);
 
-    const changeEventHandler = (e) => {
-        const inputText = e.target.value;
-        if (inputText.trim()) {
-            setText(inputText);
-        } else {
-            setText("");
-        }
+const Post = ({ post }) => {
+  const navigate=useNavigate();
+  const [text, setText] = useState("");
+  const [open, setOpen] = useState(false);
+  const { posts, loading, error, comments } = useSelector(
+    (store) => store.post
+  );
+  const fetchProfileState = useSelector((state) => state.fetchProfile);
+  const { profile } = fetchProfileState || {};
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+  const [liked, setLiked] = useState(
+    post.likes.includes(userInfo?._id) || false
+  );
+  const [postLike, setPostLike] = useState(post.likes.length);
+  const [comment, setComment] = useState(post.comments);
+  const [showOptions, setShowOptions] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(post.postedBy.bookmarks.includes(post?._id) || false);
+  const dispatch = useDispatch();
+  const { isDarkMode } = useContext(ThemeContext);
+  const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+  const changeEventHandler = (e) => {
+    const inputText = e.target.value;
+    if (inputText.trim()) {
+      setText(inputText);
+    } else {
+      setText("");
     }
-
-    const likeOrDislikeHandler = async () => {
-      // Optimistically update UI
-      setLiked(!liked);
-      setPostLike(liked ? postLike - 1 : postLike + 1);
-  
-      try {
-          const action = liked ? 'dislike' : 'like';
-          const res = await axios.get(`http://localhost:5000/api/posts/${post._id}/${action}`, { 
-              headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${userInfo.token}`,
-              },
-              withCredentials: true
-          });
-  
-          console.log(res.data);
-          if (!res.data.success) {
-              // If API fails, revert UI changes
-              setLiked(liked);
-              setPostLike(liked ? postLike + 1 : postLike - 1);
-              alert("Failed to update like status.");
-          }
-      } catch (error) {
-          console.error(error);
-          // Revert UI in case of an error
-          setLiked(liked);
-          setPostLike(liked ? postLike + 1 : postLike - 1);
-      }
   };
-  
 
-    const commentHandler = async () => {
+  const likeOrDislikeHandler = async () => {
+    // Optimistically update UI
+    setLiked(!liked);
+    setPostLike(liked ? postLike - 1 : postLike + 1);
 
-        try {
-            const res = await axios.post(`http://localhost:5000/api/posts/comment/${post._id}`, { text }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${userInfo.token}`,
-                },
-                withCredentials: true
-            });
-            console.log(res.data);
-            if (res.data.success) {
-                const updatedCommentData = [...comment, res.data.comment];
-                setComment(updatedCommentData);
-
-                const updatedPostData = posts.map(p =>
-                    p._id === post._id ? { ...p, comments: updatedCommentData } : p
-                );
-
-                dispatch(setPosts(updatedPostData));
-                alert(res.data.message);
-                setText("");
-            }
-        } catch (error) {
-            console.log(error);
+    try {
+      const action = liked ? "dislike" : "like";
+      const res = await axios.get(
+        `http://localhost:5000/api/posts/${post._id}/${action}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+          withCredentials: true,
         }
-    }
+      );
 
-    const deletePostHandler = async () => {
-        try {
-            const res = await axios.delete(`http://localhost:5000/api/posts/delete/${post?._id}`, { 
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${userInfo.token}`,
-                },
-                withCredentials: true
-             })
-            if (res.data.success) {
-                const updatedPostData = posts.filter((postItem) => postItem?._id !== post?._id);
-                dispatch(setPosts(updatedPostData));
-                alert(res.data.message);
-            }
-        } catch (error) {
-            console.log(error);
-            alert(error.response.data.messsage);
+      if (!res.data.success) {
+        // If API fails, revert UI changes
+        setLiked(liked);
+        setPostLike(liked ? postLike + 1 : postLike - 1);
+        alert("Failed to update like status.");
+      }
+    } catch (error) {
+      console.error(error);
+      // Revert UI in case of an error
+      setLiked(liked);
+      setPostLike(liked ? postLike + 1 : postLike - 1);
+    }
+  };
+
+  const commentHandler = async () => {
+    if (!text.trim()) return;
+
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/posts/comment/${post._id}`,
+        { text },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+          withCredentials: true,
         }
-    }
+      );
 
-    const bookmarkHandler = async () => {
-        try {
-            const res = await axios.get(`http://localhost:5000/api/posts/${post?._id}/bookmark`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${userInfo.token}`,
-                },
-                withCredentials: true
-            });
-            if(res.data.success){
-                alert(res.data.message);
-            }
-        } catch (error) {
-            console.log(error);
+      if (res.data.success) {
+        const updatedCommentData = [...comment, res.data.comment];
+        setComment(updatedCommentData);
+
+        const updatedPostData = posts.map((p) =>
+          p._id === post._id ? { ...p, comments: updatedCommentData } : p
+        );
+
+        dispatch(setPosts(updatedPostData));
+        setText("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deletePostHandler = async () => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:5000/api/posts/delete/${post?._id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+          withCredentials: true,
         }
+      );
+
+      if (res.data.success) {
+        const updatedPostData = posts.filter(
+          (postItem) => postItem?._id !== post?._id
+        );
+        dispatch(setPosts(updatedPostData));
+        alert(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert(error.response.data.message);
     }
-    return (
-        <div key={post._id} className={` rounded-lg p-5 shadow-md w-full ${isDarkMode? "bg-gray-800 text-white" : "bg-white text-black"} border-b`}>
-              <div className="flex items-center mb-3 border-b pb-2">
-                <div className="mr-3">
-                  <img
-                    src={
-                      "http://localhost:5000" + post.postedBy.profileImage ||
-                      "default-profile.jpg"
-                    }
-                    alt="Profile"
-                    className="w-12 h-12 rounded-full object-cover border border-gray-300"
-                  />
-                </div>
-                <div>
-                <h4 className="font-bold text-lg ">
-                  {post.postedBy.username}
-                </h4>
-                <p className={`text-sm ${isDarkMode? " text-gray-400" : " text-gray-500"}`}>{post.postedBy.jobProfile}</p>
-                </div>
-                
-              </div>
+  };
 
-              <div className="mb-3">
-                {post.media && post.media.length > 0 && (
-                  <div className="flex flex-col gap-3">
-                    {post.media.map((mediaItem, index) => (
-                      <div
-                        key={index}
-                        className="m-2 rounded-lg shadow-lg transition-transform duration-200 hover:scale-105 hover:shadow-xl"
-                      >
-                        {mediaItem.endsWith(".mp4") ? (
-                          <video
-                            controls
-                            className="w-full max-h-96 bg-black object-cover rounded-lg"
-                          >
-                            <source
-                              src={`http://localhost:5000${mediaItem}`}
-                              type="video/mp4"
-                            />
-                          </video>
-                        ) : (
-                          <img
-                            src={`http://localhost:5000${mediaItem}`}
-                            alt="Post media"
-                            className="w-full max-h-96 bg-gray-100 object-cover rounded-lg"
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+  const bookmarkHandler = async () => {
+    // Optimistic UI update
+    setIsBookmarked(!isBookmarked);
 
-              <div className="flex justify-between items-center border-t border-gray-400 pt-3">
-                <div className="flex items-center gap-3">
-                <FontAwesomeIcon 
-    icon={faHeart} 
-    onClick={likeOrDislikeHandler} 
-    size={'24'} 
-    className={`cursor-pointer ${liked ? 'text-red-600' : 'text-gray-600 hover:text-gray-800'}`} 
-/>
-<p>{postLike}</p>
-                  <button className="text-xl text-gray-500 hover:text-blue-500 transition-colors duration-300">
-                    <FontAwesomeIcon icon={faComment} onClick={() => {
-                        dispatch(setSelectedPost(post));
-                        setOpen(true);
-                    }} className='cursor-pointer hover:text-gray-600'/>
-                  </button>
-                  <p>{comment.length}</p>
-                </div>
-                {userInfo?._id === profile?._id && (
-                  <button
-                    onClick={deletePostHandler}
-                    className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition duration-300"
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/posts/${post?._id}/bookmark`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (!res.data.success) {
+        // Revert if failed
+        setIsBookmarked(isBookmarked);
+      }
+    } catch (error) {
+      console.log(error);
+      // Revert if error
+      setIsBookmarked(isBookmarked);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && text.trim()) {
+      commentHandler();
+    }
+  };
+const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
+// console.log(post.likes);
+  return (
+    <div
+      key={post._id}
+      className={`rounded-lg shadow mb-4 overflow-hidden ${
+        isDarkMode ? "bg-gray-700 text-gray-200" : "bg-white text-gray-800"
+      }`}
+    >
+      {/* Post header */}
+      <div className="p-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="rounded-full"
+          onClick={()=>navigate(`/profile/${post.postedBy._id}`)}>
+            <img
+              src={
+                post.postedBy.profileImage?"http://localhost:5000"+post.postedBy.profileImage:defaultProfileImage
+              }
+              alt={`${post.postedBy.username}'s avatar`}
+              className="w-10 h-10 object-cover rounded-full mr-3"
+            />
+          </div>
+          <div className="flex flex-col items-start">
+            <p className="font-semibold">{post.postedBy.username}</p>
+            <p
+              className={`text-xs ${
+                isDarkMode ? "text-gray-400" : "text-gray-500"
+              }`
+            }
+            onClick={()=>navigate(`/profile/${post.postedBy._id}`)}
+            >
+              {getRelativeTime(post.createdAt)}
+              {userInfo._id !== post.postedBy._id && (
+                <span className="ml-1 text-green-500">
+                  {isFollowing ? "Following" : "Follow"}
+                </span>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => setShowOptions(!showOptions)}
+            className={`${
+              isDarkMode
+                ? "text-gray-400 hover:text-gray-200"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="19" cy="12" r="1"></circle>
+              <circle cx="5" cy="12" r="1"></circle>
+            </svg>
+          </button>
+
+          {showOptions && (
+            <div
+              className={`absolute right-0 mt-2 py-2 w-48 rounded-md shadow-lg z-10 ${
+                isDarkMode
+                  ? "bg-gray-600 border border-gray-500"
+                  : "bg-white border border-gray-200"
+              }`}
+            >
+              {userInfo?._id === post.postedBy._id && (
+                <button
+                  onClick={() => {
+                    deletePostHandler();
+                    setShowOptions(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm ${
+                    isDarkMode
+                      ? "text-gray-200 hover:bg-gray-500"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  Delete Post
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  bookmarkHandler();
+                  setShowOptions(false);
+                }}
+                className={`w-full text-left px-4 py-2 text-sm ${
+                  isDarkMode
+                    ? "text-gray-200 hover:bg-gray-500"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {isBookmarked ? "Remove Bookmark" : "Bookmark Post"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Post content */}
+      <div className="px-4 pb-3">
+        <p className="mb-3 text-center">{post.caption}</p>
+
+        {post.media && post.media.length > 0 && (
+          <div className="rounded-lg">
+            {post.media.map((mediaItem, index) => (
+              <div key={index}>
+                {mediaItem.endsWith(".mp4") ? (
+                  <video
+                    controls
+                    className="w-full object-cover h-80 rounded-lg"
                   >
-                    Delete
-                  </button>
+                    <source
+                      src={`http://localhost:5000${mediaItem}`}
+                      type="video/mp4"
+                    />
+                  </video>
+                ) : (
+                  <div className="rounded-lg">
+                    <img
+                      src={`http://localhost:5000${mediaItem}`}
+                      alt="Post content"
+                      className="w-full border object-cover h-80 rounded-lg"
+                      loading="lazy"
+                    />
+                  </div>
                 )}
               </div>
-              
-              {/* <div className="mt-3">
-                {post.comments?.map((comment, index) => (
-                  <div key={index} className="flex items-center gap-3 mb-2">
-                    <img
-                      src={
-                        comment.commentedBy.profileImage ||
-                        "default-profile.jpg"
-                      }
-                      alt="Commenter"
-                      className="w-8 h-8 rounded-full object-cover border border-gray-300"
-                    />
-                    <p>{comment.commentedBy.username}</p>
-                  </div>
-                ))}
-              </div> */}
-              <div className="flex items-center gap-3 my-2">
-                <p className={`font-bold ${isDarkMode? " text-white" : " text-black"}`}>
-                  {post.postedBy.username}
-                </p>
-                <p className={`${isDarkMode? " text-white" : " text-black"}`}>{post.caption}</p>
-              </div>
-              {
-                comment.length > 0 && (
-                    <span onClick={() => {
-                        dispatch(setSelectedPost(post));
-                        setOpen(true);
-                    }} className='cursor-pointer text-sm text-gray-400 p-4 mb-5'>View all {comment.length} comments</span>
-                )
-            }
-            <CommentDialog open={open} setOpen={setOpen} post={post}/>
-            <div className='flex items-center gap-2 justify-between mt-2'>
-              <div className="rounded-full">
-                <img src={"http://localhost:5000"+userInfo.profileImage} alt="" 
-                className="rounded-full object-cover w-10 h-10"/>
-              </div>
-                <input
-                    type="text"
-                    placeholder='Add a comment...'
-                    value={text}
-                    onChange={changeEventHandler}
-                    className={`outline-none text-sm text-gray-500 w-full ${isDarkMode ? "bg-gray-600" : "bg-gray-100"} p-2.5 rounded-lg border `}
-                />
-                {
-                    text && <span onClick={commentHandler} onKeyDown={(e) => e.key === "Enter" && commentHandler()} className='text-green-600 cursor-pointer'>Post</span>
-                }
+            ))}
+          </div>
+        )}
+      </div>
 
-            </div>
-              <p className={`text-sm ${isDarkMode? " text-gray-400" : " text-gray-600"} mt-3`}>
-                {getRelativeTime(post.createdAt)}
-              </p>
-            </div>
-    )
-}
+      {/* Post actions */}
+      <div
+        className={`px-4 py-2 flex justify-between border-t ${
+          isDarkMode ? "border-gray-600" : "border-gray-100"
+        }`}
+      >
+        <div className="flex space-x-6">
+          <button
+            onClick={likeOrDislikeHandler}
+            className={`flex items-center ${
+              liked
+                ? isDarkMode
+                  ? "text-red-400"
+                  : "text-red-500"
+                : isDarkMode
+                ? "text-gray-400 hover:text-red-400"
+                : "text-gray-500 hover:text-red-500"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill={liked ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-1"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            {postLike}
+          </button>
+
+          <button
+            onClick={() => {
+              dispatch(setSelectedPost(post));
+              setOpen(true);
+            }}
+            className={`flex items-center ${
+              isDarkMode
+                ? "text-gray-400 hover:text-green-400"
+                : "text-gray-500 hover:text-green-500"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-1"
+            >
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            {comment.length}
+          </button>
+        </div>
+
+        <button
+          onClick={bookmarkHandler}
+          className={`flex items-center ${
+            isBookmarked
+              ? isDarkMode
+                ? "text-blue-400"
+                : "text-blue-500"
+              : isDarkMode
+              ? "text-gray-400 hover:text-green-400"
+              : "text-gray-500 hover:text-green-500"
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill={isBookmarked ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </button>
+      </div>
+
+      {/* Comments section */}
+      {comment.length > 0 && (
+        <div className="px-4 py-2 flex items-center">
+          <button
+            onClick={() => {
+              dispatch(setSelectedPost(post));
+              setOpen(true);
+            }}
+            className={`text-sm ${
+              isDarkMode
+                ? "text-green-400 hover:text-green-300"
+                : "text-green-600 hover:text-green-700"
+            } font-medium`}
+          >
+            View all {comment.length} comments
+          </button>
+        </div>
+      )}
+
+      {/* Comment input */}
+      <div
+        className={`px-4 py-3 flex items-center gap-3  ${
+          isDarkMode ? "border-gray-600" : "border-gray-100"
+        }`}
+      >
+        <div className="flex-shrink-0">
+          <img
+            src={"http://localhost:5000" + userInfo.profileImage}
+            alt="Your avatar"
+            className="rounded-full object-cover w-8 h-8"
+          />
+        </div>
+        <div className="flex-grow relative">
+          <input
+            type="text"
+            placeholder="Add a comment..."
+            value={text}
+            onChange={changeEventHandler}
+            onKeyDown={handleKeyDown}
+            className={`outline-none w-full px-3 py-1.5 rounded-full text-sm ${
+              isDarkMode
+                ? "bg-gray-600 text-white border border-gray-500 focus:border-blue-400"
+                : "bg-gray-100 text-gray-700 border border-gray-200 focus:border-blue-400"
+            }`}
+          />
+          {text && (
+            <button
+              onClick={commentHandler}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
+                isDarkMode
+                  ? "text-green-400 hover:text-green-300"
+                  : "text-green-600 hover:text-green-700"
+              } font-medium text-sm`}
+            >
+              Post
+            </button>
+          )}
+        </div>
+      </div>
+
+      <CommentDialog open={open} setOpen={setOpen} post={post} />
+    </div>
+  );
+};
+
 export default Post;
