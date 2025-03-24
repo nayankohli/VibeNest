@@ -31,6 +31,7 @@ const PostSlice = createSlice({
         posts: [],
         selectedPost: null,
         comments: [],
+        replies:[],
         loading: false,
         error: null,
     },
@@ -43,7 +44,10 @@ const PostSlice = createSlice({
         },
         setComments: (state, action) => {
           state.comments = action.payload;
-      }
+      },
+      setReplies: (state, action) => {
+        state.replies = action.payload;
+    }
     },
     extraReducers: (builder) => {
         builder
@@ -62,5 +66,5 @@ const PostSlice = createSlice({
     }
 });
 
-export const { setSelectedPost,setPosts,setComments } = PostSlice.actions;
+export const { setSelectedPost,setPosts,setComments, setReplies } = PostSlice.actions;
 export default PostSlice.reducer;

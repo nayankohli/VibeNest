@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { listStories, markStorySeen, deleteStory } from '../../../actions/StoryActions';
 import UploadStory from "./UploadStory";
 import { FaTimes, FaChevronLeft, FaChevronRight, FaTrash, FaEye } from "react-icons/fa";
-
+import Loader from "../../Loader";
 const Stories = ({ isDarkMode }) => {
   const dispatch = useDispatch();
   const { storyGroups, loading, error } = useSelector((state) => state.storyList);
@@ -290,7 +290,7 @@ const Stories = ({ isDarkMode }) => {
         {/* Story thumbnails */}
         {loading ? (
           <div className="flex justify-center items-center w-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+            <Loader/>
           </div>
         ) : error ? (
           <div className="text-red-500">{error}</div>

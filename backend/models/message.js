@@ -14,5 +14,9 @@ const messageSchema = new mongoose.Schema({
         ref: 'Conversation'
     },
     readBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    isEdited: {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true });
 module.exports={Message : mongoose.model('Message', messageSchema)} ;

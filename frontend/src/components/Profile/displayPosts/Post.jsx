@@ -5,6 +5,7 @@ import axios from "axios";
 import CommentDialog from "./CommentDialog";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
@@ -36,12 +37,12 @@ const Post = ({ post }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
   const [liked, setLiked] = useState(
-    post.likes.includes(userInfo?._id) || false
+    post?.likes?.includes(userInfo?._id) || false
   );
-  const [postLike, setPostLike] = useState(post.likes.length);
-  const [comment, setComment] = useState(post.comments);
+  const [postLike, setPostLike] = useState(post?.likes?.length);
+  const [comment, setComment] = useState(post?.comments);
   const [showOptions, setShowOptions] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(post.postedBy.bookmarks.includes(post?._id) || false);
+  const [isBookmarked, setIsBookmarked] = useState(userInfo?.bookmarks?.includes(post?._id) || false);
   const dispatch = useDispatch();
   const { isDarkMode } = useContext(ThemeContext);
   const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
@@ -55,132 +56,260 @@ const Post = ({ post }) => {
   };
 
   const likeOrDislikeHandler = async () => {
-    // Optimistically update UI
-    setLiked(!liked);
-    setPostLike(liked ? postLike - 1 : postLike + 1);
-
+    const prevLiked = liked; // Store previous state before toggling
+    setLiked((prev) => !prev);
+    setPostLike((prev) => (prevLiked ? prev - 1 : prev + 1));
+  
     try {
-      const action = liked ? "dislike" : "like";
+      const action = prevLiked ? "dislike" : "like";
       const res = await axios.get(
-        `http://localhost:5000/api/posts/${post._id}/${action}`,
+        `http://localhost:5000/api/posts/${post?._id}/${action}`,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${userInfo.token}`,
+            Authorization: `Bearer ${userInfo?.token}`,
           },
           withCredentials: true,
         }
       );
+      console.log("API Response:", res.data);
 
       if (!res.data.success) {
-        // If API fails, revert UI changes
-        setLiked(liked);
-        setPostLike(liked ? postLike + 1 : postLike - 1);
-        alert("Failed to update like status.");
+        throw new Error("Failed to update like status.");
       }
+  
+      // Show toast message on success
+      toast.success(prevLiked ? "Post disliked successfully" : "Post liked successfully", {
+        style: {
+          background: isDarkMode 
+            ? "" 
+            : "black",
+          color: isDarkMode 
+          ? "black" 
+          : "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          boxShadow: isDarkMode 
+            ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+            : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+          borderRadius: "12px",
+          border: isDarkMode 
+            ? "2px solid #0ea5e9" 
+            : "2px solid #38bdf8",
+        },
+        position: "bottom-right",
+        duration: 3000,
+      });
+  
     } catch (error) {
       console.error(error);
-      // Revert UI in case of an error
-      setLiked(liked);
-      setPostLike(liked ? postLike + 1 : postLike - 1);
+      setLiked(prevLiked); // Revert to previous state
+      setPostLike((prev) => (prevLiked ? prev + 1 : prev - 1));
+  
+      // Show error toast
+      toast.error("Error updating post. Please try again.");
     }
   };
 
-  const commentHandler = async () => {
-    if (!text.trim()) return;
-
-    try {
-      const res = await axios.post(
-        `http://localhost:5000/api/posts/comment/${post._id}`,
-        { text },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (res.data.success) {
-        const updatedCommentData = [...comment, res.data.comment];
-        setComment(updatedCommentData);
-
-        const updatedPostData = posts.map((p) =>
-          p._id === post._id ? { ...p, comments: updatedCommentData } : p
-        );
-
-        dispatch(setPosts(updatedPostData));
-        setText("");
+const commentHandler = async () => {
+  if (!text.trim()) {
+    console.log("🚨 Empty comment: toast should be raised");
+    toast.error("Comment cannot be empty!",{
+      style: {
+        background: isDarkMode 
+          ? "" 
+          : "black",
+        color: isDarkMode 
+        ? "black" 
+        : "white",
+        fontWeight: "bold",
+        padding: "14px 20px",
+        boxShadow: isDarkMode 
+          ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+          : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+        borderRadius: "12px",
+        border: isDarkMode 
+          ? "2px solid #0ea5e9" 
+          : "2px solid #38bdf8",
+      },
+      position: "bottom-right",
+      duration: 3000,
+    });
+    return;
+  }
+  try {
+    const res = await axios.post(
+      `http://localhost:5000/api/posts/comment/${post?._id}`,
+      { text },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo?.token}`,
+        },
+        withCredentials: true,
       }
-    } catch (error) {
-      console.log(error);
+    );
+    if (!res.data.success) {
+      toast.success("Comment added successfully", {
+        style: {
+          background: isDarkMode 
+            ? "" 
+            : "black",
+          color: isDarkMode 
+          ? "black" 
+          : "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          boxShadow: isDarkMode 
+            ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+            : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+          borderRadius: "12px",
+          border: isDarkMode 
+            ? "2px solid #0ea5e9" 
+            : "2px solid #38bdf8",
+        },
+        position: "bottom-right",
+        duration: 3000,
+      });
     }
-  };
 
-  const deletePostHandler = async () => {
-    try {
-      const res = await axios.delete(
-        `http://localhost:5000/api/posts/delete/${post?._id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-          withCredentials: true,
-        }
+      // Update state
+      const updatedCommentData = [...comment, res.data.comment];
+      setComment(updatedCommentData);
+
+      const updatedPostData = posts.map((p) =>
+        p._id === post._id ? { ...p, comments: updatedCommentData } : p
       );
+      dispatch(setPosts(updatedPostData));
 
-      if (res.data.success) {
-        const updatedPostData = posts.filter(
-          (postItem) => postItem?._id !== post?._id
-        );
-        dispatch(setPosts(updatedPostData));
-        alert(res.data.message);
+      setText("");
+  } catch (error) {
+    console.error("🚨 Error in commentHandler:", error);
+    toast.error("Something went wrong. Try again later!");
+  }
+};
+
+
+const deletePostHandler = async () => {
+  try {
+    const res = await axios.delete(
+      `http://localhost:5000/api/posts/delete/${post?._id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo?.token}`,
+        },
+        withCredentials: true,
       }
-    } catch (error) {
-      console.log(error);
-      alert(error.response.data.message);
-    }
-  };
+    );
 
-  const bookmarkHandler = async () => {
-    // Optimistic UI update
-    setIsBookmarked(!isBookmarked);
-
-    try {
-      const res = await axios.get(
-        `http://localhost:5000/api/posts/${post?._id}/bookmark`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-          withCredentials: true,
-        }
+    if (res.data.success) {
+      const updatedPostData = posts.filter(
+        (postItem) => postItem?._id !== post?._id
       );
+      dispatch(setPosts(updatedPostData));
 
-      if (!res.data.success) {
-        // Revert if failed
-        setIsBookmarked(isBookmarked);
-      }
-    } catch (error) {
-      console.log(error);
-      // Revert if error
-      setIsBookmarked(isBookmarked);
+      toast.success(res.data.message || "Post deleted successfully!", {
+        style: {
+          background: isDarkMode 
+            ? "" 
+            : "black",
+          color: isDarkMode 
+          ? "black" 
+          : "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          boxShadow: isDarkMode 
+            ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+            : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+          borderRadius: "12px",
+          border: isDarkMode 
+            ? "2px solid #0ea5e9" 
+            : "2px solid #38bdf8",
+        },
+        position: "bottom-right",
+        duration: 3000,
+      });
+
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 2000);
     }
-  };
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    toast.error(error.response?.data?.message || "Failed to delete post!");
+  }
+};
+
+const bookmarkHandler = async () => {
+  // Optimistic UI update
+  setIsBookmarked((prev) => !prev);
+
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/api/posts/${post?._id}/bookmark`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo?.token}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (res.data.success) {
+      const updatedUserInfo = { 
+        ...userInfo, 
+        bookmarks: res.data.isBookmarked
+          ? [...userInfo.bookmarks, post._id]  // Add bookmark
+          : userInfo.bookmarks.filter(id => id !== post._id)  // Remove bookmark
+      };
+      localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+      toast.success(
+        res.data.message || (isBookmarked ? "Bookmark removed!" : "Post bookmarked!", {
+          style: {
+            background: isDarkMode 
+              ? "" 
+              : "black",
+            color: isDarkMode 
+            ? "black" 
+            : "white",
+            fontWeight: "bold",
+            padding: "14px 20px",
+            boxShadow: isDarkMode 
+              ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+              : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+            borderRadius: "12px",
+            border: isDarkMode 
+              ? "2px solid #0ea5e9" 
+              : "2px solid #38bdf8",
+          },
+          position: "bottom-right",
+          duration: 3000,
+        })
+      );
+    } else {
+      // Revert if failed
+      setIsBookmarked((prev) => !prev);
+      toast.error("Failed to update bookmark status!");
+    }
+  } catch (error) {
+    console.error("Error in bookmarking:", error);
+    setIsBookmarked((prev) => !prev);
+    toast.error(error.response?.data?.message || "Failed to update bookmark!");
+  }
+};
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && text.trim()) {
       commentHandler();
     }
   };
-const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
+const isFollowing=userInfo.following.includes(post?.postedBy?._id)?true:false;
 // console.log(post.likes);
   return (
     <div
-      key={post._id}
+      key={post?._id}
       className={`rounded-lg shadow mb-4 overflow-hidden ${
         isDarkMode ? "bg-gray-700 text-gray-200" : "bg-white text-gray-800"
       }`}
@@ -189,26 +318,26 @@ const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center">
           <div className="rounded-full"
-          onClick={()=>navigate(`/profile/${post.postedBy._id}`)}>
+          onClick={()=>navigate(`/profile/${post?.postedBy?._id}`)}>
             <img
               src={
-                post.postedBy.profileImage?"http://localhost:5000"+post.postedBy.profileImage:defaultProfileImage
+                post?.postedBy?.profileImage?"http://localhost:5000"+post?.postedBy?.profileImage:defaultProfileImage
               }
-              alt={`${post.postedBy.username}'s avatar`}
+              alt={`${post?.postedBy?.username}'s avatar`}
               className="w-10 h-10 object-cover rounded-full mr-3"
             />
           </div>
           <div className="flex flex-col items-start">
-            <p className="font-semibold">{post.postedBy.username}</p>
+            <p className="font-semibold">{post?.postedBy?.username}</p>
             <p
               className={`text-xs ${
                 isDarkMode ? "text-gray-400" : "text-gray-500"
               }`
             }
-            onClick={()=>navigate(`/profile/${post.postedBy._id}`)}
+            onClick={()=>navigate(`/profile/${post?.postedBy?._id}`)}
             >
-              {getRelativeTime(post.createdAt)}
-              {userInfo._id !== post.postedBy._id && (
+              {getRelativeTime(post?.createdAt)}
+              {userInfo._id !== post?.postedBy?._id && (
                 <span className="ml-1 text-green-500">
                   {isFollowing ? "Following" : "Follow"}
                 </span>
@@ -251,7 +380,7 @@ const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
                   : "bg-white border border-gray-200"
               }`}
             >
-              {userInfo?._id === post.postedBy._id && (
+              {userInfo?._id === post?.postedBy?._id && (
                 <button
                   onClick={() => {
                     deletePostHandler();
@@ -286,7 +415,7 @@ const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
 
       {/* Post content */}
       <div className="px-4 pb-3">
-        <p className="mb-3 text-center">{post.caption}</p>
+        <p className="mb-3 text-center">{post?.caption}</p>
 
         {post.media && post.media.length > 0 && (
           <div className="rounded-lg">
@@ -379,7 +508,7 @@ const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
             >
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
             </svg>
-            {comment.length}
+            {comment?.length}
           </button>
         </div>
 
@@ -412,7 +541,7 @@ const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
       </div>
 
       {/* Comments section */}
-      {comment.length > 0 && (
+      {comment?.length > 0 && (
         <div className="px-4 py-2 flex items-center">
           <button
             onClick={() => {
@@ -425,7 +554,7 @@ const isFollowing=userInfo.following.includes(post.postedBy._id)?true:false;
                 : "text-green-600 hover:text-green-700"
             } font-medium`}
           >
-            View all {comment.length} comments
+            View all {comment?.length} comments
           </button>
         </div>
       )}

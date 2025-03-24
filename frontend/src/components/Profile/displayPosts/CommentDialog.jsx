@@ -14,11 +14,10 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import {
   faHeart,
   faComment,
-  faShare,
+  faBookmark,
   faCircleDot,
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
-
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -55,11 +54,12 @@ const CommentDialog = ({ open, setOpen, post }) => {
   const dialogRef = useRef(null);
   const commentsEndRef = useRef(null);
   const [slideDirection, setSlideDirection] = useState("none");
-  const [liked, setLiked] = useState(post.likes.includes(userInfo?._id) || false);
+  const [liked, setLiked] = useState(post?.likes?.includes(userInfo?._id) || false);
   const [postLike, setPostLike] = useState(post.likes?.length);
+  const [isBookmarked, setIsBookmarked] = useState(userInfo?.bookmarks?.includes(post?._id) || false);
   UseGetAllComments();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  
+  console.log(isBookmarked)
   useEffect(() => {
     if (commentsEndRef.current) {
       commentsEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -129,6 +129,27 @@ const CommentDialog = ({ open, setOpen, post }) => {
         );
         dispatch(setPosts(updatedPosts));
         setText("");
+        toast.success("Comment added successfully", {
+                style: {
+                  background: isDarkMode 
+                    ? "" 
+                    : "black",
+                  color: isDarkMode 
+                  ? "black" 
+                  : "white",
+                  fontWeight: "bold",
+                  padding: "14px 20px",
+                  boxShadow: isDarkMode 
+                    ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+                    : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+                  borderRadius: "12px",
+                  border: isDarkMode 
+                    ? "2px solid #0ea5e9" 
+                    : "2px solid #38bdf8",
+                },
+                position: "bottom-right",
+                duration: 3000,
+              });
         setShowEmojiPicker(false);
       }
     } catch (error) {
@@ -165,6 +186,65 @@ const CommentDialog = ({ open, setOpen, post }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showEmojiPicker]);
+
+  const bookmarkHandler = async () => {
+    // Optimistic UI update
+    setIsBookmarked((prev) => !prev);
+  
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/posts/${post?._id}/bookmark`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+          withCredentials: true,
+        }
+      );
+  
+      if (res.data.success) {
+        const updatedUserInfo = { 
+          ...userInfo, 
+          bookmarks: res.data.isBookmarked
+            ? [...userInfo.bookmarks, post._id]  // Add bookmark
+            : userInfo.bookmarks.filter(id => id !== post._id)  // Remove bookmark
+        };
+        localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+        toast.success(
+          res.data.message || (isBookmarked ? "Bookmark removed!" : "Post bookmarked!", {
+            style: {
+              background: isDarkMode 
+                ? "" 
+                : "black",
+              color: isDarkMode 
+              ? "black" 
+              : "white",
+              fontWeight: "bold",
+              padding: "14px 20px",
+              boxShadow: isDarkMode 
+                ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+                : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+              borderRadius: "12px",
+              border: isDarkMode 
+                ? "2px solid #0ea5e9" 
+                : "2px solid #38bdf8",
+            },
+            position: "bottom-right",
+            duration: 3000,
+          })
+        );
+      } else {
+        // Revert if failed
+        setIsBookmarked((prev) => !prev);
+        toast.error("Failed to update bookmark status!");
+      }
+    } catch (error) {
+      console.error("Error in bookmarking:", error);
+      setIsBookmarked((prev) => !prev);
+      toast.error(error.response?.data?.message || "Failed to update bookmark!");
+    }
+  };
   
   return (
     open && (
@@ -275,17 +355,23 @@ const CommentDialog = ({ open, setOpen, post }) => {
                   </div>
                   <div className="flex flex-col items-center">
                     <FontAwesomeIcon
-                      icon={faShare}
-                      className={`cursor-pointer text-2xl ${isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
+                      icon={faBookmark}
+                      className={`cursor-pointer text-2xl ${isBookmarked ? 'text-blue-500' : isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
+                      onClick={bookmarkHandler}
                     />
                   </div>
                 </div>
               </div>
               {/* Comments */}
-              {comments.map((c) => (
-                <Comment key={c._id} comment={c} currentUserId={userInfo._id} 
-                postOwnerId={post?.postedBy?._id} postId={post._id} />
-              ))}
+              {comments.map((comment) => (
+        <Comment 
+          key={comment._id} 
+          comment={comment} 
+          currentUserId={userInfo._id} 
+          postOwnerId={post?.postedBy?._id} 
+          postId={post._id}
+        />
+      ))}
               <div ref={commentsEndRef} />
             </div>
 

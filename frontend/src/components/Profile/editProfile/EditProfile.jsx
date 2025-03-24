@@ -48,8 +48,12 @@ function EditProfilePage() {
         if (success) {
             toast.success("Profile Updated Succesfully!", {
                 style: {
-                  background: "linear-gradient(135deg, #16a34a, #15803d)",
-                  color: "white",
+                  background: isDarkMode 
+                  ? "" 
+                  : "black",
+                  color:isDarkMode 
+                  ? "black" 
+                  : "white",
                   fontWeight: "bold",
                   padding: "14px 20px",
                   boxShadow: "0px 6px 15px rgba(22, 163, 74, 0.3)",

@@ -9,7 +9,7 @@ import {
   faMagnifyingGlass,
   faPlus,
   faBookmark,
-  faLock,
+  faGlobe,
   faRightFromBracket,
   faSun,
   faMoon,
@@ -209,7 +209,7 @@ const Navbar = () => {
                         isDarkMode ? "text-gray-300" : "text-gray-600"
                       }`}
                     >
-                      {userInfo?.jobProfile || "No bio available."}
+                      {userInfo?.jobProfile || "No job Profile."}
                     </p>
                   </div>
                 </div>
@@ -241,6 +241,7 @@ const Navbar = () => {
                     className={`flex items-center px-4 py-2 cursor-pointer ${
                       isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
                     }`}
+                  onClick={()=>navigate("/settings")}
                   >
                     <FontAwesomeIcon icon={faGears} className="mr-3" /> Settings
                   </li>
@@ -248,9 +249,9 @@ const Navbar = () => {
                     className={`flex items-center px-4 py-2 cursor-pointer ${
                       isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
                     }`}
+                    onClick={()=>navigate("/news")}
                   >
-                    <FontAwesomeIcon icon={faLock} className="mr-3" /> Security
-                    & Privacy
+                    <FontAwesomeIcon icon={faGlobe} className="mr-3" /> Latest News
                   </li>
                   <li
                     className={`flex items-center px-4 py-2 text-red-500 cursor-pointer ${

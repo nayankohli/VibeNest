@@ -33,7 +33,7 @@ const Media = () => {
       
       {posts && posts.length > 0 ? (
         <div className="grid grid-cols-2 gap-2">
-          {posts.slice(0, 5).map((post, index) => (
+          {posts.slice(0, 6).map((post, index) => (
             <div key={index} className="mb-0">
               {post.media && post.media.length > 0 && (
                 <div className="">

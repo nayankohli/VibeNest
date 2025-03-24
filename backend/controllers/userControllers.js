@@ -50,6 +50,8 @@ const authUser = asyncHandler(async (req, res) => {
       following: user.following,
       posts: user.posts,
       privacy: user.privacy,
+      jobProfile:user.jobProfile,
+      bookmarks:user.bookmarks,
       token: generateToken(user._id)
     });
   } else {
@@ -80,6 +82,7 @@ const registerUser = asyncHandler(async (req, res) => {
     following: [],
     posts: [],
     privacy: "public",
+    bookmarks:[]
   });
 
   if (user) {
@@ -95,6 +98,7 @@ const registerUser = asyncHandler(async (req, res) => {
       following: user.following,
       posts: user.posts,
       privacy: user.privacy,
+      bookmarks:user.bookmarks,
       token: generateToken(user._id)
     });
   } else {

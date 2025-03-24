@@ -162,7 +162,7 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
       
       <div className={`flex-1 px-4 overflow-y-auto scrollbar-hide flex flex-col ${isDarkMode ? 'bg-gray-800' : ''}`}>
         <div className="flex-1 overflow-y-auto scrollbar-hide">
-          <MessageList loading={loading} messages={messages} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}/>
+          <MessageList loading={loading} messages={messages} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} setMessages={setMessages}/>
         </div>
       </div>
       

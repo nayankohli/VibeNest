@@ -25,9 +25,11 @@ const Register = () => {
       toast.success("✅ Registration Successful!", {
         style: {
           background: isDarkMode 
-            ? "linear-gradient(135deg, #064e3b, #065f46)" 
-            : "linear-gradient(135deg, #16a34a, #15803d)",
-          color: "white",
+            ? "" 
+            : "black",
+          color: isDarkMode 
+          ? "black" 
+          : "white",
           fontWeight: "bold",
           padding: "14px 20px",
           boxShadow: isDarkMode 

@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import Message from "./Message";
 import Loading from "../Loading";
 import { ThemeContext } from "../../context/ThemeContext";
-function MessageList({ loading ,messages, fetchAgain, setFetchAgain}) {
+function MessageList({ loading ,messages, fetchAgain, setFetchAgain, setMessages}) {
   const { isDarkMode } = useContext(ThemeContext);
   if (loading) {
     return <Loading />;
@@ -14,7 +14,7 @@ function MessageList({ loading ,messages, fetchAgain, setFetchAgain}) {
     <div className="flex flex-col gap-2">
       {messages && messages.length > 0 ? (
         <div>
-<Message messages={messages} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+<Message messages={messages} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} setMessages={setMessages} />
 
         </div>
         

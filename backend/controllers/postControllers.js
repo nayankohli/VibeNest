@@ -4,7 +4,7 @@ const asyncHandler = require('express-async-handler');
 const multer = require('multer');
 const path = require('path');
 const cloudinary =require("../utils/cloudinary.js");
-const Comment = require("../models/comment.js");
+const {Comment ,Reply}= require("../models/comment.js");
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
@@ -56,6 +56,12 @@ const createPost = [
         likes: [],
       });
 
+      // Populate the postedBy field with username and profile image
+      await post.populate({
+        path: 'postedBy',
+        select: 'username profileImage jobProfile _id'
+      });
+
       const user = await User.findById(req.user._id);
       if (user) {
         user.posts.unshift(post._id);
@@ -63,10 +69,13 @@ const createPost = [
         console.log('Post added to user:', user);
       }
 
-      res.status(201).json(post);
+      res.status(201).json({
+        success: true,
+        post
+      });
     } catch (error) {
       console.error('Error creating post:', error);
-      res.status(500).json({ message: 'Server error' });
+      res.status(500).json({ message: 'Server error', success: false });
     }
   }),
 ];
@@ -80,121 +89,114 @@ const likePost = asyncHandler(async (req, res) => {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-    // like logic started
+    // Add like to post
     await post.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } });
-    await post.save();
 
-    // implement socket io for real time notification
+    // Implement socket.io for real-time notification
     const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
-     
     const postOwnerId = post.postedBy.toString();
-    if(postOwnerId !== likeKrneWalaUserKiId){
-        // emit a notification event
-        const notification = {
-            type:'like',
-            userId:likeKrneWalaUserKiId,
-            userDetails:user,
-            postId,
-            message:'Your post was liked'
-        }
-        const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-        io.to(postOwnerSocketId).emit('notification', notification);
-    }
 
-    return res.status(200).json({message:'Post liked', success:true});
-} catch (error) {
+    // if (postOwnerId !== likeKrneWalaUserKiId) {
+    //     // Emit a notification event
+    //     const notification = {
+    //         type: 'like',
+    //         userId: likeKrneWalaUserKiId,
+    //         userDetails: user,
+    //         postId,
+    //         message: 'Your post was liked'
+    //     };
+    //     const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+    //     if (postOwnerSocketId) io.to(postOwnerSocketId).emit('notification', notification);
+    // }
 
-}
+    return res.status(200).json({ message: 'Post liked', success: true });
+
+  } catch (error) {
+    console.error("Error in likePost:", error);
+    return res.status(500).json({ message: 'Server error', success: false });
+  }
 });
 
- const dislikePost = async (req, res) => {
+const dislikePost = asyncHandler(async (req, res) => {
   try {
-      const likeKrneWalaUserKiId = req.user._id;
-      const postId = req.params.id;
-      const post = await Post.findById(postId);
-      if (!post) return res.status(404).json({ message: 'Post not found', success: false });
+    const likeKrneWalaUserKiId = req.user._id;
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-      // like logic started
-      await post.updateOne({ $pull: { likes: likeKrneWalaUserKiId } });
-      await post.save();
+    // Remove like from post
+    await post.updateOne({ $pull: { likes: likeKrneWalaUserKiId } });
 
-      // implement socket io for real time notification
-      const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
-      const postOwnerId = post.postedBy.toString();
-      if(postOwnerId !== likeKrneWalaUserKiId){
-          // emit a notification event
-          const notification = {
-              type:'dislike',
-              userId:likeKrneWalaUserKiId,
-              userDetails:user,
-              postId,
-              message:'Your post was liked'
-          }
-          const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-          io.to(postOwnerSocketId).emit('notification', notification);
-      }
+    // Implement socket.io for real-time notification
+    const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
+    const postOwnerId = post.postedBy.toString();
 
+    // if (postOwnerId !== likeKrneWalaUserKiId) {
+    //     // Emit a notification event
+    //     const notification = {
+    //         type: 'dislike',
+    //         userId: likeKrneWalaUserKiId,
+    //         userDetails: user,
+    //         postId,
+    //         message: 'Your post was disliked'
+    //     };
+    //     const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+    //     if (postOwnerSocketId) io.to(postOwnerSocketId).emit('notification', notification);
+    // }
 
+    return res.status(200).json({ message: 'Post disliked', success: true });
 
-      return res.status(200).json({message:'Post disliked', success:true});
   } catch (error) {
-
+    console.error("Error in dislikePost:", error);
+    return res.status(500).json({ message: 'Server error', success: false });
   }
-}
-
-// Add a comment to a post
-const addComment = async (req,res) =>{
-    try {
-        const postId = req.params.id;
-        const commentKrneWalaUserKiId = req.user._id;
-
-        const {text} = req.body;
-
-        const post = await Post.findById(postId);
-
-        if(!text) return res.status(400).json({message:'text is required', success:false});
-
-        const comment = await Comment.create({
-            text,
-            commentedBy:commentKrneWalaUserKiId,
-            post:postId
-        })
-
-        await comment.populate({
-            path:'commentedBy',
-            select:"username profileImage jobProfile"
-        });
-        
-        post.comments.push(comment._id);
-        await post.save();
-
-        return res.status(201).json({
-            message:'Comment Added',
-            comment,
-            success:true
-        })
-
-    } catch (error) {
-        console.log(error);
-    }
+});
+const addComment = async (req, res) => {
+  try {
+    const { text, postId } = req.body;
+    const userId = req.user._id; // Assuming you have user authentication middleware
+    
+    const newComment = await Comment.create({
+      text,
+      commentedBy: userId,
+      post: postId
+    });
+    
+    const populatedComment = await Comment.findById(newComment._id)
+      .populate({
+        path: "commentedBy",
+        select: "username profileImage jobProfile"
+      });
+    
+    res.status(201).json({
+      success: true,
+      comment: populatedComment
+    });
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
 };
+
 
  const getCommentsOfPost = async (req,res) => {
   try {
-      const postId = req.params.id;
-
-      const comments = await Comment.find({post:postId}).populate('commentedBy', 'username profileImage jobProfile');
-
-      if(!comments) return res.status(404).json({message:'No comments found for this post', success:false});
-
-      return res.status(200).json({success:true,comments});
-
+    const comments = await Comment.find({ post: req.params.id })
+      .populate({
+        path: "commentedBy",
+        select: "username profileImage jobProfile"
+      })
+      .sort({ createdAt: -1 });
+    
+    res.json({
+      success: true,
+      comments
+    });
   } catch (error) {
-      console.log(error);
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 }
-
-// Fetch all posts
 const getAllPosts = asyncHandler(async (req, res) => {
   const userId=req.params.id;
   console.log('Get All Posts Endpoint Hit');
@@ -221,91 +223,134 @@ const getAllPosts = asyncHandler(async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-// Delete a post
 const deletePost = asyncHandler(async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-
-    if (post) {
-      if (post.postedBy.toString() === req.user._id.toString() || req.user.isAdmin) {
-        const user = await User.findById(post.postedBy);
-        if (user) {
-          user.posts = user.posts.filter((postId) => postId.toString() !== req.params.id);
-          await user.save();
-        }
-        await Post.deleteOne({ _id: req.params.id });
-        
-        res.json({ message: 'Post deleted successfully' });
-      } else {
-        res.status(401);
-        throw new Error('You are not authorized to delete this post');
-      }
-    } else {
-      res.status(404);
-      throw new Error('Post not found');
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found', success: false });
     }
+
+    if (post.postedBy.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+      return res.status(403).json({ message: 'Unauthorized to delete this post', success: false });
+    }
+    const user = await User.findById(post.postedBy);
+    if (user) {
+      user.posts = user.posts.filter((postId) => postId.toString() !== req.params.id);
+      await user.save();
+    }
+    await User.updateMany(
+      { bookmarks: req.params.id },
+      { $pull: { bookmarks: req.params.id } }
+    );
+    await Post.findByIdAndDelete(req.params.id);
+
+    return res.status(200).json({ message: 'Post deleted successfully', success: true });
   } catch (error) {
     console.error('Error deleting post:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error', success: false });
+  }
+});
+
+const likeComment=asyncHandler(async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+    if (comment.likes.includes(req.user.id)) {
+      return res.status(400).json({ success: false, message: "Comment already liked" });
+    }
+    comment.likes.push(req.user.id);
+    await comment.save();
+    
+    res.json({ success: true, message: "Comment liked successfully" });
+  } catch (error) {
+    console.error("Error liking comment:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
+
+const unlikeComment=asyncHandler(async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
+    }
+    if (!comment.likes.includes(req.user.id)) {
+      return res.status(400).json({ success: false, message: "Comment not liked yet" });
+    }
+    comment.likes = comment.likes.filter(
+      like => like.toString() !== req.user.id.toString()
+    );
+    await comment.save();
+    
+    res.json({ success: true, message: "Comment unliked successfully" });
+  } catch (error) {
+    console.error("Error unliking comment:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 });
 
 const deleteComment = asyncHandler(async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.commentId);
-    console.log("Comment to be deleted: ", comment);
-
+    
     if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+      return res.status(404).json({ success: false, message: "Comment not found" });
     }
-
-    // Ensure only the comment owner or an admin can delete the comment
-    if (comment.commentedBy.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-      return res.status(401).json({ message: 'You are not authorized to delete this comment' });
-    }
-
-    // Fetch the post using the correct model
+    
     const post = await Post.findById(req.params.postId);
+    
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ success: false, message: "Post not found" });
     }
-
-    // Remove the comment ID from the post's comments array
-    post.comments = post.comments.filter((id) => id.toString() !== req.params.commentId);
-    await post.save(); // Save the post after removing the comment ID
-
-    // Delete the comment from the Comment collection
-    await Comment.deleteOne({ _id: req.params.commentId });
-
-    res.json({ message: 'Comment deleted successfully' });
+    if (
+      comment.commentedBy.toString() !== req.user.id.toString() &&
+      post.postedBy.toString() !== req.user.id.toString()
+    ) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    const replies = await Comment.find({ parentId: req.params.commentId });
+    const deleteCount = 1 + replies.length
+    await Comment.findByIdAndDelete(req.params.commentId);
+    if (replies.length > 0) {
+      await Comment.deleteMany({ parentId: req.params.commentId });
+    }
+    await Post.findByIdAndUpdate(req.params.postId, {
+      $inc: { commentCount: -deleteCount }
+    });
+    
+    res.json({ 
+      success: true, 
+      message: "Comment and associated replies deleted successfully" 
+    });
   } catch (error) {
-    console.error('Error deleting comment:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error deleting comment:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 });
 
-// Fetch posts from users the current user follows
 const fetchFollowing = asyncHandler(async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    
-    // Get the list of users the current user follows
     const user = await User.findById(req.user._id);
     const following = user.following || [];
-    
-    // If following list is empty, return empty result
     if (following.length === 0) {
       return res.json({ posts: [] });
     }
-    
-    // Find posts from these users
+
+    const fortyEightHoursAgo = new Date();
+    fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
+
     const posts = await Post.find({
-      postedBy: { $in: following }  // Posts from followed users only
+      postedBy: { $in: following },
+      createdAt: { $gte: fortyEightHoursAgo }  
     })
-      .sort({ createdAt: -1 })      // Most recent first
+      .sort({ createdAt: -1 }) 
       .skip(skip)
       .limit(limit)
         .populate([
@@ -329,36 +374,32 @@ const fetchFollowing = asyncHandler(async (req, res) => {
   }
 });
 
-// Fetch posts for the explore feed (public posts from users not followed)
+
 const fetchExplore = asyncHandler(async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     
-    // Get the list of users the current user follows
     const user = await User.findById(req.user._id);
     const following = user.following || [];
     
-    // Add current user to exclude their posts too
     const excludeUsers = [...following];
     if (!excludeUsers.includes(req.user._id.toString())) {
       excludeUsers.push(req.user._id);
     }
     
-    // Find users with public profiles who are NOT followed by the current user
     const publicUsers = await User.find({ 
       _id: { $nin: excludeUsers }, 
-      privacy: 'public' // Only select users with public profiles
-    }).select('_id'); // Get only user IDs
+      privacy: 'public'
+    }).select('_id'); 
 
     const publicUserIds = publicUsers.map(user => user._id);
 
-    // Fetch posts only from users with public profiles
     const posts = await Post.find({
-      postedBy: { $in: publicUserIds } // Only fetch posts from public users
+      postedBy: { $in: publicUserIds } 
     })
-      .sort({ createdAt: -1 })        // Most recent first
+      .sort({ createdAt: -1 })        
       .skip(skip)
       .limit(limit)
       .populate([
@@ -392,32 +433,43 @@ const getPostsFeed = asyncHandler(async (req, res) => {
     
     const currentUser = await User.findById(req.user._id);
     const following = currentUser.following || [];
+
+    const fortyEightHoursAgo = new Date();
+    fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
+    
     const publicUsers = await User.find({ 
       _id: { $nin: [req.user._id, ...following] }, 
       privacy: 'public' 
     }).select('_id');
 
     const publicUserIds = publicUsers.map(user => user._id);
-    
-      const posts = await Post.find({
-        postedBy: { $in: [...following, ...publicUserIds] } // Only fetch posts from public users
-      })
-        .sort({ createdAt: -1 })        // Most recent first
-        .skip(skip)
-        .limit(limit)
-        .populate([
-          {
-            path: 'postedBy',
-            select: 'username profileImage privacy bookmarks'
-          },
-          {
-            path: 'comments',
-            populate: {
-              path: 'commentedBy',
-              select: 'username profileImage'
-            }
+    const posts = await Post.find({
+      $or: [
+        { 
+          postedBy: { $in: following },
+          createdAt: { $gte: fortyEightHoursAgo }
+        },
+        { 
+          postedBy: { $in: publicUserIds }
+        }
+      ]
+    })
+      .sort({ createdAt: -1 })        
+      .skip(skip)
+      .limit(limit)
+      .populate([
+        {
+          path: 'postedBy',
+          select: 'username profileImage privacy bookmarks'
+        },
+        {
+          path: 'comments',
+          populate: {
+            path: 'commentedBy',
+            select: 'username profileImage'
           }
-        ])
+        }
+      ]);
 
     res.json({ posts });
   } catch (error) {
@@ -431,7 +483,6 @@ const bookmarkPost = asyncHandler(async (req, res) => {
     const postId = req.params.id;
     const userId = req.user._id;
 
-    // Find the post
     const post = await Post.findById(postId);
     
     if (!post) {
@@ -441,7 +492,6 @@ const bookmarkPost = asyncHandler(async (req, res) => {
       });
     }
 
-    // Find the user
     const user = await User.findById(userId);
     
     if (!user) {
@@ -451,11 +501,9 @@ const bookmarkPost = asyncHandler(async (req, res) => {
       });
     }
 
-    // Check if post is already bookmarked
     const isBookmarked = user.bookmarks.includes(postId);
     
     if (isBookmarked) {
-      // Unbookmark: Remove post from user's bookmarks
       await User.findByIdAndUpdate(userId, {
         $pull: { bookmarks: postId }
       });
@@ -486,6 +534,170 @@ const bookmarkPost = asyncHandler(async (req, res) => {
   }
 });
 
+const getRepliesOfComment = async (req, res) => {
+  try {
+    const replies = await Reply.find({ comment: req.params.commentId })
+      .populate({
+        path: "repliedBy",
+        select: "username profileImage jobProfile"
+      })
+      .sort({ createdAt: -1 });
+    
+    res.json({
+      success: true,
+      replies
+    });
+  } catch (error) {
+    console.error("Error fetching replies:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+const createReply = async (req, res) => {
+  try {
+    const { text, commentId } = req.body;
+    
+    if (!commentId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Comment ID is required" 
+      });
+    }
+    
+    const userId = req.user._id; // Assuming you have user authentication middleware
+    
+    // Verify the comment exists first
+    const commentExists = await Comment.findById(commentId);
+    if (!commentExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found"
+      });
+    }
+    
+    const newReply = await Reply.create({
+      text,
+      repliedBy: userId,
+      comment: commentId  // This field must match your Reply schema definition
+    });
+    
+    // Increment the reply count on the parent comment
+    await Comment.findByIdAndUpdate(commentId, { $inc: { replyCount: 1 } });
+    
+    const populatedReply = await Reply.findById(newReply._id)
+      .populate({
+        path: "repliedBy",
+        select: "username profileImage jobProfile"
+      });
+    
+    res.status(201).json({
+      success: true,
+      reply: populatedReply
+    });
+  } catch (error) {
+    console.error("Error creating reply:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server Error", 
+      error: error.message 
+    });
+  }
+};
+
+const toggleReplyLike = async (req, res) => {
+  try {
+    const { replyId } = req.params;
+    const userId = req.user._id;
+
+    // Check if reply exists
+    const reply = await Reply.findById(replyId);
+    if (!reply) {
+      return res.status(404).json({
+        success: false,
+        message: "Reply not found"
+      });
+    }
+
+    // Check if user has already liked the reply
+    const isLiked = reply.likes.includes(userId);
+
+    // Toggle like status
+    if (isLiked) {
+      // Unlike: Remove user ID from likes array
+      await Reply.findByIdAndUpdate(replyId, {
+        $pull: { likes: userId }
+      });
+      
+      res.status(200).json({
+        success: true,
+        message: "Reply unliked successfully",
+        liked: false
+      });
+    } else {
+      // Like: Add user ID to likes array
+      await Reply.findByIdAndUpdate(replyId, {
+        $addToSet: { likes: userId }
+      });
+      
+      res.status(200).json({
+        success: true,
+        message: "Reply liked successfully",
+        liked: true
+      });
+    }
+  } catch (error) {
+    console.error("Error toggling reply like:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+
+// Delete a reply
+const deleteReply = async (req, res) => {
+  try {
+    const { replyId } = req.params;
+    const userId = req.user._id;
+
+    // Find the reply
+    const reply = await Reply.findById(replyId);
+    
+    if (!reply) {
+      return res.status(404).json({
+        success: false,
+        message: "Reply not found"
+      });
+    }
+
+    // Check if user is authorized to delete (either the reply creator or an admin)
+    if (reply.repliedBy.toString() !== userId.toString() ) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to delete this reply"
+      });
+    }
+    const commentId = reply.comment;
+
+    await Reply.findByIdAndDelete(replyId);
+
+    await Comment.findByIdAndUpdate(commentId, { $inc: { replyCount: -1 } });
+
+    res.status(200).json({
+      success: true,
+      message: "Reply deleted successfully"
+    });
+  } catch (error) {
+    console.error("Error deleting reply:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createPost,
   likePost,
@@ -499,5 +711,11 @@ module.exports = {
   fetchFollowing,
   fetchExplore,
   getPostsFeed,
-  bookmarkPost // Exporting upload middleware for potential direct usage
+  bookmarkPost,
+  likeComment,
+  unlikeComment,
+  getRepliesOfComment,
+  createReply,
+  deleteReply,
+  toggleReplyLike// Exporting upload middleware for potential direct usage
 };

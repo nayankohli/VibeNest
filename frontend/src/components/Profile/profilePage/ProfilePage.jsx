@@ -11,6 +11,7 @@ import Followers from "./Followers";
 import { FaBirthdayCake, FaUser, FaEnvelope, FaUserPlus } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import defaultBanner from "./defaultBanner.jpg";
+import { toast } from "sonner";
 import {
   faUserPen,
   faBriefcase,
@@ -51,7 +52,29 @@ function ProfilePage() {
 
   const handleFollowUnfollow = () => {
     dispatch(followUnfollow(profile?._id, isFollowing));
-    window.location.reload();
+    toast.success(`You ${isFollowing ? 'unfollowed' : 'followed'} ${profile?.username}`, {
+          style: {
+            background: isDarkMode 
+              ? "linear-gradient(135deg, #064e3b, #065f46)" 
+              : "linear-gradient(135deg, #16a34a, #15803d)",
+            color: "white",
+            fontWeight: "bold",
+            padding: "14px 20px",
+            boxShadow: isDarkMode 
+              ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+              : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+            borderRadius: "12px",
+            border: isDarkMode 
+              ? "2px solid #0ea5e9" 
+              : "2px solid #38bdf8",
+            textAlign: "center",
+            letterSpacing: "0.5px",
+            transition: "transform 0.3s ease-in-out",
+          },
+          position: "bottom-right",
+          duration: 3000,
+        });
+        window.location.reload();
   };
 
   useEffect(() => {
@@ -304,9 +327,7 @@ function ProfilePage() {
               } p-6 rounded-lg shadow-md  text-md`}
             >
               {/* Header */}
-              <h1
-                className={`text-2xl font-bold text-green-600 mb-4`}
-              >
+              <h1 className={`text-2xl font-bold text-green-600 mb-4`}>
                 About
               </h1>
 
@@ -314,7 +335,7 @@ function ProfilePage() {
               <p
                 className={`${
                   isDarkMode ? "text-gray-300" : "text-gray-800"
-                } mb-4`}
+                } mb-4 whitespace-pre-line`}
               >
                 {profile?.bio || "No bio available."}
               </p>

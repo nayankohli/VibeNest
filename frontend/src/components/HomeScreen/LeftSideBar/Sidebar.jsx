@@ -23,7 +23,7 @@ const Sidebar = () => {
     }, [navigate, userInfo]);
     
   return (
-    <div className={`flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} rounded-lg shadow-md w-70 h-auto overflow-hidden`}>
+    <div className={`flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} rounded-lg shadow-md w-full h-auto overflow-hidden`}>
       {/* Banner Section */}
       <div className="relative flex flex-col top-0">
         <img
@@ -56,7 +56,7 @@ const Sidebar = () => {
   <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-500'} text-sm`}>
     {userInfo?.jobProfile}
   </p>
-  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-2`}>
+  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-2 whitespace-pre-line`}>
     {userInfo?.bio}
   </p>
 </div>
@@ -96,6 +96,8 @@ const Sidebar = () => {
         onClick={()=>navigate("/chats")} />
         <SidebarItem icon={<FaBookmark />} text="Your Saved" isDarkMode={isDarkMode}
         onClick={()=>navigate("/saved")} />
+        <SidebarItem icon={<FaGlobe />} text="Latest News" isDarkMode={isDarkMode}
+        onClick={()=>navigate("/news")}  />
         <SidebarItem icon={<FaBell />} text="Notifications" isDarkMode={isDarkMode} />
         <SidebarItem icon={<FaCog />} text="Settings" isDarkMode={isDarkMode} 
         onClick={()=>navigate("/settings")}/>

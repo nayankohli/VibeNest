@@ -7,7 +7,6 @@ const UseGetAllComments = () => {
     const dispatch = useDispatch();
     const { userInfo } = useSelector((state) => state.userLogin);
     const { selectedPost } = useSelector((store) => store.post);
-    console.log(selectedPost);
     useEffect(() => {
         const fetchAllComments = async () => {
             try {

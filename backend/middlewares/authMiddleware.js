@@ -5,7 +5,8 @@ const {User} = require('../models/user.js') // Adjust path if needed
 
 const protect = asyncHandler(async (req, res, next) => {
   let token
-
+console.log(req.headers.authorization);
+console.log(req.headers.authorization.startsWith('Bearer'));
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -13,14 +14,12 @@ const protect = asyncHandler(async (req, res, next) => {
     try {
       // Debugging - log the token to see what's being received
       token = req.headers.authorization.split(' ')[1]
-      
+      console.log("try block");
       // Check if token exists and is not undefined/null
       if (!token) {
         res.status(401)
         throw new Error('Not authorized, token is missing')
       }
-
-      // Try to decode and verify the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
       // Find user by ID

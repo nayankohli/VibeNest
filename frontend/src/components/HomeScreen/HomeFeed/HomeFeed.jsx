@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from 'axios';
 import { useFollowingService } from './useFollowingService'; // Import the hook we created
 import Post from '../../Profile/displayPosts/Post';
+import Loader from '../../Loader';
 const HomeFeed = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -220,13 +221,7 @@ const HomeFeed = () => {
       {/* Posts container */}
       <div className="posts-content p-4">
         {isLoadingFollowing && posts.length === 0 ? (
-          <div className="flex justify-center p-4">
-            <div className={`w-8 h-8 border-4 rounded-full animate-spin ${
-              isDarkMode 
-                ? 'border-gray-600 border-t-green-400' 
-                : 'border-green-200 border-t-green-500'
-            }`}></div>
-          </div>
+          ""
         ) : posts.length === 0 && !isLoading ? (
           <div className={`text-center py-10 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             {feedType === 'following' ? 'No posts from users you follow yet.' : 'No posts to display.'}
@@ -240,11 +235,7 @@ const HomeFeed = () => {
         {/* Loading indicator */}
         {isLoading && (
           <div className="flex justify-center p-4">
-            <div className={`w-8 h-8 border-4 rounded-full animate-spin ${
-              isDarkMode 
-                ? 'border-gray-600 border-t-green-400' 
-                : 'border-green-200 border-t-green-500'
-            }`}></div>
+            <Loader/>
           </div>
         )}
         

@@ -10,6 +10,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "./context/ThemeContext";
 import ChatProvider from "./context/ChatProvider"; // ✅ Correct import
 import SavedPosts from "./components/SavedPosts/SavedPosts";
+import NewsPage from "./components/HomeScreen/RightSideBar/NewsPage";
 function App() {
   return (
     <ThemeProvider> {/* ✅ Wrap everything inside ThemeProvider */}
@@ -24,6 +25,7 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/saved" element={<SavedPosts />} />
           <Route path="/chats" element={<ChatPage />} />
+          <Route path="/news" element={<NewsPage />} />
         </Routes>
       </ChatProvider>
     </ThemeProvider>
