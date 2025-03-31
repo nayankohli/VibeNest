@@ -275,21 +275,24 @@ const Stories = ({ isDarkMode }) => {
   return (
     <>
       {/* Stories horizontal list */}
-      <div className="flex justify-start items-start overflow-x-auto hide-scrollbar">
+      <div className="flex justify-start h-full items-start overflow-x-auto hide-scrollbar">
         {/* Create story button */}
         <div 
-          className="flex flex-col items-center justify-center cursor-pointer mr-4"
+          className="flex flex-col items-center justify-center cursor-pointer mr-6"
           onClick={() => setShowUploadModal(true)}
         >
-          <div className={`w-24 h-28 rounded-lg flex flex-col items-center justify-center border-2 border-dashed ${isDarkMode ? "bg-gray-700 border-gray-400" : "bg-gray-100 border-gray-500"} `}>
-            <span className={`text-2xl ${isDarkMode ? "bg-gray-800" : "bg-gray-300"} rounded-full p-2 mb-1`}>+</span>
+          <div className={`w-32 h-36 rounded-lg flex flex-col items-center justify-center border-2 border-dashed ${isDarkMode ? "bg-gray-700 border-gray-400" : "bg-gray-100 border-gray-500"} `}>
+            <div className={`${isDarkMode ? "bg-gray-800" : "bg-gray-300"} flex items-center justify-center rounded-full w-10 h-10 mb-1`}>
+            <span className={`text-2xl`}>+</span>
+            </div>
+            
             <span className="text-xs font-medium">Post a Story</span>
           </div>
         </div>
         
         {/* Story thumbnails */}
         {loading ? (
-          <div className="flex justify-center items-center w-full">
+          <div className="flex justify-center items-center w-full h-36">
             <Loader/>
           </div>
         ) : error ? (
@@ -305,7 +308,7 @@ const Stories = ({ isDarkMode }) => {
                 onClick={() => openStoryView(index)}
               >
                 <div 
-                  className={`w-24 h-28 rounded-lg p-0.5 mb-1 relative ${
+                  className={`w-28 h-36 rounded-lg p-0.5 mb-1 relative ${
                     group.hasUnseenStories 
                       ? "border-2 border-green-500" 
                       : isDarkMode 

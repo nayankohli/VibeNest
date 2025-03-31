@@ -4,6 +4,8 @@ import Navbar from "../Navbar";
 import { ThemeContext } from "../../../context/ThemeContext";
 import NotificationSettings from "./NotificationSetting";
 import PrivacySecuritySettings from "./PrivacySecuritySettings";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGears } from "@fortawesome/free-solid-svg-icons";
 function Settings() {
     const [activeTab, setActiveTab] = useState("account");
     const { isDarkMode } = useContext(ThemeContext);
@@ -20,7 +22,7 @@ function Settings() {
 
                 {/* Sidebar - Added self-start, h-fit, and sticky classes */}
                 <div className={`w-full md:w-1/4 shadow-lg rounded-lg p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} self-start sticky top-20 h-fit`}>
-                    <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-green-300' : 'text-green-600'}`}>Settings</h2>
+                    <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? "text-green-400" : "text-green-600"}`}><FontAwesomeIcon icon={faGears} className="mr-3" /> Settings</h2>
                     <div className="flex flex-col gap-2">
                         <div
                             className={`cursor-pointer p-3 rounded-lg transition-all flex items-center ${

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, useRef, useCallback } from "rea
 import { ThemeContext } from "../../../context/ThemeContext";
 import Navbar from "../../NavBarMainScreen/Navbar";
 import Loader from "../../Loader";
-// Custom function to format time ago (kept unchanged)
 const formatTimeAgo = (dateString) => {
   const now = new Date();
   const date = new Date(dateString);
@@ -43,10 +42,8 @@ const NewsPage = () => {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
-  // Updated API key to match the NewsAPI used in NewsApp component
   const API_KEY = "24ed623baee84e789dc520e9e678b854";
   
-  // Updated list of news categories to match NewsAPI.org categories
   const categories = [
     { value: "general", label: "General" },
     { value: "business", label: "Business" },
@@ -62,7 +59,6 @@ const NewsPage = () => {
     
     setIsLoading(true);
     try {
-      // Use the everything endpoint that works in RightSidebar
       let apiUrl;
       const searchTerm = searchQuery || selectedCategory;
       
@@ -188,7 +184,6 @@ const NewsPage = () => {
             Search
           </button>
         </div>
-        {/* Filter button and dropdown in top-right corner */}
         <div className=" w-1/6 ">
   <button 
     className={`flex items-center justify-self-end gap-2 px-3 py-2 rounded-md ${
@@ -229,6 +224,7 @@ const NewsPage = () => {
         </div>
         
         <h1 className="text-3xl font-bold mb-6 text-green-600">
+        <i className="fas fa-globe mr-3"></i>
           {searchQuery
             ? `Search Results for "${searchQuery}"`
             : `${categories.find(c => c.value === selectedCategory)?.label} News`}
@@ -241,7 +237,7 @@ const NewsPage = () => {
                 <div 
                   ref={lastNewsElementRef}
                   key={`${article.url}-${index}`}
-                  className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-102`}
+                  className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-102`}
                 >
                   <NewsCard article={article} isDarkMode={isDarkMode} />
                 </div>
@@ -250,7 +246,7 @@ const NewsPage = () => {
               return (
                 <div 
                   key={`${article.url}-${index}`}
-                  className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-102`}
+                  className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-lg hover:scale-102`}
                 >
                   <NewsCard article={article} isDarkMode={isDarkMode} />
                 </div>

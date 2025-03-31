@@ -14,16 +14,27 @@ const storage = multer.diskStorage({
   },
 });
 
+const fileFilter = (req, file, cb) => {
+  const imageTypes = /jpeg|jpg|png/;
+  const videoTypes = /mp4|mov/;
+  
+  if (imageTypes.test(file.mimetype)) {
+    // For images: 5MB limit
+    req.fileTypeLimit = 5 * 1024 * 1024;
+    return cb(null, true);
+  } else if (videoTypes.test(file.mimetype)) {
+    // For videos: 50MB limit
+    req.fileTypeLimit = 50 * 1024 * 1024;
+    return cb(null, true);
+  }
+  
+  cb(new Error('Unsupported file type'));
+};
+
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB size limit
-  fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|mp4|mov/;
-    const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimeType = fileTypes.test(file.mimetype);
-    if (extName && mimeType) return cb(null, true);
-    cb(new Error('Only .jpeg, .jpg, .png, .mp4, and .mov files are allowed!'));
-  },
+  limits: { fileSize: 50 * 1024 * 1024 }, // 2MB size limit
+  fileFilter
 });
 
 // Create a post with media upload
@@ -153,8 +164,9 @@ const dislikePost = asyncHandler(async (req, res) => {
 });
 const addComment = async (req, res) => {
   try {
-    const { text, postId } = req.body;
-    const userId = req.user._id; // Assuming you have user authentication middleware
+    const { text } = req.body;
+    const postId=req.params.id;
+    const userId = req.user._id;
     
     const newComment = await Comment.create({
       text,
@@ -203,7 +215,7 @@ const getAllPosts = asyncHandler(async (req, res) => {
   try {
     const posts = await Post.find({ postedBy: userId })
     .sort({ createdAt: -1 })
-      .populate('postedBy', 'username profileImage jobProfile bookmarks')
+      .populate('postedBy', 'username profileImage jobProfile bookmarks story')
       .populate({
         path: 'comments',
         populate: {
@@ -356,7 +368,7 @@ const fetchFollowing = asyncHandler(async (req, res) => {
         .populate([
           {
             path: 'postedBy',
-            select: 'username profileImage privacy bookmarks'
+            select: 'username profileImage privacy bookmarks story'
           },
           {
             path: 'comments',
@@ -384,13 +396,10 @@ const fetchExplore = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
     const following = user.following || [];
     
-    const excludeUsers = [...following];
-    if (!excludeUsers.includes(req.user._id.toString())) {
-      excludeUsers.push(req.user._id);
-    }
+    
     
     const publicUsers = await User.find({ 
-      _id: { $nin: excludeUsers }, 
+      _id: { $nin: [req.user._id]}, 
       privacy: 'public'
     }).select('_id'); 
 
@@ -405,7 +414,7 @@ const fetchExplore = asyncHandler(async (req, res) => {
       .populate([
         {
           path: 'postedBy',
-          select: 'username profileImage privacy bookmarks'
+          select: 'username profileImage privacy bookmarks story'
         },
         {
           path: 'comments',
@@ -438,7 +447,7 @@ const getPostsFeed = asyncHandler(async (req, res) => {
     fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
     
     const publicUsers = await User.find({ 
-      _id: { $nin: [req.user._id, ...following] }, 
+      _id: { $nin: [req.user._id] }, 
       privacy: 'public' 
     }).select('_id');
 
@@ -460,7 +469,7 @@ const getPostsFeed = asyncHandler(async (req, res) => {
       .populate([
         {
           path: 'postedBy',
-          select: 'username profileImage privacy bookmarks'
+          select: 'username profileImage privacy bookmarks story'
         },
         {
           path: 'comments',

@@ -21,7 +21,7 @@ const commentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
-  replyCount: { type: Number, default: 0 } // To keep track of number of replies
+  replyCount: { type: Number, default: 0 } 
 },
 {timestamps: true});
 

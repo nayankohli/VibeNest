@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,15 +7,16 @@ import axios from "axios";
 import { ThemeContext } from "../../context/ThemeContext";
 import { toast } from "sonner"; // Import Toaster as well
 import { setPosts } from "../../reducers/PostReducers";
-
+import EmojiPicker from "emoji-picker-react";
+import { FaSmile } from "react-icons/fa";
 const CreatePost = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isDarkMode } = useContext(ThemeContext);
-  
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
-  
+  const emojiPickerRef = useRef(null);
   // Get posts from Redux store
   const posts = useSelector((store) => store.post.posts);
   
@@ -30,15 +31,29 @@ const CreatePost = () => {
     // Uncomment this to test if toasts are working at all
     // toast.success("Component mounted");
   }, []);
+
+  const addEmoji = (emojiObject) => {
+    setPostData((prev) => prev + emojiObject.emoji);
+  };
   
   const handleInputChange = (e) => {
     setPostData({ ...postData, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
-    setPostData({ ...postData, media: Array.from(e.target.files) });
+    const files = Array.from(e.target.files);
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    
+    const validFiles = files.filter(file => {
+      if (file.size > maxSize) {
+        toast.error(`File "${file.name}" exceeds the 50MB size limit`);
+        return false;
+      }
+      return true;
+    });
+    
+    setPostData({ ...postData, media: validFiles });
   };
-
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => {
     setIsPopupOpen(false);
@@ -105,6 +120,23 @@ const CreatePost = () => {
     }
   };
 
+  
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+          setShowEmojiPicker(false);
+        }
+      };
+  
+      if (showEmojiPicker) {
+        document.addEventListener("mousedown", handleClickOutside);
+      }
+  
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [showEmojiPicker]);
+
   return (
     <div className={`relative max-w-full rounded-lg shadow-md ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
       {/* Include Toaster component to render toast notifications */}
@@ -154,12 +186,28 @@ const CreatePost = () => {
                 </svg>
               </button>
             </h3>
+            <button
+                            type="button"
+                            className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'} absolute flex right-8 top-24 justify-self-end mx-2`}
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                          >
+                            <FaSmile size={20} className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-300 hover:text-gray-500'}`} />
+                          </button>
+                          
+                          {/* Emoji Picker Dropdown */}
+                          <div ref={emojiPickerRef} className="relative">
+                            {showEmojiPicker && (
+                              <div className={`absolute bottom-12 right-2 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md rounded-lg`}>
+                                <EmojiPicker onEmojiClick={addEmoji} theme={isDarkMode ? 'dark' : 'light'} />
+                              </div>
+                            )}
+                          </div>
             <textarea
               name="caption"
               value={postData.caption}
               onChange={handleInputChange}
               placeholder="What's on your mind?"
-              className={`w-full p-3 border rounded-lg resize-none min-h-24 focus:ring-2 focus:ring-blue-500 focus:outline-none mb-4 ${isDarkMode ? "bg-gray-700 border-gray-600 placeholder-gray-400" : "bg-white border-gray-300 placeholder-gray-500"}`}
+              className={`w-full p-3 border rounded-lg resize-none min-h-24 focus:ring-2 focus:ring-green-500 focus:outline-none mb-4 ${isDarkMode ? "bg-gray-700 border-gray-600 placeholder-gray-400" : "bg-white border-gray-300 placeholder-gray-500"}`}
             ></textarea>
             
             <label className={`block mb-4 p-3 border border-dashed rounded-lg text-center cursor-pointer hover:bg-opacity-50 transition-colors ${isDarkMode ? "border-gray-600 hover:bg-gray-700" : "border-gray-300 hover:bg-gray-100"}`}>

@@ -59,7 +59,15 @@ const CommentDialog = ({ open, setOpen, post }) => {
   const [isBookmarked, setIsBookmarked] = useState(userInfo?.bookmarks?.includes(post?._id) || false);
   UseGetAllComments();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  console.log(isBookmarked)
+
+  const [currentMedia, setCurrentMedia] = useState(0);
+    const carouselRef = useRef(null);
+  
+    // Reset current media index when post changes
+    useEffect(() => {
+      setCurrentMedia(0);
+    }, [post?._id]);
+
   useEffect(() => {
     if (commentsEndRef.current) {
       commentsEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -245,6 +253,23 @@ const CommentDialog = ({ open, setOpen, post }) => {
       toast.error(error.response?.data?.message || "Failed to update bookmark!");
     }
   };
+  const goToNextMedia = (e) => {
+    e.stopPropagation();
+    if (post.media?.length > 1) {
+      setCurrentMedia((prev) => (prev === post.media.length - 1 ? 0 : prev + 1));
+    }
+  };
+
+  const goToPrevMedia = (e) => {
+    e.stopPropagation();
+    if (post.media?.length > 1) {
+      setCurrentMedia((prev) => (prev === 0 ? post.media.length - 1 : prev - 1));
+    }
+  };
+
+  const goToMedia = (index) => {
+    setCurrentMedia(index);
+  };
   
   return (
     open && (
@@ -269,16 +294,98 @@ const CommentDialog = ({ open, setOpen, post }) => {
         </button>
 
         <div
-          className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} shadow-lg w-full max-w-5xl h-[90vh] flex flex-row relative`}
+          className={`${isDarkMode ? 'bg-gray-800 border text-white' : 'bg-white'} shadow-lg w-full max-w-5xl h-[90vh] flex flex-row relative`}
           ref={dialogRef}
         >
           {/* Left Side - Post Image */}
-          <div className="w-7/12 h-full flex justify-center items-center bg-black">
+          <div className={`w-7/12 h-full flex justify-center items-center bg-black`}>
+          {post.media && post.media.length > 0 && (
+  <div className={"w-full h-[31rem] relative overflow-hidden flex justify-center items-center "}>
+    <div 
+      ref={carouselRef}
+      className="w-full h-full flex transition-transform duration-300 ease-in-out" 
+      style={{ 
+        transform: `translateX(-${currentMedia * 100}%)`,
+        display: 'flex'
+      }}
+    >
+      {post.media.map((mediaItem, index) => (
+        <div 
+          key={index} 
+          className="w-full h-full flex-shrink-0 flex justify-center items-center"
+        >
+          {mediaItem.endsWith(".mp4") ? (
+            <video
+              controls
+              className="max-w-full max-h-full object-scale-down"
+            >
+              <source
+                src={`http://localhost:5000${mediaItem}`}
+                type="video/mp4"
+              />
+            </video>
+          ) : (
             <img
-              src={"http://localhost:5000" + post?.media}
-              alt="Post"
-              className="max-w-full max-h-full object-contain"
+              src={`http://localhost:5000${mediaItem}`}
+              alt="Post content"
+              className="max-w-full max-h-full rounded-lg object-scale-down"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                width: 'auto',
+                height: 'auto'
+              }}
+              loading="lazy"
             />
+          )}
+        </div>
+      ))}
+    </div>
+
+    {/* Navigation elements */}
+    {post.media.length > 1 && (
+      <>
+        {/* Left arrow */}
+        <button 
+          onClick={goToPrevMedia}
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full p-1"
+          aria-label="Previous media"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        
+        {/* Right arrow */}
+        <button 
+          onClick={goToNextMedia}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full p-1"
+          aria-label="Next media"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        {/* Dots indicator */}
+        <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2">
+          {post.media.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToMedia(index)}
+              className={`w-2 h-2 rounded-full focus:outline-none transition-all duration-200 ${
+                currentMedia === index 
+                  ? 'bg-white w-4' 
+                  : 'bg-white bg-opacity-50'
+              }`}
+              aria-label={`Go to media ${index + 1}`}
+            />
+          ))}
+        </div>
+      </>
+    )}
+  </div>
+)}
           </div>
 
           {/* Right Side - Post Details & Comments */}

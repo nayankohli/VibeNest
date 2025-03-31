@@ -10,10 +10,10 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("bg-gray-900", "text-white");
-      document.body.classList.remove("bg-white", "text-gray-900");
+      document.body.classList.remove("bg-green-100", "text-gray-900");
       localStorage.setItem("theme", "dark");
     } else {
-      document.body.classList.add("bg-white", "text-gray-900");
+      document.body.classList.add("bg-green-100", "text-gray-900");
       document.body.classList.remove("bg-gray-900", "text-white");
       localStorage.setItem("theme", "light");
     }

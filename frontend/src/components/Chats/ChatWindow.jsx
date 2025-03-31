@@ -22,7 +22,7 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
     setChats, 
     notification,
     setNotification,
-    addNotification, // Use the new function instead of setNotification
+    addNotification,
   } = ChatState();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,6 +35,7 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const emojiPickerRef = useRef(null);
+  const messageEndRef = useRef(null);
   const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
   
   const fetchMessages = async () => {
@@ -57,7 +58,6 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
-
     // eslint-disable-next-line
   }, []); 
 
@@ -67,13 +67,16 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
   }, [selectedUser]);
 
   useEffect(() => {
+    // Scroll to bottom when messages change
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
       if (
         !selectedChatCompare || 
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
-        
-        
         if (!notification.includes(newMessageRecieved)) {
           const senderName = newMessageRecieved.sender.name || 'Someone';
           const notificationContent = `${senderName}: ${newMessageRecieved.content.substring(0, 30)}${newMessageRecieved.content.length > 30 ? '...' : ''}`;
@@ -90,10 +93,10 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
               senderPic: newMessageRecieved.sender.profileImage || defaultProfileImage
             }
           );
-          console.log("new type is: " + newNotification.type); 
+          console.log("new type is: " + newNotification.type);
           const updatedNotifications = [newNotification, ...notification];
-    setNotification(updatedNotifications);
-    localStorage.setItem("chatNotifications", JSON.stringify(updatedNotifications));// Properly access the type property
+          setNotification(updatedNotifications);
+          localStorage.setItem("chatNotifications", JSON.stringify(updatedNotifications));
           setFetchAgain(!fetchAgain);
         }
       } else {
@@ -157,28 +160,29 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
   };
 
   return (
-    <div className={`flex-1 flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} overflow-hidden rounded-r-lg`}>
+    <div className={`w-[60rem] flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} overflow-hidden rounded-r-lg  border-l ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} h-full`}>
       <ChatHeader selectedUser={selectedUser} selectedChat={selectedChat} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
       
-      <div className={`flex-1 px-4 overflow-y-auto scrollbar-hide flex flex-col ${isDarkMode ? 'bg-gray-800' : ''}`}>
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
+      <div className={`flex-1 px-4 overflow-y-auto scrollbar-hide ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} h-[calc(100vh-180px)]`}>
+        <div className="overflow-y-auto h-full py-4 scrollbar-hide">
           <MessageList loading={loading} messages={messages} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} setMessages={setMessages}/>
+          <div ref={messageEndRef} />
         </div>
       </div>
       
       {/* Typing indicator with correct positioning */}
       {isTyping && (
-        <div className="px-4 py-2 mb-2">
+        <div className="px-4 py-2">
           <div className="flex items-center">
             <div className="mr-2">
               <img 
                 src={selectedUser?.profileImage ? `http://localhost:5000${selectedUser.profileImage}` : defaultProfileImage} 
                 alt="Typing" 
-                className="w-8 h-8 rounded-full object-cover border border-blue-500"
+                className="w-8 h-8 rounded-full object-cover border-2 border-blue-500 shadow-md"
               />
             </div>
-            <div className={`p-2 px-4 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-300 text-black'} inline-flex items-center`}>
-              <span className="mr-1">Typing</span>
+            <div className={`p-2 px-4 rounded-lg shadow-md ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-black'} inline-flex items-center transition-all duration-300 ease-in-out`}>
+              <span className="mr-1 font-medium">Typing</span>
               <span className="flex">
                 <span className="h-2 w-2 bg-current rounded-full mx-0.5 animate-bounce" style={{animationDelay: '0ms'}}></span>
                 <span className="h-2 w-2 bg-current rounded-full mx-0.5 animate-bounce" style={{animationDelay: '300ms'}}></span>
@@ -189,33 +193,57 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
         </div>
       )}
       
-      <div className={`p-4 border-t ${isDarkMode ? 'border-gray-700' : ''} flex items-end gap-3`}>
+      <div className={`p-4 border-t ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} flex items-end gap-3 shadow-inner`}>
         <input
           type="text"
-          className={`flex-1 p-2 border rounded focus:ring-2 focus:ring-green-500 focus:no-outline ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : ''}`}
+          className={`flex-1 p-3 border rounded-full focus:ring-2 focus:outline-none transition-all duration-200 ${
+            isDarkMode 
+              ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500' 
+              : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-green-500 focus:border-green-500'
+          }`}
           placeholder="Type a message"
           value={newMessage}
           onChange={typingHandler}
           onKeyDown={(e) => e.key === "Enter" && sendMessage(e)}
         />
-        <div className="flex gap-1 items-center">
-          <div className={`p-2 px-3 rounded cursor-pointer ${isDarkMode ? 'text-red-400 bg-red-900 hover:text-red-900 hover:bg-red-400' : 'text-red-600 bg-red-100 hover:text-white hover:bg-red-600'}`} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-            <FaSmile />
-          </div>
+        <div className="flex gap-2 items-center">
+          <button 
+            className={`p-3 rounded-full transition-all duration-200 ${
+              isDarkMode 
+                ? 'text-yellow-400 hover:bg-gray-700 active:bg-gray-600' 
+                : 'text-yellow-600 hover:bg-gray-100 active:bg-gray-200'
+            }`} 
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          >
+            <FaSmile className="text-xl" />
+          </button>
           <div ref={emojiPickerRef} className="relative">
             {showEmojiPicker && (
-              <div className={`absolute bottom-12 right-2 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md rounded-lg`}>
+              <div className={`absolute bottom-14 right-0 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-lg rounded-lg z-10 border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
                 <EmojiPicker onEmojiClick={(emojiObject) => setNewMessage(prev => prev + emojiObject.emoji)} theme={isDarkMode ? 'dark' : 'light'} />
               </div>
             )}
           </div>
-          <div className="p-1 px-3 rounded cursor-pointer">
-            <input type="file" id="image" accept="image/png, image/jpeg, image/jpg" hidden />
-            <label htmlFor="image"><FaPaperclip /></label>
-          </div>
-          <div className={`p-2 rounded px-3 cursor-pointer ${isDarkMode ? 'text-blue-300 bg-blue-900 hover:bg-blue-400 hover:text-blue-900' : 'text-blue-500 bg-blue-100 hover:bg-blue-500 hover:text-white'}`} onClick={() => sendMessage("Enter")}>
-            <FaPaperPlane />
-          </div>
+          <button className={`p-3 rounded-full transition-all duration-200 ${
+            isDarkMode 
+              ? 'text-blue-400 hover:bg-gray-700 active:bg-gray-600' 
+              : 'text-blue-600 hover:bg-gray-100 active:bg-gray-200'
+          }`}>
+            <label htmlFor="image" className="cursor-pointer">
+              <FaPaperclip className="text-xl" />
+              <input type="file" id="image" accept="image/png, image/jpeg, image/jpg" className="hidden" />
+            </label>
+          </button>
+          <button 
+            className={`p-3 rounded-full transition-all duration-200 ${
+              isDarkMode 
+                ? 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800' 
+                : 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800'
+            }`} 
+            onClick={() => sendMessage("Enter")}
+          >
+            <FaPaperPlane className="text-xl" />
+          </button>
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ import Media from './Media/Media';
 import Following from './FollowingList/Following';
 import { useContext } from 'react';
 import { ThemeContext } from "../../../context/ThemeContext";
+import Videos from './Videos/Video';
 function ProfileContent({ activeTab }) {
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin; // Access the user data from context
@@ -39,7 +40,7 @@ function ProfileContent({ activeTab }) {
             case 'media':
                 return <Media/>;
             case 'videos':
-                return <div className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} p-6 rounded-lg shadow-md`}>{profile.username}'s videos...</div>;
+                return <Videos/>
             default:
                 return <div className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} p-6 rounded-lg shadow-md text-center`}>Loading...</div>;
         }

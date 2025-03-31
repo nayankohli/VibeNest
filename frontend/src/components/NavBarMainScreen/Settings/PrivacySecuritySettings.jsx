@@ -3,7 +3,7 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useSelector,useDispatch } from "react-redux";
-import { updatePrivacy, resetPrivacyUpdate } from "../../../actions/UserActions";
+import { updatePrivacy, resetPrivacyUpdate, changePassword } from "../../../actions/UserActions";
 import { toast } from "sonner"; 
 function PrivacySecuritySettings() {
   const dispatch=useDispatch();
@@ -17,7 +17,13 @@ function PrivacySecuritySettings() {
   const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
     const userPrivacyUpdate = useSelector((state) => state.userPrivacyUpdate);
+    const userPasswordUpdate = useSelector((state) => state.userPasswordUpdate);
   const { loading: privacyLoading, success: privacySuccess, error: privacyError } = userPrivacyUpdate;
+  const { 
+    loading: passwordLoading, 
+    success: passwordSuccess, 
+    error: passwordError 
+  } = userPasswordUpdate || {};
   
   const isPrivateAccount = userInfo?.privacy === "private";
   
@@ -26,6 +32,47 @@ function PrivacySecuritySettings() {
     // Toggle between "public" and "private"
     const newPrivacyStatus = isPrivateAccount ? "public" : "private";
     dispatch(updatePrivacy(newPrivacyStatus));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Basic password validation
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long", {
+        style: {
+          background: "linear-gradient(135deg, #ef4444, #b91c1c)",
+          color: "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          borderRadius: "12px",
+        },
+        position: "top-center",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match", {
+        style: {
+          background: "linear-gradient(135deg, #ef4444, #b91c1c)",
+          color: "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          borderRadius: "12px",
+        },
+        position: "top-center",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Dispatch password change action
+    dispatch(changePassword({
+      currentPassword, 
+      newPassword
+    }));
   };
 
   useEffect(() => {
@@ -74,19 +121,47 @@ function PrivacySecuritySettings() {
     }
   }, [privacySuccess, privacyError, userInfo, dispatch]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      alert("Passwords don't match!");
-      return;
+  useEffect(() => {
+    if (passwordSuccess) {
+      toast.success("Password successfully updated", {
+        style: {
+          background: isDarkMode ? "" : "black",
+          color: isDarkMode ? "black" : "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          boxShadow: "0px 6px 15px rgba(22, 163, 74, 0.3)",
+          borderRadius: "12px",
+          border: "2px solid #38bdf8",
+          textAlign: "center",
+        },
+        position: "top-center",
+        duration: 3000,
+      });
+      
+      // Reset password fields after successful update
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
     }
-    // Handle password update logic here
-    console.log("Password update submitted");
-  };
-  
+    
+    if (passwordError) {
+      toast.error(`Failed to update password: ${passwordError}`, {
+        style: {
+          background: "linear-gradient(135deg, #ef4444, #b91c1c)",
+          color: "white",
+          fontWeight: "bold",
+          padding: "14px 20px",
+          borderRadius: "12px",
+        },
+        position: "top-center",
+        duration: 3000,
+      });
+    }
+  }, [passwordSuccess, passwordError, isDarkMode]);
+
   return (
-    <div className={`p-6 rounded-lg shadow-sm ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
-      <h2 className="text-2xl font-bold text-green-400 mb-2">Privacy & Security</h2>
+    <div className={`p-6 rounded-lg ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+      <h2 className={`text-2xl font-bold mb-1 ${isDarkMode ? "text-green-400" : "text-green-600"}`}><i className="fas fa-lock mr-3"></i>Privacy & Security</h2>
       <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"} mb-6`}>
         Manage your account security and privacy preferences.
       </p>
@@ -253,9 +328,15 @@ function PrivacySecuritySettings() {
           <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              className="px-4 py-2 rounded font-medium bg-green-500 hover:bg-green-600 text-white transition-colors duration-200"
+              disabled={passwordLoading}
+              className={`px-4 py-2 rounded font-medium 
+                ${passwordLoading 
+                  ? 'bg-green-300 cursor-wait' 
+                  : 'bg-green-500 hover:bg-green-600'
+                } 
+                text-white transition-colors duration-200`}
             >
-              Update password
+              {passwordLoading ? 'Updating...' : 'Update password'}
             </button>
           </div>
         </form>

@@ -139,7 +139,7 @@ const RightSidebar = () => {
   return (
     <div className="w-full h-auto space-y-6">
       <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg p-4 shadow-md`}>
-        <h2 className="text-2xl font-bold mb-3 text-green-600">Who to follow</h2>
+        <h2 className="text-2xl font-bold mb-3 text-green-600"><i className="fas fa-user mr-3"></i>Who to follow</h2>
         <div className="flex flex-col gap-0">
           {suggestedUsers.slice(0, usersToShow).map((user, index) => (
             <div key={user._id || index} className={`flex items-center justify-between rounded-lg p-2 ${isDarkMode ? "hover:bg-gray-600" : "hover:bg-gray-200"}`}>
@@ -184,7 +184,7 @@ const RightSidebar = () => {
         )}
       </div>
       <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg p-4 shadow-md`}>
-        <h2 className="text-2xl font-bold mb-3 text-green-600">Today's news</h2>
+        <h2 className="text-2xl font-bold mb-3 text-green-600"><i className="fas fa-globe mr-3"></i>Today's news</h2>
         
         <div className="flex flex-wrap gap-2 mb-3">
           {["technology", "sports", "politics", "entertainment", "health"].map(category => (

@@ -4,11 +4,13 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const {User}=require("./models/user.js");
 const path = require('path'); 
 dotenv.config();
-
+const bcrypt=require("bcryptjs");
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(
   cors({
     origin: "http://localhost:3000", // Allow frontend domain
@@ -26,6 +28,33 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
+  //   const updatePassword = async () => {
+  //     try {
+  //         const userId = "673373b5bbf5ef736eba6cc0";  // User ID
+  //         const newPassword = "nayan_14"; // New password to hash
+  
+  //         // Hash the password
+  //         const saltRounds = 10;
+  //         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  
+  //         // Find the user and update the password
+  //         const updatedUser = await User.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
+  
+  //         if (updatedUser) {
+  //             console.log("Password updated successfully for user:", userId);
+  //         } else {
+  //             console.log("User not found!");
+  //         }
+  //     } catch (error) {
+  //         console.error("Error updating password:", error);
+  //     } finally {
+  //         mongoose.connection.close(); // Close the database connection
+  //     }
+  // };
+  
+  // // Call the function after 5 seconds
+  // console.log("Password update will start in 5 seconds...");
+  // setTimeout(updatePassword, 5000);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

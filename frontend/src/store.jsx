@@ -1,7 +1,7 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { thunk } from 'redux-thunk'; // Fix: Default import
 import { composeWithDevTools } from "@redux-devtools/extension";
-import { userLoginReducer, userRegisterReducer, userUpdateReducer, userSearchReducer, fetchProfileReducer, followUnfollowReducer, followerFetchReducer, selectedUser, followingFetchReducer, authReducer, userPrivacyUpdateReducer } from './reducers/UserReducer';
+import { userLoginReducer, userRegisterReducer, userUpdateReducer, userSearchReducer, fetchProfileReducer, followUnfollowReducer, followerFetchReducer, selectedUser, followingFetchReducer, authReducer, userPrivacyUpdateReducer, userPasswordUpdateReducer } from './reducers/UserReducer';
 import PostSlice from './reducers/PostReducers'; // Import post reducer
 import ChatSlice from './reducers/ChatSlice'; 
 import { storyListReducer, storyDeleteReducer, storySeenReducer, storyUploadReducer } from './reducers/StorySlice'; // Correct import path
@@ -26,6 +26,7 @@ const reducer = combineReducers({
   profile: ProfileSlice,
   auth: authReducer,
   userPrivacyUpdate: userPrivacyUpdateReducer,
+  userPasswordUpdate:userPasswordUpdateReducer
 });
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

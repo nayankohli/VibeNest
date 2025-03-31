@@ -3,7 +3,7 @@ import axios from "axios";
 import { ChatState } from "../../context/ChatProvider";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useSelector } from "react-redux";
-import UserBadgeItem from "../userAvatar/UserBadgeItem";
+import UserBadgeItem from "./userAvatar/UserBadgeItem";
 import { toast } from "sonner";
 
 const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
@@ -215,142 +215,187 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`${
-          isDarkMode
-            ? "bg-gray-600 hover:bg-gray-500"
-            : "bg-gray-300 hover:bg-gray-400"
-        } text-md font-medium p-1 px-3 rounded-lg`}
+        className={`${isDarkMode 
+          ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+          : 'bg-green-500 hover:bg-green-600 text-white'} text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md`}
       >
         Group Details
       </button>
+      
       {isOpen && (
         <div
-          className={`fixed inset-0 flex items-center justify-center ${
-            isDarkMode ? "bg-black bg-opacity-70" : "bg-black bg-opacity-50"
-          }`}
+          className={`fixed inset-0 flex items-center justify-center z-50 ${
+            isDarkMode ? "bg-black bg-opacity-75" : "bg-black bg-opacity-60"
+          } backdrop-blur-sm transition-all duration-300`}
         >
           <div
-            className={`w-96 p-5 rounded-lg shadow-lg ${
-              isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+            className={`w-full flex flex-col max-w-md p-6 rounded-xl shadow-2xl transform transition-all duration-300 ${
+              isDarkMode 
+                ? "bg-gray-800 text-white border border-gray-700" 
+                : "bg-white text-gray-800 border border-gray-200"
             }`}
           >
-            <div
-              className={`flex justify-between items-center border-b pb-2 ${
-                isDarkMode ? "border-gray-700" : "border-gray-300"
-              }`}
-            >
-              <h2 className="text-xl font-bold">{selectedChat.chatName}</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                {selectedChat.chatName}
+              </h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-red-500 text-3xl top-[-2rem] relative"
+                className="text-gray-400 hover:text-red-500 transition-colors duration-300 text-3xl leading-none"
               >
                 &times;
               </button>
             </div>
-            <div className="mt-4 flex-flex-col items-center">
-              <div className="flex gap-2 items-center my-4">
-                <div className="rounded-full">
+            
+            <div className="space-y-6">
+              <div className="flex justify-center items-center gap-3">
+                <div className="relative group">
                   <img
                     src={getDisplayImage()}
                     alt="Group"
-                    className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-md"
+                    className="w-28 h-28 rounded-full object-cover border-4 border-green-300 shadow-lg group-hover:border-green-500 transition-all duration-300"
                   />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 rounded-full flex items-center justify-center transition-all duration-300">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="group-photo-input"
+                      className="hidden"
+                      onChange={handlePhotoChange}
+                    />
+                  </div>
                 </div>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="group-photo-input"
-                  className="hidden"
-                  onChange={handlePhotoChange}
-                />
+                
                 <button
-                  onClick={() =>
-                    document.getElementById("group-photo-input").click()
-                  }
-                  className={`${
-                    isDarkMode
-                      ? "bg-green-900 text-green-300"
-                      : "bg-green-100 text-green-600"
-                  } hover:bg-green-600 hover:text-white font-semibold px-4 py-2 rounded-lg my-4 mt-2 `}
+                  onClick={() => document.getElementById("group-photo-input").click()}
+                  className={`inline-flex items-center px-6 py-3 rounded-full ${
+                    isDarkMode 
+                      ? 'bg-gradient-to-r from-green-600 to-emerald-700 hover:from-emerald-700 hover:to-green-800' 
+                      : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700'
+                  } text-white font-medium transition-all duration-200 shadow-lg hover:shadow-xl`}
                 >
                   Change Image
                 </button>
               </div>
-              <input
-                type="text"
-                placeholder="Rename Group"
-                value={groupChatName}
-                onChange={(e) => setGroupChatName(e.target.value)}
-                className={`w-full p-2 border rounded ${
-                  isDarkMode
-                    ? "bg-gray-700 border-gray-600 text-white"
-                    : "border-gray-300"
-                }`}
-              />
-              <button
-                onClick={handleUpdate}
-                className={` ${
-                  isDarkMode
-                    ? "bg-green-900 text-green-300"
-                    : "bg-green-100 text-green-600"
-                } hover:bg-green-600 hover:text-white font-semibold px-4 py-2 rounded mt-2 w-full`}
-                disabled={renameLoading}
-              >
-                {renameLoading ? "Updating..." : "Update"}
-              </button>
-            </div>
-            <div className="flex flex-wrap">
-              {selectedChat.participants.map((u) => (
-                <UserBadgeItem
-                  key={u._id}
-                  user={u}
-                  admin={selectedChat.groupAdmin}
-                  handleFunction={() => handleRemove(u)}
+              
+              <div className="flex flex-col gap-3 items-center">
+                <div className="w-full">
+                  <label className={`block text-sm font-medium mb-1 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
+                    Group Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Rename Group"
+                    value={groupChatName}
+                    onChange={(e) => setGroupChatName(e.target.value)}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:outline-none transition-all duration-300 ${
+                      isDarkMode
+                        ? "bg-gray-700 border-gray-600 text-white focus:ring-green-500 focus:border-green-500"
+                        : "border-gray-300 focus:ring-green-500 focus:border-green-500"
+                    }`}
+                  />
+                </div>
+                
+                <button
+                  onClick={handleUpdate}
+                  className={`inline-flex  text-center items-center px-36 py-3 rounded-full
+                    ${isDarkMode 
+                      ? 'bg-gradient-to-r from-green-600 to-emerald-700 hover:from-emerald-700 hover:to-green-800' 
+                      : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700'
+                  } text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 ${renameLoading ? "opacity-75 cursor-not-allowed" : ""}`}
+                  disabled={renameLoading}
+                >
+                  {renameLoading ? "Updating..." : "Update Group"}
+                </button>
+              </div>
+              
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Group Members
+                </label>
+                <div className="flex flex-wrap gap-2 mb-4 max-h-20 overflow-y-auto p-2 rounded-lg border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}">
+                  {selectedChat.participants.map((u) => (
+                    <UserBadgeItem
+                      key={u._id}
+                      user={u}
+                      admin={selectedChat.groupAdmin}
+                      handleFunction={() => handleRemove(u)}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
+                  Add Members
+                </label>
+                <input
+                  type="text"
+                  placeholder="Search users to add"
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:outline-none transition-colors duration-300 ${
+                    isDarkMode
+                      ? "bg-gray-700 border-gray-600 text-white focus:ring-green-500 focus:border-green-500"
+                      : "border-gray-300 focus:ring-green-500 focus:border-green-500"
+                  }`}
                 />
-              ))}
-            </div>
-            <div className="mt-4">
-              <input
-                type="text"
-                placeholder="Search Users"
-                onChange={(e) => handleSearch(e.target.value)}
-                className={`w-full p-2 border rounded ${
-                  isDarkMode
-                    ? "bg-gray-700 border-gray-600 text-white"
-                    : "border-gray-300"
-                }`}
-              />
-              <div className="mt-2 max-h-40 overflow-y-auto">
-                {loading ? (
-                  <p>Loading...</p>
-                ) : (
-                  searchResult.map((user) => (
-                    <div
-                      key={user._id}
-                      className={`p-2 border-b ${
-                        isDarkMode ? "border-gray-700" : "border-gray-300"
-                      }`}
-                      onClick={() => {
-                        handleAddUser(user);
-                      }}
-                    >
-                      {user.name}
+                
+                <div className={`mt-2 max-h-32 overflow-y-auto rounded-lg ${
+                  isDarkMode ? "bg-gray-700" : "bg-gray-50"
+                } ${searchResult.length > 0 ? "border" : ""} ${
+                  isDarkMode ? "border-gray-600" : "border-gray-200"
+                }`}>
+                  {loading ? (
+                    <div className="p-3 text-center">
+                      <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" role="status">
+                        <span className="sr-only">Loading...</span>
+                      </div>
                     </div>
-                  ))
-                )}
+                  ) : (
+                    searchResult.map((user) => (
+                      <div
+                        key={user._id}
+                        className={`p-3 ${
+                          isDarkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"
+                        } cursor-pointer transition-colors duration-200 border-b ${
+                          isDarkMode ? "border-gray-600" : "border-gray-200"
+                        } flex items-center gap-2`}
+                        onClick={() => handleAddUser(user)}
+                      >
+                        <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-green-600 font-bold">
+                          {user.name.charAt(0)}
+                        </div>
+                        <span>{user.name}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className={`py-2 px-6 rounded-full font-medium transition-all duration-300 mr-2 ${
+                    isDarkMode
+                      ? "bg-gray-700 text-white hover:bg-gray-600"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleRemove(user)}
+                  className={`font-medium transition-all duration-300 
+                  inline-flex items-center px-6 py-3 rounded-full ${
+                      isDarkMode 
+                        ? 'bg-gradient-to-r from-red-600 to-pink-700 hover:from-rose-700 hover:to-red-800' 
+                        : 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-rose-600 hover:to-red-700'
+                    } text-white font-medium transition-all duration-200 shadow-lg hover:shadow-xl`}
+                >
+                  Leave Group
+                </button>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className={` ${
-                isDarkMode
-                  ? "bg-red-900 text-red-300"
-                  : "bg-red-100 text-red-600"
-              } hover:bg-red-600 hover:text-white font-semibold px-4 py-2 rounded mt-2 w-full`}
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

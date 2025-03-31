@@ -42,7 +42,7 @@ const Followers = ({ profile }) => {
       <h2 className="text-2xl font-semibold mb-4 text-green-600">Followers</h2>
 
       {sortedFollowers.map((user) => (
-        <div key={user?._id} className={`flex items-center justify-between p-4 ${isDarkMode ? 'border-t border-gray-700' : 'border-t'}`}>
+        <div key={user?._id} className={`flex lg:flex-row flex-col gap-2 items-center justify-between p-4 ${isDarkMode ? 'border-t border-gray-700' : 'border-t'}`}>
           {/* Clickable Profile Section */}
           <div
             className="flex items-center space-x-4 cursor-pointer"

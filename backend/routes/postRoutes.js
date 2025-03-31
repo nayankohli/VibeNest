@@ -21,6 +21,7 @@ router.get('/all/:id', protect, getAllPosts);
 router.get('/following', protect, fetchFollowing);
 router.get('/explore', protect, fetchExplore);
 router.get('/', protect, getPostsFeed);
+router.get('/:id/bookmark', protect, bookmarkPost);
 router.get('/:commentId/replies/all', protect, getRepliesOfComment);
 router.post('/replies/create', protect, createReply);
 router.post('/:replyId/like/reply', protect, toggleReplyLike);

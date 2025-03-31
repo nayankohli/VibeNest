@@ -32,7 +32,11 @@ import {
     USER_UPDATE_PRIVACY_REQUEST,
   USER_UPDATE_PRIVACY_SUCCESS,
   USER_UPDATE_PRIVACY_FAIL,
-  USER_UPDATE_PRIVACY_RESET
+  USER_UPDATE_PRIVACY_RESET,
+  USER_PASSWORD_UPDATE_REQUEST,
+  USER_PASSWORD_UPDATE_SUCCESS,
+  USER_PASSWORD_UPDATE_FAIL,
+  USER_PASSWORD_UPDATE_RESET
   } from "../constants/UserConstants";
   import axios from "axios";
   
@@ -332,3 +336,38 @@ export const logout = () => (dispatch) => {
       export const resetPrivacyUpdate = () => (dispatch) => {
         dispatch({ type: USER_UPDATE_PRIVACY_RESET });
       };
+
+      export const changePassword = (passwordData) => async (dispatch, getState) => {
+        try {
+          dispatch({ type: USER_PASSWORD_UPDATE_REQUEST })
+      
+          const { userLogin: { userInfo } } = getState()
+      
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userInfo.token}`
+            }
+          }
+      
+          const { data } = await axios.put('http://localhost:5000/api/users/change-password', passwordData, config)
+      
+          dispatch({ 
+            type: USER_PASSWORD_UPDATE_SUCCESS, 
+            payload: data 
+          })
+        } catch (error) {
+          dispatch({ 
+            type: USER_PASSWORD_UPDATE_FAIL, 
+            payload: 
+              error.response && error.response.data.message 
+                ? error.response.data.message 
+                : error.message 
+          })
+        }
+      }
+      
+      // Reset Password Update
+      export const resetPasswordUpdate = () => (dispatch) => {
+        dispatch({ type: USER_PASSWORD_UPDATE_RESET })
+      }

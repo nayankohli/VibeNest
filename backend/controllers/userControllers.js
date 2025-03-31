@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const generateToken = require("../utils/generateToken.js");
 const multer = require("multer");
 const path = require("path");
-
+const bcrypt=require("bcryptjs")
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads"),
@@ -49,6 +49,9 @@ const authUser = asyncHandler(async (req, res) => {
       followers: user.followers,
       following: user.following,
       posts: user.posts,
+      dob:user.dob,
+      gender:user.gender,
+      location:user.location,
       privacy: user.privacy,
       jobProfile:user.jobProfile,
       bookmarks:user.bookmarks,
@@ -398,6 +401,45 @@ const getSavedPosts = asyncHandler(async (req, res) => {
   }
 });
 
+const changeUserPassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body
+  const user = await User.findById(req.user._id)
+try{
+  if (user) {
+    const isMatch = await bcrypt.compare(currentPassword, user.password)
+
+    if (!isMatch) {
+      res.status(400)
+      throw new Error('Current password is incorrect')
+    }
+    if (newPassword.length < 8) {
+      res.status(400)
+      throw new Error('Password must be at least 8 characters long')
+    }
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(newPassword, salt)
+    user.password = hashedPassword
+    await user.save()
+
+    res.json({
+      success:true,
+      message: 'Password updated successfully'
+    })
+  } else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+}catch(error){
+  console.error('Error updating password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error while updating password',
+      error: error.message
+    });
+}
+  
+})
+
 
 module.exports = {
   registerUser,
@@ -412,5 +454,6 @@ module.exports = {
   getFollowers,
   getFollowing,
   updateUserPrivacy,
-  getSavedPosts
+  getSavedPosts,
+  changeUserPassword
 };

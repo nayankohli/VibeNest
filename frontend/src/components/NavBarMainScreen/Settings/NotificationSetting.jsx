@@ -35,8 +35,8 @@ function NotificationSettings() {
   };
 
   return (
-    <div className={`p-6 rounded-lg shadow-sm ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
-      <h2 className={`text-2xl font-bold mb-1 ${isDarkMode ? "text-green-400" : "text-green-600"}`}>Notification Settings</h2>
+    <div className={`p-6 rounded-lg ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+      <h2 className={`text-2xl font-bold mb-1 ${isDarkMode ? "text-green-400" : "text-green-600"}`}><i className="fas fa-bell mr-3"></i>Notification Settings</h2>
       <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"} mb-6`}>
         Manage your notification preferences below.
       </p>

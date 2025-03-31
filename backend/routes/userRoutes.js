@@ -13,7 +13,8 @@ const {
   getFollowing,
   getSuggestedUsers,
   updateUserPrivacy,
-  getSavedPosts
+  getSavedPosts,
+  changeUserPassword
 } = require("../controllers/userControllers");
 const { protect } = require("../middlewares/authMiddleware.js");
 
@@ -37,4 +38,5 @@ router.get("/following/:id", protect, getFollowing);
 router.get("/suggested", protect, getSuggestedUsers);
 router.put("/privacy", protect, updateUserPrivacy);
 router.get('/saved-posts', protect, getSavedPosts);
+router.put('/change-password', protect, changeUserPassword)
 module.exports = router;

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateProfile, resetUserUpdate } from "../../../actions/UserActions";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { toast } from "sonner";
-
 function EditProfilePage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -19,6 +18,7 @@ function EditProfilePage() {
 
     const [bannerPhoto, setBannerPhoto] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(null);
+    const [username, setUsername] = useState('');
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
     const [dob, setDob] = useState('');
@@ -33,6 +33,7 @@ function EditProfilePage() {
         if (!userInfo) {
             navigate("/login");
         } else {
+            setUsername(userInfo.username || '');
             setName(userInfo.name || '');
             setBio(userInfo.bio || '');
             setDob(userInfo.dob ? userInfo.dob.split('T')[0] : '');
@@ -101,6 +102,7 @@ function EditProfilePage() {
         formData.append('userId', userInfo._id); 
         if (bannerPhoto) formData.append('banner', bannerPhoto);
         if (profilePhoto) formData.append('profileImage', profilePhoto);
+        formData.append('username', username);
         formData.append('name', name);
         formData.append('bio', bio);
         formData.append('dob', dob);
@@ -143,7 +145,7 @@ function EditProfilePage() {
     return (
         <div className={containerClass}>
             {loading && <Loading />}
-            <h2 className={headingClass}>Edit Profile</h2>
+            <h2 className={headingClass}><i className="fas fa-pen-to-square mr-3"></i>Edit Profile</h2>
             <form className="space-y-6" onSubmit={handleSubmit}>
                 {loading && <div className="loading"></div>}
                 {error && <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
@@ -246,6 +248,17 @@ function EditProfilePage() {
                 <div className={sectionClass}>
                     <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Personal Information</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                            <label htmlFor="username" className={labelClass}>Username</label>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                value={username} 
+                                onChange={(e) => setUsername(e.target.value)} 
+                                className={inputClass} 
+                                placeholder="Your Username"
+                            />
+                        </div>
                         <div>
                             <label htmlFor="name" className={labelClass}>Name</label>
                             <input 
@@ -267,7 +280,14 @@ function EditProfilePage() {
                                 className={inputClass} 
                             />
                         </div>
-                        <div>
+                    </div>
+                </div>
+                
+                {/* Location & Work Section */}
+                <div className={sectionClass}>
+                    <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Additional Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
                             <label htmlFor="gender" className={labelClass}>Gender</label>
                             <select 
                                 id="gender" 
@@ -280,13 +300,6 @@ function EditProfilePage() {
                                 <option value="female">Female</option>
                             </select>
                         </div>
-                    </div>
-                </div>
-                
-                {/* Location & Work Section */}
-                <div className={sectionClass}>
-                    <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Location & Work</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label htmlFor="location" className={labelClass}>Location</label>
                             <input 

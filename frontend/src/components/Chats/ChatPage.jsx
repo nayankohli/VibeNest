@@ -18,6 +18,7 @@ var socket, selectedChatCompare;
 
 function ChatPage() {
   const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(false);
   const [fetchAgain, setFetchAgain] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
   const { isDarkMode } = useContext(ThemeContext);
@@ -72,16 +73,29 @@ function ChatPage() {
         <Navbar />
       </div>
 
-      <div className="flex flex-1 mt-20 overflow-hidden w-[80rem] px-10 mb-3 rounded-lg">
-        {<ChatSidebar fetchAgain={fetchAgain} />}
+      <div className={`flex mt-20 h-[50rem] overflow-hidden w-[85rem]  mb-3 ${isDarkMode?"":"border"} rounded-lg`}>
+        <div className={`w-[30rem] border-r h-full ${
+        isDarkMode ? "bg-gray-800 text-white" : "bg-white"
+       } ${
+        isDarkMode ? "border-gray-700" : ""
+      }`}>
+        {<ChatSidebar fetchAgain={fetchAgain} calledBy={"chatPage"} 
+        isOpen={isOpen}
+        setIsOpen={setIsOpen} />}
+        </div>
+        
+        
 
         {selectedChat ? (
           <ChatWindow 
             fetchAgain={fetchAgain}
-            setFetchAgain={setFetchAgain}// Pass dispatch down to children
+            setFetchAgain={setFetchAgain}
+            // Pass dispatch down to children
           />
         ) : (
-          <EmptyChat />
+          <EmptyChat
+          isOpen={isOpen}
+          setIsOpen={setIsOpen} />
         )}
       </div>
     </div>

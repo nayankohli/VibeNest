@@ -53,10 +53,10 @@ const Sidebar = () => {
       {/* Profile Info */}
       <div className="mt-12 flex flex-col items-center text-center px-4 w-full mx-auto">
   <h2 className="text-lg font-semibold">{userInfo?.name}</h2>
-  <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-500'} text-sm`}>
+  <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-500'} text-xs`}>
     {userInfo?.jobProfile}
   </p>
-  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-2 whitespace-pre-line`}>
+  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-md mt-2 whitespace-pre-line`}>
     {userInfo?.bio}
   </p>
 </div>

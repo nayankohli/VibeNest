@@ -85,8 +85,8 @@ export const isSameSenderMargin = (messages, m, i, userId) => {
     if (!participants || participants.length < 2) return { name: "Unknown", profileImage: "" };
   
     return participants[0]?._id === loggedUser?._id
-      ? { name: participants[1].name, profileImage: participants[1].profileImage }
-      : { name: participants[0].name, profileImage: participants[0].profileImage };
+      ? { _id:participants[1]._id,username:participants[1].username,name: participants[1].name, profileImage: participants[1].profileImage }
+      : { _id:participants[0]._id,username:participants[0].username,name: participants[0].name, profileImage: participants[0].profileImage };
   };
   
   

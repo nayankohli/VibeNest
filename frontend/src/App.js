@@ -8,14 +8,14 @@ import ChatPage from "./components/Chats/ChatPage";
 import Settings from "./components/NavBarMainScreen/Settings/Settings";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "./context/ThemeContext";
-import ChatProvider from "./context/ChatProvider"; // ✅ Correct import
+import ChatProvider from "./context/ChatProvider"; 
 import SavedPosts from "./components/SavedPosts/SavedPosts";
 import NewsPage from "./components/HomeScreen/RightSideBar/NewsPage";
 function App() {
   return (
-    <ThemeProvider> {/* ✅ Wrap everything inside ThemeProvider */}
-      <ChatProvider> {/* ✅ Move ChatProvider outside of Routes */}
-        <Toaster /> {/* ✅ Place Toaster outside of Routes */}
+    <ThemeProvider> 
+      <ChatProvider> 
+        <Toaster /> 
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Login />} />

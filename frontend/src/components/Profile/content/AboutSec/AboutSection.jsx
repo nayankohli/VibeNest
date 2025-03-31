@@ -38,7 +38,7 @@ const AboutSection = ({ profile, loggedInUserId }) => {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-4">
         {profile.dob ? (
           <div className={`p-3 ${isDarkMode ? 'border-gray-700 border' : 'border'} rounded-md flex justify-between items-center relative ${isDarkMode ? 'bg-gray-700' : ''}`}>
             <div>
