@@ -89,9 +89,7 @@ app.get("/api/health", (req, res) => {
 "scripts": {
   "start": "node index.js",
   "dev": "nodemon index.js",
-  "test": "jest",
-  "test:watch": "jest --watch",
-  "test:coverage": "jest --coverage"
+  "test": "echo \"Error: no test specified\" && exit 1"
 },
 ```
 
@@ -116,10 +114,6 @@ app.get("/api/health", (req, res) => {
 ```json
 // Added
 "devDependencies": {
-  "jest": "^29.7.0",
-  "supertest": "^6.3.3",
-  "mongodb-memory-server": "^9.1.6",
-  "mock-socket": "^9.3.1",
   "nodemon": "^3.0.1"
 },
 ```
