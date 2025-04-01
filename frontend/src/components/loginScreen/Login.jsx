@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useContext } from "react";
-import Loading from "../Loading.jsx";
+import Loading from "../Loaders/Loading.jsx";
 import { Link } from "react-router-dom";
 import { login } from "../../actions/UserActions.jsx";
 import { useDispatch, useSelector } from "react-redux";

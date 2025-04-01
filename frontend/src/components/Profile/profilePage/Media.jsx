@@ -3,7 +3,7 @@ import React, { useEffect, useContext } from "react";
 import { fetchAllPosts } from "../../../reducers/PostReducers";
 import { setActiveTab } from "../../../reducers/ProfileSlice";
 import { ThemeContext } from "../../../context/ThemeContext";
-import Loader from "../../Loader";
+import Loader from "../../Loaders/Loader";
 const Media = () => {
   const dispatch = useDispatch();
   const { isDarkMode } = useContext(ThemeContext);

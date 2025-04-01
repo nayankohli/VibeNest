@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Loading from "../../Loading";
+import Loading from "../../Loaders/Loading";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfile, resetUserUpdate } from "../../../actions/UserActions";

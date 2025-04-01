@@ -2,15 +2,15 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { setPosts, setComments } from "../../../reducers/PostReducers";
-import Comment from "./Comment";
-import UseGetAllComments from "./UseGetAllComments";
+import { setPosts, setComments } from "../../../../reducers/PostReducers";
+import Comment from "../Comment/Comment";
+import UseGetAllComments from "../hooks/UseGetAllComments";
 import "./CommentDialog.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "sonner";
 import EmojiPicker from "emoji-picker-react";
 import { FaSmile } from "react-icons/fa";
-import { ThemeContext } from "../../../context/ThemeContext";
+import { ThemeContext } from "../../../../context/ThemeContext";
 import {
   faHeart,
   faComment,

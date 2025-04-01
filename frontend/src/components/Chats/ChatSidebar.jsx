@@ -3,7 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { ThemeContext } from "../../context/ThemeContext";
 import { setSelectedUser } from "../../actions/UserActions";
-import Loading from "../Loading";
+import Loading from "../Loaders/Loading";
 import SideDrawer from "./SideDrawer";
 import { ChatState } from "../../context/ChatProvider";
 import { getSender } from "../../actions/ChatActions";
@@ -96,14 +96,15 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
  
   <button
         onClick={() => setIsGroupOpen(true)}
-        className={`inline-flex items-center px-6 py-3 rounded-full 
-          ${isDarkMode 
-            ? 'bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800' 
-            : 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700'
+        className={`inline-flex items-center px-3 py-3 rounded-full 
+          ${
+            isDarkMode 
+              ? 'bg-gradient-to-r from-green-600 to-emerald-700 hover:from-emerald-700 hover:to-green-800' 
+              : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700'
           } text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1`}
       >
         <FontAwesomeIcon icon={faPenToSquare} className="mr-2"/>
-        New Group Chat
+        New Group
       </button>
 
 </div>
@@ -136,7 +137,7 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
                     if (!chat.isGroupChat)
                       dispatch(setSelectedUser(getSender(loggedUser, chat.participants)));
                   }}
-                  className={`cursor-pointer flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${
+                  className={`cursor-pointer flex items-center gap-3 p-4 py-3 rounded-xl transition-all duration-300 ${
                     selectedChat === chat
                       ? isDarkMode 
                         ? "bg-gradient-to-r from-green-800/60 to-emerald-800/60 border-l-4 border-green-500 transform scale-102" 

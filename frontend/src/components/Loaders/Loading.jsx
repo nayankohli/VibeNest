@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ThemeContext } from '../context/ThemeContext';
+import { ThemeContext } from '../../context/ThemeContext';
 const Loading = ({ size = 200 }) => {
   const d = size / 5; // Derive the base value for animation
 const {isDarkMode}=useContext(ThemeContext)

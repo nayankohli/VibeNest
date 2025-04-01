@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { FaHeart, FaComment, FaCamera, FaVideo } from "react-icons/fa";
 import { ThemeContext } from "../../context/ThemeContext";
-import Loader from "../Loader"; 
+import Loader from "../Loaders/Loader"; 
 import Navbar from "../NavBarMainScreen/Navbar";
-import CommentDialog from "../Profile/displayPosts/CommentDialog";
+import CommentDialog from "../Profile/displayPosts/CommentDialog/CommentDialog";
 import { setSelectedPost } from "../../reducers/PostReducers";
 
 const SavedPostMedia = ({ post, isDarkMode, onRemoveFromSaved, open, setOpen }) => {

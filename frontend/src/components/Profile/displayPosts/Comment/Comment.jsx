@@ -2,8 +2,8 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { setComments, setReplies } from "../../../reducers/PostReducers"; // Update reducer import
-import { ThemeContext } from "../../../context/ThemeContext";
+import { setComments, setReplies } from "../../../../reducers/PostReducers"; // Update reducer import
+import { ThemeContext } from "../../../../context/ThemeContext";
 import './Comment.css';
 import { toast } from "sonner";
 

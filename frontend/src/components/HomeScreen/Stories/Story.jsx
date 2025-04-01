@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { listStories, markStorySeen, deleteStory } from '../../../actions/StoryActions';
 import UploadStory from "./UploadStory";
 import { FaTimes, FaChevronLeft, FaChevronRight, FaTrash, FaEye } from "react-icons/fa";
-import Loader from "../../Loader";
+import Loader from "../../Loaders/Loader";
 const Stories = ({ isDarkMode }) => {
   const dispatch = useDispatch();
   const { storyGroups, loading, error } = useSelector((state) => state.storyList);

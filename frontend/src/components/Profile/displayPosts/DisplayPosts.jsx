@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllPosts } from "../../../reducers/PostReducers";
 import { ThemeContext } from "../../../context/ThemeContext";
-import Loader from "../../Loader";
+import Loader from "../../Loaders/Loader";
 import Post from "./Post";
 
 const DisplayPosts = () => {

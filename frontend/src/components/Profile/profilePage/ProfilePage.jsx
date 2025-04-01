@@ -5,7 +5,7 @@ import ProfileNavBar from "../navbar/ProfileNavBar";
 import ProfileContent from "../content/ProfileContent";
 import Navbar from "../../NavBarMainScreen/Navbar";
 import { fetchProfile, followUnfollow } from "../../../actions/UserActions";
-import Loading from "../../Loading";
+import Loading from "../../Loaders/Loading";
 import Media from "./Media";
 import Followers from "./Followers";
 import { FaBirthdayCake, FaUser, FaEnvelope, FaUserPlus } from "react-icons/fa";

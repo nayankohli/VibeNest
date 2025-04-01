@@ -2,10 +2,10 @@ import { FaHeart, FaComment, FaVideo } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState, useContext } from "react";
 import { fetchAllPosts } from "../../../../reducers/PostReducers";
-import CommentDialog from "../../displayPosts/CommentDialog";
+import CommentDialog from "../../displayPosts/CommentDialog/CommentDialog";
 import { setSelectedPost } from "../../../../reducers/PostReducers";
 import { ThemeContext } from "../../../../context/ThemeContext";
-import Loader from '../../../Loader'
+import Loader from '../../../Loaders/Loader'
 
 const Videos = () => {
   const dispatch = useDispatch();

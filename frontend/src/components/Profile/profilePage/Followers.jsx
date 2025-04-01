@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck, faMessage } from "@fortawesome/free-solid-svg-icons";
 import { setActiveTab } from "../../../reducers/ProfileSlice";
 import { ThemeContext } from "../../../context/ThemeContext";
-import Loader from "../../Loader"; // Import the Loader component
+import Loader from "../../Loaders/Loader"; // Import the Loader component
 
 const Followers = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { setComments} from "../../../reducers/PostReducers";
+import { setComments} from "../../../../reducers/PostReducers";
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";

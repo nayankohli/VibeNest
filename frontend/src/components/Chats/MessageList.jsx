@@ -2,7 +2,7 @@
 import { useContext } from "react";
 import { useSelector } from "react-redux";
 import Message from "./Message";
-import Loading from "../Loading";
+import Loading from "../Loaders/Loading";
 import { ThemeContext } from "../../context/ThemeContext";
 function MessageList({ loading ,messages, fetchAgain, setFetchAgain, setMessages}) {
   const { isDarkMode } = useContext(ThemeContext);

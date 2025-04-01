@@ -73,7 +73,7 @@ function ChatPage() {
         <Navbar />
       </div>
 
-      <div className={`flex mt-20 h-[50rem] overflow-hidden w-[85rem]  mb-3 ${isDarkMode?"":"border"} rounded-lg`}>
+      <div className={`flex mt-20 h-[50rem] overflow-hidden w-[80rem]  mb-3 ${isDarkMode?"":"border"} rounded-lg`}>
         <div className={`w-[30rem] border-r h-full ${
         isDarkMode ? "bg-gray-800 text-white" : "bg-white"
        } ${

@@ -289,7 +289,7 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto px-4 pb-24">
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-24">
                 {Object.keys(groupedMessages || {}).map((dateKey) => (
                     <div key={dateKey} className="mb-6">
                         <div className=" flex items-center my-4">

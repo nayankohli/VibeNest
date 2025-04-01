@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
 import { ThemeContext } from "../../../context/ThemeContext";
 import Navbar from "../../NavBarMainScreen/Navbar";
-import Loader from "../../Loader";
+import Loader from "../../Loaders/Loader";
 const formatTimeAgo = (dateString) => {
   const now = new Date();
   const date = new Date(dateString);

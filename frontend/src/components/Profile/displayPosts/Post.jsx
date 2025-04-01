@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts, setSelectedPost } from "../../../reducers/PostReducers";
 import axios from "axios";
-import CommentDialog from "./CommentDialog";
+import CommentDialog from "./CommentDialog/CommentDialog";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";

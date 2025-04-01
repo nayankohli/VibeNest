@@ -49,9 +49,9 @@ const Home = () => {
       </div>
 
       {/* Main Grid Container */}
-      <div className="flex flex-grow pt-20 px-2 md:px-5 mx-auto relative">
+      <div className="flex flex-grow pt-20 px-2 md:px-5 mx-auto gap-3 relative">
         {/* Left Sidebar - Hidden on mobile, visible on large screens */}
-        <div className="hidden lg:block w-80 flex-shrink-0 sticky top-20 h-screen overflow-y-auto pb-20">
+        <div className="hidden lg:block w-80 flex-shrink-0  top-20 h-screen  pb-20">
           <Sidebar />
         </div>
         
@@ -82,7 +82,7 @@ const Home = () => {
         </button>
         
         {/* Center Content - Full width on mobile, constrained on larger screens */}
-        <div className="w-full lg:w-[45rem] flex flex-col gap-2 mx-auto px-2 md:px-4">
+        <div className="w-full lg:w-[45rem] flex flex-col gap-4 mx-auto px-2 md:px-4">
           <div className={`${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} p-2 rounded-lg shadow-md w-full`}>
             <Stories isDarkMode={isDarkMode} />
           </div>
@@ -95,7 +95,7 @@ const Home = () => {
         </div>
 
         {/* Right Sidebar - Only visible on large screens */}
-        <div className="hidden lg:block w-80 flex-shrink-0 sticky top-20 h-screen overflow-y-auto pb-20">
+        <div className="hidden lg:block w-80 flex-shrink-0 top-20 h-screen  pb-20">
           <RightSidebar />
         </div>
       </div>

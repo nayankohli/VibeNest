@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import axios from 'axios';
 import { useFollowingService } from './useFollowingService'; // Import the hook we created
 import Post from '../../Profile/displayPosts/Post';
-import Loader from '../../Loader';
+import Loader from '../../Loaders/Loader';
 const HomeFeed = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

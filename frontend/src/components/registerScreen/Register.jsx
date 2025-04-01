@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Loading from "../Loading.jsx";
+import Loading from "../Loaders/Loading.jsx";
 import { register } from "../../actions/UserActions.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'sonner';
