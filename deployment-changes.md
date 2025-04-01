@@ -227,33 +227,3 @@ const API_CONFIG = {
     : 'http://localhost:5000'
 };
 ```
-
-## How to Revert Changes
-
-To revert the project to its original state:
-
-### 1. Revert `backend/index.js`
-- Restore original CORS configuration
-- Remove PORT variable and use hardcoded 5000
-- Restore original socket.io CORS configuration
-- Remove health check endpoint
-
-### 2. Revert `backend/package.json`
-- Remove start and dev scripts
-- Remove Node.js engine specification
-- Restore original description
-- Remove dev dependencies
-
-### 3. Revert `backend/.env`
-- Remove FRONTEND_URL and NODE_ENV variables
-
-### 4. Delete New Files
-- Delete `backend/Procfile`
-- Delete `backend/render.yaml`
-- Delete `backend/.env.example`
-- Delete `backend/.gitignore`
-- Delete `backend/README.md`
-- Delete `backend/uploads/.gitkeep` (if the uploads directory was not in the original project)
-
-### 5. Revert `frontend/src/config/api-config.js`
-- Restore hardcoded localhost URL
