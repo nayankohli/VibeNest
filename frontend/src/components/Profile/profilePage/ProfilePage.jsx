@@ -206,7 +206,7 @@ function ProfilePage() {
                           isDarkMode
                             ? "bg-red-900 text-red-200 hover:bg-red-700 hover:text-white"
                             : "bg-red-100 text-red-500 hover:bg-red-500 hover:text-white"
-                        } py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg flex  transition lg:text-lg md:text-md sm:text-xs`}
+                        } py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg flex items-center  transition lg:text-lg md:text-md sm:text-xs`}
                         onClick={handleEditClick}
                       >
                         <FontAwesomeIcon icon={faUserPen} className="mr-1 sm:mr-2" />Edit Profile

@@ -275,28 +275,28 @@ const Stories = ({ isDarkMode }) => {
   return (
     <>
       {/* Stories horizontal list */}
-      <div className="flex justify-start h-full items-start overflow-x-auto hide-scrollbar">
+      <div className="flex justify-start h-full items-start overflow-x-auto hide-scrollbar py-2">
         {/* Create story button */}
         <div 
-          className="flex flex-col items-center justify-center cursor-pointer mr-6"
+          className="flex flex-col items-center justify-center cursor-pointer mr-3 sm:mr-6 flex-shrink-0"
           onClick={() => setShowUploadModal(true)}
         >
-          <div className={`w-32 h-36 rounded-lg flex flex-col items-center justify-center border-2 border-dashed ${isDarkMode ? "bg-gray-700 border-gray-400" : "bg-gray-100 border-gray-500"} `}>
-            <div className={`${isDarkMode ? "bg-gray-800" : "bg-gray-300"} flex items-center justify-center rounded-full w-10 h-10 mb-1`}>
-            <span className={`text-2xl`}>+</span>
+          <div className={`w-24 sm:w-28 md:w-32 h-32 sm:h-36 rounded-lg flex flex-col items-center justify-center border-2 border-dashed ${isDarkMode ? "bg-gray-700 border-gray-400" : "bg-gray-100 border-gray-500"} `}>
+            <div className={`${isDarkMode ? "bg-gray-800" : "bg-gray-300"} flex items-center justify-center rounded-full w-8 sm:w-10 h-8 sm:h-10 mb-1`}>
+            <span className={`text-xl sm:text-2xl`}>+</span>
             </div>
             
-            <span className="text-xs font-medium">Post a Story</span>
+            <span className="text-xs font-medium text-center px-1">Post a Story</span>
           </div>
         </div>
         
         {/* Story thumbnails */}
         {loading ? (
-          <div className="flex justify-center items-center w-full h-36">
+          <div className="flex justify-center items-center w-full h-32 sm:h-36">
             <Loader/>
           </div>
         ) : error ? (
-          <div className="text-red-500">{error}</div>
+          <div className="text-red-500 text-sm sm:text-base">{error}</div>
         ) : (
           sortedStoryGroups?.map((group, index) => {
             const allStoriesSeen = hasUserSeenAllStories(group);
@@ -304,11 +304,11 @@ const Stories = ({ isDarkMode }) => {
             return (
               <div 
                 key={group.user._id} 
-                className={`flex flex-col items-center cursor-pointer mr-2 ${allStoriesSeen ? 'opacity-60' : ''}`}
+                className={`flex flex-col items-center cursor-pointer mr-2 flex-shrink-0 ${allStoriesSeen ? 'opacity-60' : ''}`}
                 onClick={() => openStoryView(index)}
               >
                 <div 
-                  className={`w-28 h-36 rounded-lg p-0.5 mb-1 relative ${
+                  className={`w-20 sm:w-24 md:w-28 h-32 sm:h-36 rounded-lg p-0.5 mb-1 relative ${
                     group.hasUnseenStories 
                       ? "border-2 border-green-500" 
                       : isDarkMode 
@@ -330,7 +330,7 @@ const Stories = ({ isDarkMode }) => {
                   
                   {/* Viewed indicator */}
                   {allStoriesSeen && (
-                    <div className="absolute bottom-1 right-1 bg-gray-800 bg-opacity-70 rounded-full p-1">
+                    <div className="absolute bottom-1 right-1 bg-gray-800 bg-opacity-70 rounded-full p-0.5 sm:p-1">
                       <FaEye className="text-white text-xs" />
                     </div>
                   )}
@@ -364,9 +364,9 @@ const Stories = ({ isDarkMode }) => {
                 draggable="false"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center flex-col text-white">
-                <p className="text-xl mb-2">Unable to load media</p>
-                <p className="text-sm text-gray-400">The story content couldn't be displayed</p>
+              <div className="w-full h-full flex items-center justify-center flex-col text-white px-4">
+                <p className="text-lg sm:text-xl mb-2 text-center">Unable to load media</p>
+                <p className="text-xs sm:text-sm text-gray-400 text-center">The story content couldn't be displayed</p>
               </div>
             )}
             
@@ -381,7 +381,7 @@ const Stories = ({ isDarkMode }) => {
             )}
             
             {/* Story header */}
-            <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center">
+            <div className="absolute top-0 left-0 right-0 p-2 sm:p-4 flex justify-between items-center">
               <div className="flex items-center">
                 <img 
                   src={activeGroup.user.profileImage 
@@ -389,13 +389,13 @@ const Stories = ({ isDarkMode }) => {
                     : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
                   }
                   alt={activeGroup.user.name}
-                  className="w-10 h-10 rounded-full object-cover mr-3"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
                   onError={(e) => {
                     e.target.src = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
                   }}
                 />
                 <div>
-                  <p className="text-white font-medium">{activeGroup.user.name}</p>
+                  <p className="text-white font-medium text-sm sm:text-base">{activeGroup.user.name}</p>
                   <p className="text-gray-300 text-xs">
                     {formatTime(activeGroup.stories[activeStoryIndex].createdAt)}
                   </p>
@@ -405,9 +405,9 @@ const Stories = ({ isDarkMode }) => {
               <div className="flex items-center">
                 {/* Seen indicator */}
                 {activeGroup.stories[activeStoryIndex].seenBy.includes(userInfo._id) && (
-                  <div className="text-gray-400 mr-4 flex items-center">
+                  <div className="text-gray-400 mr-2 sm:mr-4 flex items-center">
                     <FaEye className="mr-1" />
-                    <span className="text-xs">Viewed</span>
+                    <span className="text-xs hidden sm:inline">Viewed</span>
                   </div>
                 )}
                 
@@ -415,17 +415,17 @@ const Stories = ({ isDarkMode }) => {
                 {activeGroup.user._id === userInfo._id && (
                   <button 
                     onClick={() => handleDeleteStory(activeGroup.stories[activeStoryIndex]._id)}
-                    className="text-white mr-4 p-2"
+                    className="text-white mr-2 sm:mr-4 p-1 sm:p-2"
                     aria-label="Delete story"
                   >
-                    <FaTrash />
+                    <FaTrash className="text-sm sm:text-base" />
                   </button>
                 )}
                 
                 {/* Close button */}
                 <button 
                   onClick={closeStoryView}
-                  className="text-white text-xl"
+                  className="text-white text-lg sm:text-xl p-1 sm:p-2"
                   aria-label="Close story view"
                 >
                   <FaTimes />
@@ -434,11 +434,11 @@ const Stories = ({ isDarkMode }) => {
             </div>
             
             {/* Story progress bars */}
-            <div className="absolute top-0 left-0 right-0 flex space-x-1 p-2">
+            <div className="absolute top-0 left-0 right-0 flex space-x-1 p-1 sm:p-2">
               {activeGroup.stories.map((story, index) => (
                 <div 
                   key={story._id}
-                  className="h-1 bg-gray-500 flex-1 rounded-full overflow-hidden"
+                  className="h-0.5 sm:h-1 bg-gray-500 flex-1 rounded-full overflow-hidden"
                 >
                   <div 
                     ref={(el) => setProgressRef(el, index)}
@@ -455,25 +455,25 @@ const Stories = ({ isDarkMode }) => {
             
             {/* Navigation buttons */}
             <button 
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 p-2 rounded-r-lg"
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 p-1 sm:p-2 rounded-r-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 goToPrevStory();
               }}
               aria-label="Previous story"
             >
-              <FaChevronLeft className="text-white" />
+              <FaChevronLeft className="text-white text-sm sm:text-base" />
             </button>
             
             <button 
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 p-2 rounded-l-lg"
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 p-1 sm:p-2 rounded-l-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 goToNextStory();
               }}
               aria-label="Next story"
             >
-              <FaChevronRight className="text-white" />
+              <FaChevronRight className="text-white text-sm sm:text-base" />
             </button>
           </div>
         </div>
@@ -490,7 +490,7 @@ const Stories = ({ isDarkMode }) => {
           }}
         />
       )}
-
+  
       {/* Add CSS for progress bar animation */}
       <style jsx>{`
         .transition-width {

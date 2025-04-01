@@ -151,7 +151,7 @@ const HomeFeed = () => {
   };
 
   return (
-    <div className={`posts-container w-full rounded-lg p-0 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+    <div className={`posts-container w-full rounded-lg pt-1 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
       {/* Feed type selector */}
       <div className={`sticky top-0 z-10 p-4 border-b ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
       <div className="flex w-full items-center justify-between space-x-2">
