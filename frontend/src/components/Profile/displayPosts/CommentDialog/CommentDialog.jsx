@@ -19,6 +19,7 @@ import {
   faCircleDot,
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
+
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -62,12 +63,12 @@ const CommentDialog = ({ open, setOpen, post }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const [currentMedia, setCurrentMedia] = useState(0);
-    const carouselRef = useRef(null);
+  const carouselRef = useRef(null);
   
-    // Reset current media index when post changes
-    useEffect(() => {
-      setCurrentMedia(0);
-    }, [post?._id]);
+  // Reset current media index when post changes
+  useEffect(() => {
+    setCurrentMedia(0);
+  }, [post?._id]);
 
   useEffect(() => {
     if (commentsEndRef.current) {
@@ -139,26 +140,26 @@ const CommentDialog = ({ open, setOpen, post }) => {
         dispatch(setPosts(updatedPosts));
         setText("");
         toast.success("Comment added successfully", {
-                style: {
-                  background: isDarkMode 
-                    ? "" 
-                    : "black",
-                  color: isDarkMode 
-                  ? "black" 
-                  : "white",
-                  fontWeight: "bold",
-                  padding: "14px 20px",
-                  boxShadow: isDarkMode 
-                    ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
-                    : "0px 6px 15px rgba(22, 163, 74, 0.3)",
-                  borderRadius: "12px",
-                  border: isDarkMode 
-                    ? "2px solid #0ea5e9" 
-                    : "2px solid #38bdf8",
-                },
-                position: "bottom-right",
-                duration: 3000,
-              });
+          style: {
+            background: isDarkMode 
+              ? "" 
+              : "black",
+            color: isDarkMode 
+              ? "black" 
+              : "white",
+            fontWeight: "bold",
+            padding: "14px 20px",
+            boxShadow: isDarkMode 
+              ? "0px 6px 15px rgba(5, 150, 105, 0.4)" 
+              : "0px 6px 15px rgba(22, 163, 74, 0.3)",
+            borderRadius: "12px",
+            border: isDarkMode 
+              ? "2px solid #0ea5e9" 
+              : "2px solid #38bdf8",
+          },
+          position: "bottom-right",
+          duration: 3000,
+        });
         setShowEmojiPicker(false);
       }
     } catch (error) {
@@ -227,8 +228,8 @@ const CommentDialog = ({ open, setOpen, post }) => {
                 ? "" 
                 : "black",
               color: isDarkMode 
-              ? "black" 
-              : "white",
+                ? "black" 
+                : "white",
               fontWeight: "bold",
               padding: "14px 20px",
               boxShadow: isDarkMode 
@@ -254,6 +255,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
       toast.error(error.response?.data?.message || "Failed to update bookmark!");
     }
   };
+
   const goToNextMedia = (e) => {
     e.stopPropagation();
     if (post.media?.length > 1) {
@@ -281,116 +283,118 @@ const CommentDialog = ({ open, setOpen, post }) => {
         >
           ✖
         </button>
+        
+        {/* Navigation buttons, hidden on mobile */}
         <button
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 text-2xl text-white hover:bg-opacity-70 bg-black bg-opacity-50 p-3 hover:border-2 hover:border-gray-600"
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 text-2xl text-white hover:bg-opacity-70 bg-black bg-opacity-50 p-3 hover:border-2 hover:border-gray-600 hidden md:block"
           onClick={() => navigatePost("prev")}
         >
           ◀
         </button>
         <button
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-2xl text-white hover:bg-opacity-70 bg-black bg-opacity-50 p-3 hover:border-2 hover:border-gray-600"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-2xl text-white hover:bg-opacity-70 bg-black bg-opacity-50 p-3 hover:border-2 hover:border-gray-600 hidden md:block"
           onClick={() => navigatePost("next")}
         >
           ▶
         </button>
 
         <div
-          className={`${isDarkMode ? 'bg-gray-800 border text-white' : 'bg-white'} shadow-lg w-full max-w-5xl h-[90vh] flex flex-row relative`}
+          className={`${isDarkMode ? 'bg-gray-800 border text-white' : 'bg-white'} shadow-lg w-full max-w-5xl h-[90vh] flex flex-col md:flex-row relative overflow-hidden`}
           ref={dialogRef}
         >
-          {/* Left Side - Post Image */}
-          <div className={`w-7/12 h-full flex justify-center items-center bg-black`}>
-          {post.media && post.media.length > 0 && (
-  <div className={"w-full h-[31rem] relative overflow-hidden flex justify-center items-center "}>
-    <div 
-      ref={carouselRef}
-      className="w-full h-full flex transition-transform duration-300 ease-in-out" 
-      style={{ 
-        transform: `translateX(-${currentMedia * 100}%)`,
-        display: 'flex'
-      }}
-    >
-      {post.media.map((mediaItem, index) => (
-        <div 
-          key={index} 
-          className="w-full h-full flex-shrink-0 flex justify-center items-center"
-        >
-          {mediaItem.endsWith(".mp4") ? (
-            <video
-              controls
-              className="max-w-full max-h-full object-scale-down"
-            >
-              <source
-                src={`${API_CONFIG.BASE_URL}${mediaItem}`}
-                type="video/mp4"
-              />
-            </video>
-          ) : (
-            <img
-              src={`${API_CONFIG.BASE_URL}${mediaItem}`}
-              alt="Post content"
-              className="max-w-full max-h-full rounded-lg object-scale-down"
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                width: 'auto',
-                height: 'auto'
-              }}
-              loading="lazy"
-            />
-          )}
-        </div>
-      ))}
-    </div>
+          {/* Left Side - Post Image (becomes top section on mobile) */}
+          <div className={`w-full md:w-7/12 h-[40vh] md:h-full flex justify-center items-center bg-black`}>
+            {post.media && post.media.length > 0 && (
+              <div className="w-full h-full relative overflow-hidden flex justify-center items-center">
+                <div 
+                  ref={carouselRef}
+                  className="w-full h-full flex transition-transform duration-300 ease-in-out" 
+                  style={{ 
+                    transform: `translateX(-${currentMedia * 100}%)`,
+                    display: 'flex'
+                  }}
+                >
+                  {post.media.map((mediaItem, index) => (
+                    <div 
+                      key={index} 
+                      className="w-full h-full flex-shrink-0 flex justify-center items-center"
+                    >
+                      {mediaItem.endsWith(".mp4") ? (
+                        <video
+                          controls
+                          className="max-w-full max-h-full object-scale-down"
+                        >
+                          <source
+                            src={`${API_CONFIG.BASE_URL}${mediaItem}`}
+                            type="video/mp4"
+                          />
+                        </video>
+                      ) : (
+                        <img
+                          src={`${API_CONFIG.BASE_URL}${mediaItem}`}
+                          alt="Post content"
+                          className="max-w-full max-h-full rounded-lg object-scale-down"
+                          style={{
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            width: 'auto',
+                            height: 'auto'
+                          }}
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
 
-    {/* Navigation elements */}
-    {post.media.length > 1 && (
-      <>
-        {/* Left arrow */}
-        <button 
-          onClick={goToPrevMedia}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full p-1"
-          aria-label="Previous media"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </button>
-        
-        {/* Right arrow */}
-        <button 
-          onClick={goToNextMedia}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full p-1"
-          aria-label="Next media"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
+                {/* Navigation elements */}
+                {post.media.length > 1 && (
+                  <>
+                    {/* Left arrow */}
+                    <button 
+                      onClick={goToPrevMedia}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full p-1"
+                      aria-label="Previous media"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                      </svg>
+                    </button>
+                    
+                    {/* Right arrow */}
+                    <button 
+                      onClick={goToNextMedia}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full p-1"
+                      aria-label="Next media"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
 
-        {/* Dots indicator */}
-        <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2">
-          {post.media.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToMedia(index)}
-              className={`w-2 h-2 rounded-full focus:outline-none transition-all duration-200 ${
-                currentMedia === index 
-                  ? 'bg-white w-4' 
-                  : 'bg-white bg-opacity-50'
-              }`}
-              aria-label={`Go to media ${index + 1}`}
-            />
-          ))}
-        </div>
-      </>
-    )}
-  </div>
-)}
+                    {/* Dots indicator */}
+                    <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2">
+                      {post.media.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => goToMedia(index)}
+                          className={`w-2 h-2 rounded-full focus:outline-none transition-all duration-200 ${
+                            currentMedia === index 
+                              ? 'bg-white w-4' 
+                              : 'bg-white bg-opacity-50'
+                          }`}
+                          aria-label={`Go to media ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Right Side - Post Details & Comments */}
-          <div className={`w-5/12 flex flex-col h-full ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          {/* Right Side - Post Details & Comments (becomes bottom section on mobile) */}
+          <div className={`w-full md:w-5/12 flex flex-col h-[50vh] md:h-full overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
             {/* User Info Header */}
             <div className={`flex items-center p-4 border-b gap-1 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
               <Link to="#" className="flex items-center w-full">
@@ -399,27 +403,27 @@ const CommentDialog = ({ open, setOpen, post }) => {
                   <img
                     src={`${API_CONFIG.BASE_URL}` + post?.postedBy?.profileImage}
                     alt="avatar"
-                    className="w-12 h-12 object-cover mr-4 rounded-full"
+                    className="w-10 h-10 md:w-12 md:h-12 object-cover mr-2 md:mr-4 rounded-full"
                   />
                 </div>
 
                 {/* User Info */}
                 <div className="flex flex-col ml-2 w-full">
-                  <div className="flex items-center gap-3 whitespace-nowrap overflow-hidden">
+                  <div className="flex items-center gap-1 md:gap-3 whitespace-nowrap overflow-hidden">
                     {/* Username (Prevents Wrapping) */}
-                    <h4 className={`font-semibold text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate`}>
+                    <h4 className={`font-semibold text-sm md:text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate`}>
                       {post?.postedBy?.username}
                     </h4>
 
                     {/* Time and Status (Prevents Wrapping) */}
-                    <div className="flex items-center gap-1 text-gray-500 text-sm flex-nowrap">
-                      <FontAwesomeIcon icon={faCircleDot} className="text-xs" />
+                    <div className="flex items-center gap-1 text-gray-500 text-xs flex-nowrap">
+                      <FontAwesomeIcon icon={faCircleDot} className="text-xs hidden md:inline" />
                       <p className="text-xs">{getRelativeTime(post?.createdAt)}</p>
                     </div>
                   </div>
 
                   {/* Job Profile */}
-                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+                  <span className={`text-xs md:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                     {post?.postedBy?.jobProfile}
                   </span>
                 </div>
@@ -432,11 +436,11 @@ const CommentDialog = ({ open, setOpen, post }) => {
               </Link>
             </div>
 
-            {/* Comments Section */}
-            <div className={`flex-1 overflow-y-auto p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            {/* Comments Section - Scrollable area */}
+            <div className={`flex-1 overflow-y-auto p-2 md:p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
               {/* Original Post Caption */}
               <div className="flex mb-4">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <span className={`text-xs md:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {post?.caption}
                 </span>
               </div>
@@ -445,7 +449,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
                   <div className="flex flex-col items-center mb-4">
                     <FontAwesomeIcon
                       icon={faHeart}
-                      className={`cursor-pointer text-2xl ${liked ? 'text-red-600' : isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
+                      className={`cursor-pointer text-xl md:text-2xl ${liked ? 'text-red-600' : isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
                       onClick={likeOrDislikeHandler} 
                     />
                     <div className={`font-semibold text-xs mb-1 ${isDarkMode ? 'text-gray-300' : ''}`}>
@@ -455,7 +459,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
                   <div className="flex flex-col items-center">
                     <FontAwesomeIcon
                       icon={faComment}
-                      className={`cursor-pointer text-2xl ${isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
+                      className={`cursor-pointer text-xl md:text-2xl ${isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
                     />
                     <div className={`font-semibold text-xs mb-1 ${isDarkMode ? 'text-gray-300' : ''}`}>
                       {post?.comments?.length} comments
@@ -464,53 +468,54 @@ const CommentDialog = ({ open, setOpen, post }) => {
                   <div className="flex flex-col items-center">
                     <FontAwesomeIcon
                       icon={faBookmark}
-                      className={`cursor-pointer text-2xl ${isBookmarked ? 'text-blue-500' : isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
+                      className={`cursor-pointer text-xl md:text-2xl ${isBookmarked ? 'text-blue-500' : isDarkMode ? 'text-gray-200 hover:text-gray-100' : 'text-black hover:text-gray-600'}`}
                       onClick={bookmarkHandler}
                     />
                   </div>
                 </div>
               </div>
+              
               {/* Comments */}
               {comments.map((comment) => (
-        <Comment 
-          key={comment._id} 
-          comment={comment} 
-          currentUserId={userInfo._id} 
-          postOwnerId={post?.postedBy?._id} 
-          postId={post._id}
-        />
-      ))}
+                <Comment 
+                  key={comment._id} 
+                  comment={comment} 
+                  currentUserId={userInfo._id} 
+                  postOwnerId={post?.postedBy?._id} 
+                  postId={post._id}
+                />
+              ))}
               <div ref={commentsEndRef} />
             </div>
 
             {/* Add Comment Input */}
-            <div className={`p-4 flex items-center border-t ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+            <div className={`p-2 md:p-4 flex items-center border-t ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
               <input
                 type="text"
                 value={text}
                 onChange={changeEventHandler}
                 placeholder="Add a comment..."
-                className={`flex-1 text-sm border-none outline-none ${isDarkMode ? 'bg-gray-800 text-white placeholder-gray-400' : 'bg-white'}`}
+                className={`flex-1 text-xs md:text-sm border-none outline-none ${isDarkMode ? 'bg-gray-800 text-white placeholder-gray-400' : 'bg-white'}`}
                 onKeyDown={(e) => e.key === "Enter" && sendMessageHandler()}
               />
               <button
                 type="button"
-                className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'} mx-2`}
+                className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'} mx-1 md:mx-2`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               >
-                <FaSmile size={20} className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-300 hover:text-gray-500'}`} />
+                <FaSmile size={18} className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-300 hover:text-gray-500'}`} />
               </button>
               
-              {/* Emoji Picker Dropdown */}
+              {/* Emoji Picker Dropdown - Position adjusts based on screen size */}
               <div ref={emojiPickerRef} className="relative">
                 {showEmojiPicker && (
-                  <div className={`absolute bottom-12 right-2 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md rounded-lg`}>
+                  <div className={`absolute bottom-12 right-0 md:right-2 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md rounded-lg`} style={{ maxWidth: '100vw', transform: 'scale(0.9)', transformOrigin: 'bottom right' }}>
                     <EmojiPicker onEmojiClick={addEmoji} theme={isDarkMode ? 'dark' : 'light'} />
                   </div>
                 )}
               </div>
               <button
-                className={`font-semibold ${
+                className={`font-semibold text-sm md:text-base ${
                   text.trim() 
                     ? 'text-green-500' 
                     : isDarkMode 

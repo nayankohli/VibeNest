@@ -5,8 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateProfile, resetUserUpdate } from "../../../actions/UserActions";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { toast } from "sonner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import API_CONFIG from '../../../config/api-config';
-function EditProfilePage() {
+
+function EditProfilePage({handleBackToMenu}) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { isDarkMode } = useContext(ThemeContext);
@@ -48,7 +51,7 @@ function EditProfilePage() {
 
     useEffect(() => {
         if (success) {
-            toast.success("Profile Updated Succesfully!", {
+            toast.success("Profile Updated Successfully!", {
                 style: {
                   background: isDarkMode 
                   ? "" 
@@ -114,49 +117,52 @@ function EditProfilePage() {
         dispatch(updateProfile(formData));
     };
 
-    // Enhanced theme-dependent classes
+    // Enhanced theme-dependent classes with improved responsiveness
     const containerClass = isDarkMode 
-        ? "container mx-auto p-8 bg-gray-800 text-white rounded-xl w-full" 
-        : "container mx-auto p-8 bg-white rounded-xl w-full";
+        ? "container mx-auto p-1 lg:p-4 bg-gray-800 text-white rounded-xl w-full max-w-6xl" 
+        : "container mx-auto p-1 lg:p-4 bg-white rounded-xl w-full max-w-6xl";
     
     const inputClass = isDarkMode
-        ? "w-full p-3 bg-gray-700 border border-gray-600 text-white rounded-lg outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
-        : "w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition duration-200";
+        ? "w-full p-2 sm:p-3 bg-gray-700 border border-gray-600 text-white rounded-lg outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+        : "w-full p-2 sm:p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition duration-200";
     
     const buttonClass = isDarkMode
-        ? "w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-1"
-        : "w-full bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-1";
+        ? "w-full bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-1"
+        : "w-full bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-1";
     
-    const imageButtonClass = isDarkMode
-        ? "bg-green-700 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-md flex items-center justify-center gap-2 transition-all shadow hover:shadow-md"
-        : "bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-md flex items-center justify-center gap-2 transition-all shadow hover:shadow-md";
-
     const sectionClass = isDarkMode
-        ? "mb-6 bg-gray-700 p-6 rounded-lg shadow-md"
-        : "mb-6 bg-gray-50 p-6 rounded-lg shadow-sm";
+        ? "mb-4 sm:mb-6 bg-gray-700 p-4 sm:p-6 rounded-lg shadow-md"
+        : "mb-4 sm:mb-6 bg-gray-50 p-4 sm:p-6 rounded-lg shadow-sm";
 
     const headingClass = isDarkMode
-        ? "text-2xl font-bold mb-6 text-green-400 border-b border-gray-700 pb-3"
-        : "text-2xl font-bold mb-6 text-green-600 border-b border-gray-200 pb-3";
+        ? " flex text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-green-400 border-b border-gray-700 pb-3"
+        : "text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-green-600 border-b border-gray-200 pb-3";
     
     const labelClass = isDarkMode
-        ? "font-semibold text-gray-200 mb-1 block"
-        : "font-semibold text-gray-700 mb-1 block";
+        ? "font-semibold text-gray-200 mb-1 block text-sm sm:text-base"
+        : "font-semibold text-gray-700 mb-1 block text-sm sm:text-base";
 
     return (
         <div className={containerClass}>
             {loading && <Loading />}
-            <h2 className={headingClass}><i className="fas fa-pen-to-square mr-3"></i>Edit Profile</h2>
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <h2 className={headingClass}><div
+                      className={`cursor-pointer block lg:hidden p-1 -ml-4 mr-4 rounded-full ${
+                        isDarkMode ? "hover:bg-gray-700 text-white" : "hover:bg-green-100"
+                      }`}
+                      onClick={() => handleBackToMenu()}
+                    >
+                      <FontAwesomeIcon icon={faArrowLeft}  />
+                    </div><i className="fas fa-pen-to-square mr-2 sm:mr-3"></i>Edit Profile</h2>
+            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
                 {loading && <div className="loading"></div>}
-                {error && <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+                {error && <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 sm:p-4 mb-4 sm:mb-6 rounded-md" role="alert">
                     <p>{error}</p>
                 </div>}
                 
                 {/* Media Section */}
                 <div className={sectionClass}>
-                    <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Profile Media</h3>
-                    <div className="flex flex-col md:flex-row md:space-x-6 space-y-4 md:space-y-0">
+                    <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Profile Media</h3>
+                    <div className="flex flex-col space-y-4 sm:space-y-6 md:flex-row md:space-x-6 md:space-y-0">
                         {/* Banner Photo */}
                         <div className="w-full md:w-1/2">
                             <label className={labelClass}>Banner Photo</label>
@@ -170,8 +176,8 @@ function EditProfilePage() {
                                 className="hidden" 
                             />
                             
-                            {/* Banner Preview - MODIFIED FOR BETTER HOVER EXPERIENCE */}
-                            <div className={`mt-2 relative rounded-lg overflow-hidden group ${bannerPreview ? 'h-40' : 'h-32 border-2 border-dashed flex items-center justify-center'} ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+                            {/* Banner Preview - MODIFIED FOR BETTER HOVER EXPERIENCE & RESPONSIVENESS */}
+                            <div className={`mt-2 relative rounded-lg overflow-hidden group ${bannerPreview ? 'h-28 sm:h-32 md:h-40' : 'h-24 sm:h-28 md:h-32 border-2 border-dashed flex items-center justify-center'} ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
                                 {bannerPreview ? (
                                     <>
                                         <img 
@@ -181,7 +187,7 @@ function EditProfilePage() {
                                         />
                                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center cursor-pointer">
                                             <label htmlFor="bannerPhoto" className="p-2 rounded-full bg-white bg-opacity-70 hover:bg-opacity-100 transition-all opacity-0 group-hover:opacity-100 cursor-pointer">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
@@ -190,16 +196,16 @@ function EditProfilePage() {
                                     </>
                                 ) : (
                                     <label htmlFor="bannerPhoto" className="cursor-pointer flex flex-col items-center justify-center w-full h-full">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-10 w-10 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-2`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 sm:h-10 sm:w-10 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-1 sm:mb-2`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Click to upload banner image</span>
+                                        <span className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Click to upload banner image</span>
                                     </label>
                                 )}
                             </div>
                         </div>
                         
-                        {/* Profile Photo - MODIFIED FOR BETTER HOVER EXPERIENCE */}
+                        {/* Profile Photo - MODIFIED FOR BETTER HOVER EXPERIENCE & RESPONSIVENESS */}
                         <div className="w-full md:w-1/2">
                             <label className={labelClass}>Profile Photo</label>
                             
@@ -214,7 +220,7 @@ function EditProfilePage() {
                             
                             {/* Profile Preview */}
                             <div className="mt-2 flex justify-center">
-                                <div className={`relative w-32 h-32 rounded-full overflow-hidden group ${profilePreview ? '' : 'border-2 border-dashed flex items-center justify-center'} ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+                                <div className={`relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden group ${profilePreview ? '' : 'border-2 border-dashed flex items-center justify-center'} ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
                                     {profilePreview ? (
                                         <>
                                             <img 
@@ -223,8 +229,8 @@ function EditProfilePage() {
                                                 className="w-full h-full object-cover" 
                                             />
                                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center cursor-pointer">
-                                                <label htmlFor="profilePhoto" className="p-2 rounded-full  bg-white bg-opacity-70 hover:bg-opacity-100 transition-all opacity-0 group-hover:opacity-100 cursor-pointer">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6  text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <label htmlFor="profilePhoto" className="p-2 rounded-full bg-white bg-opacity-70 hover:bg-opacity-100 transition-all opacity-0 group-hover:opacity-100 cursor-pointer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-6 sm:w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                                                     </svg>
@@ -233,7 +239,7 @@ function EditProfilePage() {
                                         </>
                                     ) : (
                                         <label htmlFor="profilePhoto" className="cursor-pointer flex flex-col items-center justify-center w-full h-full">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-1`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 sm:h-8 sm:w-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-1`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                             </svg>
                                             <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Upload photo</span>
@@ -247,9 +253,9 @@ function EditProfilePage() {
                 
                 {/* Personal Info Section */}
                 <div className={sectionClass}>
-                    <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Personal Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
+                    <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Personal Information</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                        <div>
                             <label htmlFor="username" className={labelClass}>Username</label>
                             <input 
                                 type="text" 
@@ -286,9 +292,9 @@ function EditProfilePage() {
                 
                 {/* Location & Work Section */}
                 <div className={sectionClass}>
-                    <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Additional Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
+                    <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>Additional Information</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                        <div>
                             <label htmlFor="gender" className={labelClass}>Gender</label>
                             <select 
                                 id="gender" 
@@ -328,14 +334,14 @@ function EditProfilePage() {
                 
                 {/* Bio Section */}
                 <div className={sectionClass}>
-                    <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>About You</h3>
+                    <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${isDarkMode ? "text-green-300" : "text-green-600"}`}>About You</h3>
                     <div>
                         <label htmlFor="bio" className={labelClass}>Bio</label>
                         <textarea 
                             id="bio" 
                             value={bio} 
                             onChange={(e) => setBio(e.target.value)} 
-                            rows="4" 
+                            rows="3"
                             className={inputClass}
                             placeholder="Tell us about yourself..."
                         ></textarea>
@@ -343,7 +349,7 @@ function EditProfilePage() {
                 </div>
                 
                 {/* Submit Button */}
-                <div className="pt-4">
+                <div className="pt-2 sm:pt-4">
                     <button type="submit" className={buttonClass}>
                         Save Changes
                     </button>

@@ -147,7 +147,7 @@ function ProfilePage() {
                     <img
                       src={
                         profile?.profileImage
-                          ? `${API_CONFIG.BASE_URL} `+ profile?.profileImage
+                          ? API_CONFIG.BASE_URL+ profile?.profileImage
                           : defaultProfileImage
                       }
                       alt="Profile"

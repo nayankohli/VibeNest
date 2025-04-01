@@ -8,10 +8,11 @@ import Navbar from "../NavBarMainScreen/Navbar";
 import CommentDialog from "../Profile/displayPosts/CommentDialog/CommentDialog";
 import { setSelectedPost } from "../../reducers/PostReducers";
 import API_CONFIG from "../../config/api-config";
+
 const SavedPostMedia = ({ post, isDarkMode, onRemoveFromSaved, open, setOpen }) => {
   const dispatch = useDispatch();
-  const { selectedPost } = useSelector((store) => store.post);
-const { userInfo } = useSelector((state) => state.userLogin);
+  const { userInfo } = useSelector((state) => state.userLogin);
+  
   const imageMedia = post.media 
     ? post.media.filter(media => !media.endsWith(".mp4"))
     : [];
@@ -19,16 +20,20 @@ const { userInfo } = useSelector((state) => state.userLogin);
   const videoMedia = post.media 
     ? post.media.filter(media => media.endsWith(".mp4"))
     : [];
+    
   const hasImageMedia = imageMedia.length > 0;
   const hasVideoMedia = videoMedia.length > 0;
+  
   const handlePostClick = () => {
     dispatch(setSelectedPost(post));
     setOpen(true);
   };
-const isLiked=post.likes.includes(userInfo._id)?true:false;
+  
+  const isLiked = post.likes.includes(userInfo._id) ? true : false;
+  
   return (
     <div 
-      className="relative rounded-lg overflow-hidden transition-transform duration-200 hover:scale-105 hover:shadow-lg cursor-pointer"
+      className="relative rounded-lg overflow-hidden transition-transform duration-200 hover:scale-105 hover:shadow-lg cursor-pointer aspect-square"
       onClick={handlePostClick}
     >
       {hasImageMedia ? (
@@ -36,7 +41,8 @@ const isLiked=post.likes.includes(userInfo._id)?true:false;
           <img
             src={`${API_CONFIG.BASE_URL}${imageMedia[0]}`}
             alt="Saved post media"
-            className="w-full h-64 object-cover"
+            className="w-full h-full object-cover"
+            loading="lazy"
           />
           {imageMedia.length > 1 && (
             <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-md">
@@ -48,7 +54,7 @@ const isLiked=post.likes.includes(userInfo._id)?true:false;
         <>
           <video
             src={`${API_CONFIG.BASE_URL}${videoMedia[0]}`}
-            className="w-full h-64 object-cover"
+            className="w-full h-full object-cover"
             preload="metadata"
           />
           {videoMedia.length > 1 && (
@@ -63,24 +69,26 @@ const isLiked=post.likes.includes(userInfo._id)?true:false;
           </div>
         </>
       ) : (
-        <div className={`w-full h-64 flex flex-col items-center justify-center ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-500'}`}>
+        <div className={`w-full h-full flex flex-col items-center justify-center ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-500'}`}>
           <FaCamera className="text-4xl mb-2 opacity-50" />
           <p>No media</p>
         </div>
       )}
-      <div className="absolute z-10 bottom-2 left-2 flex items-center p-2 space-x-3 text-sm">
-        <span className="flex items-center space-x-1">
-          <FaHeart className={`${isLiked?("text-red-500"):("text-gray-300")} text-xl`} />
-          <span className="text-white text-xl">
-            {post.likes?.length || 0}
+      <div className="absolute z-10 bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
+        <div className="flex items-center space-x-3 text-sm">
+          <span className="flex items-center space-x-1">
+            <FaHeart className={`${isLiked ? "text-red-500" : "text-gray-300"} text-lg sm:text-xl`} />
+            <span className="text-white text-sm sm:text-lg">
+              {post.likes?.length || 0}
+            </span>
           </span>
-        </span>
-        <span className="flex items-center space-x-1">
-          <FaComment className={"text-gray-300 text-xl"} />
-          <span className={'text-white text-xl'}>
-            {post.comments?.length || 0}
+          <span className="flex items-center space-x-1">
+            <FaComment className="text-gray-300 text-lg sm:text-xl" />
+            <span className="text-white text-sm sm:text-lg">
+              {post.comments?.length || 0}
+            </span>
           </span>
-        </span>
+        </div>
       </div>
     </div>
   );
@@ -175,46 +183,54 @@ const SavedPosts = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-green-100 text-gray-900"} flex flex-col gap-3 justify-center items-center`}>
+    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-green-100 text-gray-900"}`}>
       <div className="fixed top-0 left-0 right-0 z-50">
         <Navbar />
       </div>
-      <div className={`container lg:p-20 p-5 pt-10 rounded-lg ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"} lg:w-[80rem] w-full mt-20 mb-10`}>
-        <h1 className={`text-3xl font-bold mb-6 ${isDarkMode ? "text-white" : "text-green-600"}`}>
-          Your Saved Posts 
-          <span className={`font-bold p-1 px-2 text-xl rounded-lg ml-2 ${isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-600'}`}>
-            {savedPosts?.length || 0}
-          </span>
-        </h1>
-        
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader />
+      
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10">
+        <div className={`rounded-lg ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"} shadow-md overflow-hidden`}>
+          <div className="p-4 sm:p-6 lg:p-8">
+            <div className="flex items-center mb-6">
+              <h1 className={`text-xl sm:text-2xl lg:text-3xl font-bold ${isDarkMode ? "text-white" : "text-green-600"}`}>
+                Your Saved Posts
+              </h1>
+              <span className={`font-bold p-1 px-2 text-sm sm:text-lg rounded-lg ml-2 ${isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-600'}`}>
+                {savedPosts?.length || 0}
+              </span>
+            </div>
+            
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader />
+              </div>
+            ) : error ? (
+              <div className={`p-4 rounded-lg ${isDarkMode ? "bg-red-900 text-red-200" : "bg-red-100 text-red-800"} mb-4`}>
+                {error}
+              </div>
+            ) : savedPosts.length === 0 ? (
+              <div className={`p-4 sm:p-6 rounded-lg text-center ${isDarkMode ? "bg-gray-700" : "bg-gray-50"}`}>
+                <p className="text-lg mb-4">You haven't saved any posts yet.</p>
+                <p>When you save posts, they'll appear here for easy access later.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                {savedPosts.map((post) => (
+                  <SavedPostMedia 
+                    key={post._id} 
+                    post={post} 
+                    onRemoveFromSaved={() => removeFromSaved(post._id)}
+                    isDarkMode={isDarkMode}
+                    open={open}
+                    setOpen={setOpen}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        ) : error ? (
-          <div className={`p-4 rounded-lg ${isDarkMode ? "bg-red-900 text-red-200" : "bg-red-100 text-red-800"} mb-4`}>
-            {error}
-          </div>
-        ) : savedPosts.length === 0 ? (
-          <div className={`lg:p-6 p-3 rounded-lg text-center ${isDarkMode ? "bg-gray-800" : "bg-white"} shadow-md`}>
-            <p className="text-lg mb-4">You haven't saved any posts yet.</p>
-            <p>When you save posts, they'll appear here for easy access later.</p>
-          </div>
-        ) : (
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1  gap-6">
-            {savedPosts.map((post) => (
-              <SavedPostMedia 
-                key={post._id} 
-                post={post} 
-                onRemoveFromSaved={() => removeFromSaved(post._id)}
-                isDarkMode={isDarkMode}
-                open={open}
-                setOpen={setOpen}
-              />
-            ))}
-          </div>
-        )}
+        </div>
       </div>
+      
       {selectedPost && (
         <CommentDialog open={open} setOpen={setOpen} post={selectedPost} />
       )}

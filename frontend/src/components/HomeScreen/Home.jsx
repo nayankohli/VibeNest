@@ -55,32 +55,6 @@ const Home = () => {
           <Sidebar />
         </div>
         
-        {/* Left Sidebar Hamburger Button - Visible only on mobile/tablet */}
-        <button 
-          onClick={handleToggleLeftSidebar}
-          className="lg:hidden fixed top-20 left-4 z-40 w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110"
-          style={{
-            backgroundColor: isDarkMode ? '#1F2937' : '#ffffff',
-            color: isDarkMode ? '#ffffff' : '#000000'
-          }}
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-        
         {/* Center Content - Full width on mobile, constrained on larger screens */}
         <div className="w-full lg:w-[45rem] flex flex-col gap-4 mx-auto px-2 md:px-4">
           <div className={`${isDarkMode ? "bg-gray-800 text-white" : "bg-white"} p-2 rounded-lg shadow-md w-full`}>
@@ -147,26 +121,6 @@ const Home = () => {
       {isMsgSideDrawerOpen && (
         <div className="fixed inset-0 z-[70]">
           <MessageSideDrawer onClose={handleCloseMessageDrawer} />
-        </div>
-      )}
-
-      {/* Left Sidebar Drawer - Mobile Only */}
-      {isLeftSidebarOpen && (
-        <div className="lg:hidden fixed inset-0 z-[60]">
-          {/* Overlay */}
-          <div 
-            className="absolute inset-0 bg-black bg-opacity-50"
-            onClick={() => setIsLeftSidebarOpen(false)}
-          ></div>
-          
-          {/* Drawer Content */}
-          <div 
-            className={`absolute top-0 left-0 h-full w-80 shadow-xl transition-transform duration-300 transform ${isLeftSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
-          >
-            <div className="p-4 h-full overflow-y-auto pt-20">
-              <Sidebar />
-            </div>
-          </div>
         </div>
       )}
     </div>

@@ -79,17 +79,18 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
   }, [success, onUploadSuccess, dispatch]);
  
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
       <div 
-        className={`w-full max-w-md p-4 rounded-lg ${
-          isDarkMode ? "bg-gray-800" : "bg-white"
+        className={`w-full max-w-md p-3 sm:p-4 rounded-lg ${
+          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
         }`}
+        style={{ maxHeight: "90vh", overflowY: "auto" }}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Create Story</h2>
+        <div className="flex justify-between items-center mb-3 sm:mb-4">
+          <h2 className="text-lg sm:text-xl font-bold">Create Story</h2>
           <button 
             onClick={onClose}
-            className="text-xl"
+            className="text-lg sm:text-xl p-1"
             aria-label="Close upload modal"
           >
             <FaTimes />
@@ -97,13 +98,13 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
         </div>
         
         {error && (
-          <div className="mb-4 p-2 bg-red-100 text-red-600 rounded">
+          <div className="mb-3 sm:mb-4 p-2 bg-red-100 text-red-600 rounded text-sm">
             {error}
           </div>
         )}
         
         {uploadError && (
-          <div className="mb-4 p-2 bg-red-100 text-red-600 rounded">
+          <div className="mb-3 sm:mb-4 p-2 bg-red-100 text-red-600 rounded text-sm">
             {uploadError}
           </div>
         )}
@@ -111,12 +112,12 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
         <form onSubmit={handleSubmit}>
           {/* File preview area */}
           <div 
-            className={`mb-4 p-4 border-2 border-dashed rounded-lg flex flex-col items-center justify-center ${
+            className={`mb-3 sm:mb-4 p-3 sm:p-4 border-2 border-dashed rounded-lg flex flex-col items-center justify-center ${
               isDarkMode 
                 ? "border-gray-400 bg-gray-700" 
                 : "border-gray-500 bg-gray-50"
             }`}
-            style={{ minHeight: "200px" }}
+            style={{ minHeight: "180px" }}
           >
             {mediaPreview ? (
               <div className="relative w-full">
@@ -124,13 +125,13 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
                   <img 
                     src={mediaPreview} 
                     alt="Preview" 
-                    className="max-h-60 mx-auto rounded"
+                    className="max-h-48 sm:max-h-60 mx-auto rounded object-contain"
                   />
                 ) : (
                   <video 
                     src={mediaPreview} 
                     controls 
-                    className="max-h-60 w-full mx-auto rounded"
+                    className="max-h-48 sm:max-h-60 w-full mx-auto rounded"
                   />
                 )}
                 <button
@@ -147,16 +148,16 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
               </div>
             ) : (
               <>
-                <FaImage className="text-5xl mb-2 text-gray-400" />
-                <p className={isDarkMode ? "text-gray-300" : "text-gray-500"}>
+                <FaImage className="text-4xl sm:text-5xl mb-2 text-gray-400" />
+                <p className={`text-center text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-500"}`}>
                   Select an image or video to share as your story
                 </p>
                 <button
                   type="button"
                   onClick={handleChooseFile}
-                  className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg flex items-center"
+                  className="mt-3 sm:mt-4 px-3 py-1 sm:px-4 sm:py-2 bg-green-500 text-white rounded-lg flex items-center text-sm sm:text-base"
                 >
-                  <FaCloudUploadAlt className="mr-2" />
+                  <FaCloudUploadAlt className="mr-1 sm:mr-2" />
                   Choose File
                 </button>
               </>
@@ -173,11 +174,11 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
           </div>
           
           {/* Submit button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className={`mr-2 px-4 py-2 rounded-lg ${
+              className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${
                 isDarkMode 
                   ? "bg-gray-700 text-white" 
                   : "bg-gray-200 text-gray-800"
@@ -188,12 +189,12 @@ const UploadStory = ({ onClose, isDarkMode, onUploadSuccess }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded-lg flex items-center"
+              className="px-3 py-1 sm:px-4 sm:py-2 bg-green-500 text-white rounded-lg flex items-center text-sm sm:text-base"
               disabled={!file || loading}
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-1 sm:mr-2"></div>
                   Uploading...
                 </>
               ) : (
