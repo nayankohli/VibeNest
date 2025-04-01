@@ -5,7 +5,7 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const {User}=require("./models/user.js");
-const path = require('path'); 
+const path = require('path');
 dotenv.config();
 const bcrypt=require("bcryptjs");
 const app = express();
@@ -13,48 +13,48 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow frontend domain
-    credentials: true, // Allow cookies and authentication headers
-    methods: "GET,POST,PUT,DELETE", // Allow these HTTP methods
-    allowedHeaders: "Content-Type,Authorization", // Allow these headers
+    origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : "http://localhost:3000",
+    credentials: true,
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization"
   })
 );
 
 
-app.use(express.static('../frontend/build')); 
+app.use(express.static('../frontend/build'));
 
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
-  //   const updatePassword = async () => {
-  //     try {
-  //         const userId = "673373b5bbf5ef736eba6cc0";  // User ID
-  //         const newPassword = "nayan_14"; // New password to hash
-  
-  //         // Hash the password
-  //         const saltRounds = 10;
-  //         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-  
-  //         // Find the user and update the password
-  //         const updatedUser = await User.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
-  
-  //         if (updatedUser) {
-  //             console.log("Password updated successfully for user:", userId);
-  //         } else {
-  //             console.log("User not found!");
-  //         }
-  //     } catch (error) {
-  //         console.error("Error updating password:", error);
-  //     } finally {
-  //         mongoose.connection.close(); // Close the database connection
-  //     }
-  // };
-  
-  // // Call the function after 5 seconds
-  // console.log("Password update will start in 5 seconds...");
-  // setTimeout(updatePassword, 5000);
+//   const updatePassword = async () => {
+//     try {
+//         const userId = "673373b5bbf5ef736eba6cc0";  // User ID
+//         const newPassword = "nayan_14"; // New password to hash
+//
+//         // Hash the password
+//         const saltRounds = 10;
+//         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+//
+//         // Find the user and update the password
+//         const updatedUser = await User.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
+//
+//         if (updatedUser) {
+//             console.log("Password updated successfully for user:", userId);
+//         } else {
+//             console.log("User not found!");
+//         }
+//     } catch (error) {
+//         console.error("Error updating password:", error);
+//     } finally {
+//         mongoose.connection.close(); // Close the database connection
+//     }
+// };
+//
+// // Call the function after 5 seconds
+// console.log("Password update will start in 5 seconds...");
+// setTimeout(updatePassword, 5000);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -69,6 +69,10 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is running..");
   });
 }
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "API is healthy", timestamp: new Date().toISOString() });
+});
 
 //***************************ROUTES*************************
 
@@ -92,20 +96,21 @@ const { notFound,errorHandler } = require('./middlewares/errorMiddleware.js');
 app.use(notFound);
 app.use(errorHandler);
 
-const server=app.listen(5000, () => console.log(  'Server running on port 5000'));
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
-    // credentials: true,
+    origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : "http://localhost:3000",
+    credentials: true
   },
 });
 
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
   const connectedUsers = new Map();
-  
+
   socket.on("setup", (userData) => {
     if (userData && userData._id) {
       connectedUsers.set(userData._id, socket.id);
@@ -136,7 +141,7 @@ io.on("connection", (socket) => {
 
   socket.on("follow request", (followRequestData) => {
     const { sender, recipient } = followRequestData;
-    
+
     console.log(`Follow request from ${sender.name || sender._id} to ${recipient.name || recipient._id}`);
     const notification = {
       id: Date.now(),
@@ -160,7 +165,7 @@ io.on("connection", (socket) => {
     }
     socket.broadcast.to(recipient._id).emit("follow request received", notification);
   });
-  
+
   socket.on("disconnect", () => {
     for (const [userId, socketId] of connectedUsers.entries()) {
       if (socketId === socket.id) {
