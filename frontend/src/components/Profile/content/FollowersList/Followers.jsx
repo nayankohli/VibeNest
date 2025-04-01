@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFollowing } from "../../../../actions/UserActions";
 import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../../../context/ThemeContext";
-
+import API_CONFIG from "../../../../config/api-config";
 const Followers = ({ profile }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ const Followers = ({ profile }) => {
           >
             <div className="rounded-full">
               <img
-                src={user?.profileImage ? `http://localhost:5000${user.profileImage}` : "/default-avatar.png"}
+                src={user?.profileImage ? `${API_CONFIG.BASE_URL}${user.profileImage}` : "/default-avatar.png"}
                 alt={user?.name || "User"}
                 className="w-12 h-12 object-cover rounded-full"
               />

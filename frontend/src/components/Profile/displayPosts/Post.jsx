@@ -7,6 +7,7 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import StoryPreview from "../../HomeScreen/Stories/StoryView";
+import API_CONFIG from "../../../config/api-config";
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -74,7 +75,7 @@ const Post = ({ post }) => {
     try {
       const action = prevLiked ? "dislike" : "like";
       const res = await axios.get(
-        `http://localhost:5000/api/posts/${post?._id}/${action}`,
+        `${API_CONFIG.BASE_URL}/api/posts/${post?._id}/${action}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -150,7 +151,7 @@ const Post = ({ post }) => {
     }
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/posts/comment/${post?._id}`,
+        `${API_CONFIG.BASE_URL}/api/posts/comment/${post?._id}`,
         { text },
         {
           headers: {
@@ -203,7 +204,7 @@ const Post = ({ post }) => {
   const deletePostHandler = async () => {
     try {
       const res = await axios.delete(
-        `http://localhost:5000/api/posts/delete/${post?._id}`,
+        `${API_CONFIG.BASE_URL}/api/posts/delete/${post?._id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -253,7 +254,7 @@ const Post = ({ post }) => {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/posts/${post?._id}/bookmark`,
+        `${API_CONFIG.BASE_URL}/api/posts/${post?._id}/bookmark`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -315,7 +316,7 @@ const Post = ({ post }) => {
   const fetchUserStories = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/stories/user/${post?.postedBy?._id}`,
+        `${API_CONFIG.BASE_URL}/api/stories/user/${post?.postedBy?._id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -384,7 +385,7 @@ const Post = ({ post }) => {
           >
             <img
               src={
-                post?.postedBy?.profileImage ? "http://localhost:5000" + post?.postedBy?.profileImage : defaultProfileImage
+                post?.postedBy?.profileImage ? `${API_CONFIG.BASE_URL}` + post?.postedBy?.profileImage : defaultProfileImage
               }
               alt={`${post?.postedBy?.username}'s avatar`}
               className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full mr-2 sm:mr-3"
@@ -500,13 +501,13 @@ const Post = ({ post }) => {
                       className="max-w-full max-h-full object-scale-down"
                     >
                       <source
-                        src={`http://localhost:5000${mediaItem}`}
+                        src={`${API_CONFIG.BASE_URL}${mediaItem}`}
                         type="video/mp4"
                       />
                     </video>
                   ) : (
                     <img
-                      src={`http://localhost:5000${mediaItem}`}
+                      src={`${API_CONFIG.BASE_URL}${mediaItem}`}
                       alt="Post content"
                       className="max-w-full max-h-full object-scale-down"
                       style={{
@@ -688,7 +689,7 @@ const Post = ({ post }) => {
       >
         <div className="flex-shrink-0">
           <img
-            src={"http://localhost:5000" + userInfo.profileImage}
+            src={`${API_CONFIG.BASE_URL}` + userInfo.profileImage}
             alt="Your avatar"
             className="rounded-full object-cover w-6 h-6 sm:w-8 sm:h-8"
           />

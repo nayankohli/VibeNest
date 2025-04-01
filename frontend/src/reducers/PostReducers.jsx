@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import API_CONFIG from "../config/api-config";
 export const fetchAllPosts = createAsyncThunk(
   "post/fetchAllPosts",
   async (id, { getState, rejectWithValue }) => {
@@ -16,7 +16,7 @@ export const fetchAllPosts = createAsyncThunk(
         },
       };
 
-      const { data } = await axios.get(`http://localhost:5000/api/posts/all/${id}`, config);
+      const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/posts/all/${id}`, config);
       return data; // Return data for fulfilled case
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);

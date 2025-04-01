@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { FaUsers, FaCircle, FaEllipsisH, FaUserFriends, FaRegSmile, FaPaperPlane } from "react-icons/fa";
-
+import API_CONFIG from "../../config/api-config";
 function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
       };
 
       const { data } = await axios.get(
-        "http://localhost:5000/api/chat",
+        `${API_CONFIG.BASE_URL}/api/chat`,
         config
       );
       setChats(data);
@@ -165,14 +165,14 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
                     } shadow-md transform transition-transform ${selectedChat === chat ? "scale-110" : "hover:scale-105"}`}>
                       {!chat.isGroupChat ? (
                         <img
-                          src={chatSender.profileImage ? `http://localhost:5000${chatSender.profileImage}` : defaultProfileImage}
+                          src={chatSender.profileImage ? `${API_CONFIG.BASE_URL}${chatSender.profileImage}` : defaultProfileImage}
                           alt={chatSender.name}
                           className="w-full h-full object-cover"
                         />
                       ) : (
                         chat.profileImage ? (
                           <img
-                            src={`http://localhost:5000${chat.profileImage}`}
+                            src={`${API_CONFIG.BASE_URL}${chat.profileImage}`}
                             alt="Group Profile"
                             className="w-full h-full object-cover"
                           />

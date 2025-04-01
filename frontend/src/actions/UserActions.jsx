@@ -39,7 +39,7 @@ import {
   USER_PASSWORD_UPDATE_RESET
   } from "../constants/UserConstants";
   import axios from "axios";
-  
+  import API_CONFIG from "../config/api-config";
   export const login = (email, password) => async (dispatch) => {
     try {
       dispatch({ type: USER_LOGIN_REQUEST });
@@ -51,7 +51,7 @@ import {
       };
   
       const { data } = await axios.post(
-        "http://localhost:5000/api/users/login",
+        `${API_CONFIG.BASE_URL}/api/users/login`,
         { email, password },
         config
       );
@@ -84,7 +84,7 @@ export const logout = () => (dispatch) => {
       };
   
       const { data } = await axios.post(
-        "http://localhost:5000/api/users/register",
+        `${API_CONFIG.BASE_URL}/api/users/register`,
         { username, email, password },
         config
       );
@@ -117,7 +117,7 @@ export const logout = () => (dispatch) => {
       };
   
       const { data } = await axios.put(
-        "http://localhost:5000/api/users/edit-profile",
+        `${API_CONFIG.BASE_URL}/api/users/edit-profile`,
         formData,
         config
       );
@@ -156,7 +156,7 @@ export const logout = () => (dispatch) => {
       };
   
       const { data } = await axios.get(
-        `http://localhost:5000/api/users/search?query=${query}`,
+        `${API_CONFIG.BASE_URL}/api/users/search?query=${query}`,
         config
       );
   
@@ -187,7 +187,7 @@ export const logout = () => (dispatch) => {
         },
       };
   
-      const { data } = await axios.get(`http://localhost:5000/api/users/profile/${id}`,
+      const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/profile/${id}`,
         config
       ); // Replace with your actual API route
   
@@ -222,7 +222,7 @@ export const logout = () => (dispatch) => {
       };
   
       const { data } = await axios.post(
-        `http://localhost:5000/api/users/followUnfollow/${userId}`,
+        `${API_CONFIG.BASE_URL}/api/users/followUnfollow/${userId}`,
         {},
         config
       );
@@ -253,7 +253,7 @@ export const logout = () => (dispatch) => {
             Authorization: `Bearer ${userInfo.token}`, // Include token if the route is protected
           },
         };
-      const { data } = await axios.get("http://localhost:5000/api/users/followers/"+id,
+      const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/followers/${id}`,
           config
       ); // Your API route
       dispatch({ type: FOLLOWER_FETCH_SUCCESS, payload: data });
@@ -277,7 +277,7 @@ export const logout = () => (dispatch) => {
                 Authorization: `Bearer ${userInfo.token}`, // Include token if the route is protected
               },
             };
-          const { data } = await axios.get("http://localhost:5000/api/users/following/"+id,
+          const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/following/${id}`,
               config
           ); // Your API route
           dispatch({ type: FOLLOWING_FETCH_SUCCESS, payload: data });
@@ -312,7 +312,7 @@ export const logout = () => (dispatch) => {
       
           // Make API request to update privacy
           const { data } = await axios.put(
-            "http://localhost:5000/api/users/privacy",
+            `${API_CONFIG.BASE_URL}/api/users/privacy`,
             { privacy: privacyStatus },
             config
           );
@@ -350,7 +350,7 @@ export const logout = () => (dispatch) => {
             }
           }
       
-          const { data } = await axios.put('http://localhost:5000/api/users/change-password', passwordData, config)
+          const { data } = await axios.put(`${API_CONFIG.BASE_URL}/api/users/change-password`, passwordData, config)
       
           dispatch({ 
             type: USER_PASSWORD_UPDATE_SUCCESS, 

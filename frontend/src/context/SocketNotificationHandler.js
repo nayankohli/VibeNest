@@ -2,7 +2,8 @@
 import React, { useEffect } from "react";
 import { ChatState } from "../context/ChatProvider";
 import io from "socket.io-client";
-const ENDPOINT = "http://localhost:5000";
+import API_CONFIG from "../config/api-config";
+const ENDPOINT = `${API_CONFIG.BASE_URL}`;
 var socket;
 const SocketNotificationHandler = ({ children }) => {
   const { 

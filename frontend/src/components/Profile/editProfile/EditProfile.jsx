@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateProfile, resetUserUpdate } from "../../../actions/UserActions";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { toast } from "sonner";
+import API_CONFIG from '../../../config/api-config';
 function EditProfilePage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -174,7 +175,7 @@ function EditProfilePage() {
                                 {bannerPreview ? (
                                     <>
                                         <img 
-                                            src={bannerPreview.startsWith("http") ? bannerPreview : `http://localhost:5000${bannerPreview}`}
+                                            src={bannerPreview.startsWith("http") ? bannerPreview : `${API_CONFIG.BASE_URL}${bannerPreview}`}
                                             alt="Banner preview" 
                                             className="w-full h-full object-cover" 
                                         />
@@ -217,7 +218,7 @@ function EditProfilePage() {
                                     {profilePreview ? (
                                         <>
                                             <img 
-                                                src={profilePreview.startsWith("http") ? profilePreview : `http://localhost:5000${profilePreview}`}
+                                                src={profilePreview.startsWith("http") ? profilePreview : `${API_CONFIG.BASE_URL}${profilePreview}`}
                                                 alt="Profile preview"
                                                 className="w-full h-full object-cover" 
                                             />

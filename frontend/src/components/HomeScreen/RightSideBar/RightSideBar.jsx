@@ -5,6 +5,7 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { followUnfollow } from "../../../actions/UserActions";
 import { toast } from "sonner";
+import API_CONFIG from "../../../config/api-config";
 // Custom function to format time ago (kept unchanged)
 const formatTimeAgo = (dateString) => {
   const now = new Date();
@@ -145,7 +146,7 @@ const RightSidebar = () => {
             <div key={user._id || index} className={`flex items-center justify-between rounded-lg p-2 ${isDarkMode ? "hover:bg-gray-600" : "hover:bg-gray-200"}`}>
               <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate(`/profile/${user._id}`)}>
                 <img
-                  src={user?.profileImage ? `http://localhost:5000${user.profileImage}` : defaultProfileImage}
+                  src={user?.profileImage ? `${API_CONFIG.BASE_URL}${user.profileImage}` : defaultProfileImage}
                   alt={user.name}
                   className={`w-12 h-12 rounded-full object-cover ${followingState[user._id] ? "border-2 border-blue-600 p-0.5" : ""}`}
                 />

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { setUsers } from "../../../reducers/ChatSlice";
-
+import API_CONFIG from "../../../config/api-config";
 export const fetchSearchUsers = (query) => async (dispatch, getState) => {
   try {
     const { userInfo } = getState().userLogin;
@@ -10,7 +10,7 @@ export const fetchSearchUsers = (query) => async (dispatch, getState) => {
       return;
     }
     console.log(query);
-    const res = await axios.get(`http://localhost:5000/api/message/search?query=${query}`, {
+    const res = await axios.get(`${API_CONFIG.BASE_URL}/api/message/search?query=${query}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,

@@ -2,6 +2,7 @@ import { setComments} from "../../../../reducers/PostReducers";
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import API_CONFIG from "../../../../config/api-config";
 
 const UseGetAllComments = () => {
     const dispatch = useDispatch();
@@ -11,7 +12,7 @@ const UseGetAllComments = () => {
         const fetchAllComments = async () => {
             try {
                 console.log("selected post id is"+selectedPost._id);
-                const res = await axios.get(`http://localhost:5000/api/posts/${selectedPost?._id}/comment/all`, {
+                const res = await axios.get(`${API_CONFIG.BASE_URL}/api/posts/${selectedPost?._id}/comment/all`, {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${userInfo.token}`,

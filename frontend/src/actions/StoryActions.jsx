@@ -14,7 +14,7 @@ import {
   STORY_DELETE_FAIL,
   STORY_UPLOAD_RESET, // Add this constant
 } from "../constants/StoryConstants";
-
+import API_CONFIG from "../config/api-config";
 // List all stories
 export const listStories = () => async (dispatch, getState) => {
   try {
@@ -30,7 +30,7 @@ export const listStories = () => async (dispatch, getState) => {
       },
     };
     
-    const baseURL = 'http://localhost:5000';
+    const baseURL = `${API_CONFIG.BASE_URL}`;
     const { data } = await axios.get(`${baseURL}/api/stories`, config);
     
     dispatch({
@@ -64,7 +64,7 @@ export const uploadStory = (formData) => async (dispatch, getState) => {
       },
     };
     
-    const baseURL = 'http://localhost:5000';
+    const baseURL = `${API_CONFIG.BASE_URL}`;
     const { data } = await axios.post(`${baseURL}/api/stories`, formData, config);
     
     dispatch({
@@ -102,7 +102,7 @@ export const markStorySeen = (storyId) => async (dispatch, getState) => {
       },
     };
     
-    const baseURL = 'http://localhost:5000';
+    const baseURL = `${API_CONFIG.BASE_URL}`;
     await axios.post(`${baseURL}/api/stories/${storyId}/seen`, {}, config);
     
     dispatch({
@@ -134,7 +134,7 @@ export const deleteStory = (storyId) => async (dispatch, getState) => {
       },
     };
     
-    const baseURL =  'http://localhost:5000';
+    const baseURL =  `${API_CONFIG.BASE_URL}`;
     await axios.delete(`${baseURL}/api/stories/${storyId}`, config);
     
     dispatch({

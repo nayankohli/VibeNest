@@ -6,7 +6,7 @@ import { setComments, setReplies } from "../../../../reducers/PostReducers"; // 
 import { ThemeContext } from "../../../../context/ThemeContext";
 import './Comment.css';
 import { toast } from "sonner";
-
+import API_CONFIG from "../../../../config/api-config";
 const getRelativeTime = (createdAt) => {
   const currentTime = new Date();
   const postTime = new Date(createdAt);
@@ -62,7 +62,7 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
     setIsLoadingReplies(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/posts/${comment._id}/replies/all`,
+        `${API_CONFIG.BASE_URL}/api/posts/${comment._id}/replies/all`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
       console.log("Deleting comment with ID:", comment._id);
       
       const res = await axios.delete(
-        `http://localhost:5000/api/posts/delete/${comment._id}/comment/${postId}`,
+        `${API_CONFIG.BASE_URL}/api/posts/delete/${comment._id}/comment/${postId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -139,8 +139,8 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
   const handleLikeComment = async () => {
     try {
       const endpoint = isLiked 
-        ? `http://localhost:5000/api//posts/unlike/${comment._id}/comment`
-        : `http://localhost:5000/api/posts/like/${comment._id}/comment`;
+        ? `${API_CONFIG.BASE_URL}/api//posts/unlike/${comment._id}/comment`
+        : `${API_CONFIG.BASE_URL}/api/posts/like/${comment._id}/comment`;
         
       const res = await axios.post(
         endpoint,
@@ -204,7 +204,7 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
     
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/posts/replies/create`,
+        `${API_CONFIG.BASE_URL}/api/posts/replies/create`,
         { 
           text: replyText,
           commentId: comment._id,
@@ -265,7 +265,7 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
           {/* Profile Image */}
           <div className="mr-3">
             <img
-              src={"http://localhost:5000" + comment?.commentedBy?.profileImage}
+              src={`${API_CONFIG.BASE_URL}` + comment?.commentedBy?.profileImage}
               alt="Profile"
               className="object-cover rounded-full w-10 h-10"
             />
@@ -430,7 +430,7 @@ const Reply = ({ reply, currentUserId, postOwnerId, commentId }) => {
   const handleDeleteReply = async () => {
     try {
       const res = await axios.delete(
-        `http://localhost:5000/api/posts/${reply._id}/delete/reply`,
+        `${API_CONFIG.BASE_URL}/api/posts/${reply._id}/delete/reply`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -480,8 +480,8 @@ const Reply = ({ reply, currentUserId, postOwnerId, commentId }) => {
   const handleLikeReply = async () => {
     try {
       const endpoint = isLiked 
-        ? `http://localhost:5000/api/posts/${reply._id}/unlike/reply`
-        : `http://localhost:5000/api/posts/${reply._id}/like/reply`;
+        ? `${API_CONFIG.BASE_URL}/api/posts/${reply._id}/unlike/reply`
+        : `${API_CONFIG.BASE_URL}/api/posts/${reply._id}/like/reply`;
         
       const res = await axios.post(
         endpoint,
@@ -556,7 +556,7 @@ const Reply = ({ reply, currentUserId, postOwnerId, commentId }) => {
           {/* Profile Image */}
           <div className="mr-3">
             <img
-              src={"http://localhost:5000" + reply?.repliedBy?.profileImage}
+              src={`${API_CONFIG.BASE_URL}` + reply?.repliedBy?.profileImage}
               alt="Profile"
               className="object-cover rounded-full w-8 h-8"
             />

@@ -16,7 +16,7 @@ import {
     POST_DELETE_SUCCESS,
   } from "../constants/PostConstants";
   import axios from "axios";
-  
+  import API_CONFIG from "../config/api-config";
   // Create Post
   export const createPost = (caption, mediaFiles) => async (dispatch, getState) => {
     try {
@@ -38,7 +38,7 @@ import {
       mediaFiles.forEach((file) => formData.append('media', file));
   
       const { data } = await axios.post(
-        "http://localhost:5000/api/posts/create",
+        `${API_CONFIG.BASE_URL}/api/posts/create`,
         formData,
         config
       );
@@ -69,7 +69,7 @@ import {
       };
   
       const { data } = await axios.post(
-        `http://localhost:5000/api/posts/like/${postId}`,
+        `${API_CONFIG.BASE_URL}/api/posts/like/${postId}`,
         {},
         config
       );
@@ -100,7 +100,7 @@ import {
       };
   
       const { data } = await axios.post(
-        `http://localhost:5000/api/posts/comment/${postId}`,
+        `${API_CONFIG.BASE_URL}/api/posts/comment/${postId}`,
         { comment },
         config
       );
@@ -131,7 +131,7 @@ export const fetchAllPosts = (id) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.get(`http://localhost:5000/api/posts/all/${id}`, config);
+    const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/posts/all/${id}`, config);
 
     dispatch({ type: POST_FETCH_ALL_SUCCESS, payload: data });
   } catch (error) {
@@ -158,7 +158,7 @@ export const fetchAllPosts = (id) => async (dispatch, getState) => {
         },
       };
   
-      await axios.delete(`http://localhost:5000/api/posts/delete/${postId}`, config);
+      await axios.delete(`${API_CONFIG.BASE_URL}/api/posts/delete/${postId}`, config);
   
       dispatch({ type: POST_DELETE_SUCCESS, payload: postId });
     } catch (error) {

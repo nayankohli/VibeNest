@@ -6,6 +6,7 @@ import CommentDialog from "../../displayPosts/CommentDialog/CommentDialog";
 import { setSelectedPost } from "../../../../reducers/PostReducers";
 import { ThemeContext } from "../../../../context/ThemeContext";
 import Loader from '../../../Loaders/Loader'
+import API_CONFIG from "../../../../config/api-config";
 const Media = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -74,7 +75,7 @@ const Media = () => {
               }}
             >
               <img
-                src={`http://localhost:5000${item.mediaItem}`}
+                src={`${API_CONFIG.BASE_URL}${item.mediaItem}`}
                 alt={`Post ${index + 1}`}
                 className="w-full h-40 object-cover rounded-lg"
               />

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useFollowingService } from './useFollowingService'; // Import the hook we created
 import Post from '../../Profile/displayPosts/Post';
 import Loader from '../../Loaders/Loader';
+import API_CONFIG from '../../../config/api-config';
 const HomeFeed = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,12 +54,12 @@ const HomeFeed = () => {
       };
 
       // Different endpoints or parameters based on feed type
-      let endpoint = 'http://localhost:5000/api/posts';
+      let endpoint = `${API_CONFIG.BASE_URL}/api/posts`;
       
       if (type === 'following') {
-        endpoint = 'http://localhost:5000/api/posts/following';
+        endpoint = `${API_CONFIG.BASE_URL}/api/posts/following`;
       } else if (type === 'explore') {
-        endpoint = 'http://localhost:5000/api/posts/explore';
+        endpoint = `${API_CONFIG.BASE_URL}/api/posts/explore`;
       } else if (type === 'mixed') {
         // For mixed feed, we'll use a special parameter
         config.params.mixed = true;

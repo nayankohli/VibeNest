@@ -2,7 +2,7 @@ import { setSuggestedUsers } from "../../../reducers/UserReducer";
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import API_CONFIG from "../../../config/api-config";
 const useGetSuggestedUsers = () => {  // ✅ Hook names must start with lowercase "use"
     const dispatch = useDispatch();
     const { userInfo } = useSelector((state) => state.userLogin);
@@ -11,7 +11,7 @@ const useGetSuggestedUsers = () => {  // ✅ Hook names must start with lowercas
         const fetchSuggestedUsers = async () => {
             try {
                 if (!userInfo?.token) return; // ✅ Prevent API call if no token
-                const res = await axios.get("http://localhost:5000/api/users/suggested", {
+                const res = await axios.get(`${API_CONFIG.BASE_URL}/api/users/suggested`, {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${userInfo.token}`,

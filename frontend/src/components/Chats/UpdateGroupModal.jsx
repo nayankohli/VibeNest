@@ -5,7 +5,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { useSelector } from "react-redux";
 import UserBadgeItem from "./userAvatar/UserBadgeItem";
 import { toast } from "sonner";
-
+import API_CONFIG from "../../config/api-config";
 const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { selectedChat, setSelectedChat, user } = ChatState();
@@ -82,7 +82,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:5000/api/chat/groupadd`,
+        `${API_CONFIG.BASE_URL}/api/chat/groupadd`,
         {
           chatId: selectedChat._id,
           userId: user1._id,
@@ -110,7 +110,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       };
 
       const res = await axios.get(
-        `http://localhost:5000/api/message/search?query=${query}`,
+        `${API_CONFIG.BASE_URL}/api/message/search?query=${query}`,
         config
       );
 
@@ -153,7 +153,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       }
 
       const { data } = await axios.put(
-        "http://localhost:5000/api/chat/update",
+        `${API_CONFIG.BASE_URL}/api/chat/update`,
         formData,
         config
       );
@@ -182,7 +182,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:5000/api/chat/groupremove`,
+        `${API_CONFIG.BASE_URL}/api/chat/groupremove`,
         {
           chatId: selectedChat._id,
           userId: user1._id,
@@ -205,7 +205,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     if (previewImage) {
       return previewImage;
     } else if (selectedChat?.profileImage) {
-      return `http://localhost:5000${selectedChat.profileImage}`;
+      return `${API_CONFIG.BASE_URL}${selectedChat.profileImage}`;
     } else {
       return defaultProfileImage;
     }

@@ -20,7 +20,7 @@ import {
 import { format } from "date-fns";
 import { ThemeContext } from "../../../context/ThemeContext";
 import PrivateProfileCheck from "./PrivateProfileCheck";
-
+import API_CONFIG from "../../../config/api-config";
 function ProfilePage() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -128,7 +128,7 @@ function ProfilePage() {
                 <img
                   src={
                     profile?.banner
-                      ? "http://localhost:5000" + profile?.banner
+                      ? `${API_CONFIG.BASE_URL}` + profile?.banner
                       : defaultBanner
                   }
                   alt="Banner"
@@ -147,7 +147,7 @@ function ProfilePage() {
                     <img
                       src={
                         profile?.profileImage
-                          ? "http://localhost:5000" + profile?.profileImage
+                          ? `${API_CONFIG.BASE_URL} `+ profile?.profileImage
                           : defaultProfileImage
                       }
                       alt="Profile"

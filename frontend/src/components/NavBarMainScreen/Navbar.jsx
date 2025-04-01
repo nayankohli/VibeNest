@@ -21,6 +21,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { ChatState } from "../../context/ChatProvider.js";
 import { getSender} from "../../actions/ChatActions.jsx";
 import Notifications from "./Notifications.jsx";
+import API_CONFIG from "../../config/api-config.js";
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotifiDropdownOpen, setIsNotifiDropdownOpen] = useState(false);
@@ -37,7 +38,7 @@ const Navbar = () => {
     "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
 
   useEffect(() => {
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io(`${API_CONFIG.BASE_URL}`);
     setSocket(newSocket);
 
     return () => {
@@ -91,8 +92,8 @@ const Navbar = () => {
             <img
               src={`${
                 isDarkMode
-                  ? "http://localhost:5000/uploads/black-white-logo.png"
-                  : "http://localhost:5000/uploads/logo-no-background.png"
+                  ? `${API_CONFIG.BASE_URL}/uploads/black-white-logo.png`
+                  : `${API_CONFIG.BASE_URL}/uploads/logo-no-background.png`
               }`}
               alt="logo"
               className="h-8 md:h-10"
@@ -171,7 +172,7 @@ const Navbar = () => {
               <img
                 src={
                   userInfo.profileImage?
-                  "http://localhost:5000" + userInfo?.profileImage :
+                  `${API_CONFIG.BASE_URL}` + userInfo?.profileImage :
                   defaultProfileImage
                 }
                 alt="Profile"
@@ -193,7 +194,7 @@ const Navbar = () => {
                     <img
                       src={
                         userInfo.profileImage?
-                        "http://localhost:5000" + userInfo?.profileImage :
+                        `${API_CONFIG.BASE_URL}` + userInfo?.profileImage :
                         defaultProfileImage
                       }
                       alt="Profile"

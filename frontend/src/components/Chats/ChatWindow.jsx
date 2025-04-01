@@ -8,8 +8,8 @@ import EmojiPicker from "emoji-picker-react";
 import io from "socket.io-client";
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
-
-const ENDPOINT = "http://localhost:5000";
+import API_CONFIG from "../../config/api-config";
+const ENDPOINT = `${API_CONFIG.BASE_URL}`;
 var socket, selectedChatCompare;
 
 function ChatWindow({ fetchAgain, setFetchAgain }) {
@@ -43,7 +43,7 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
       setLoading(true);
-      const { data } = await axios.get(`http://localhost:5000/api/message/${selectedChat?._id}`, config);
+      const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/message/${selectedChat?._id}`, config);
       setMessages(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);
@@ -114,7 +114,7 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
       try {
         const config = { headers: { "Content-type": "application/json", Authorization: `Bearer ${userInfo.token}` } };
         setNewMessage("");
-        const { data } = await axios.post("http://localhost:5000/api/message/send", { content: newMessage, chatId: selectedChat._id }, config);
+        const { data } = await axios.post(`${API_CONFIG.BASE_URL}/api/message/send`, { content: newMessage, chatId: selectedChat._id }, config);
         socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (error) {
@@ -176,7 +176,7 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
           <div className="flex items-center">
             <div className="mr-2">
               <img 
-                src={selectedUser?.profileImage ? `http://localhost:5000${selectedUser.profileImage}` : defaultProfileImage} 
+                src={selectedUser?.profileImage ? `${API_CONFIG.BASE_URL}${selectedUser.profileImage}` : defaultProfileImage} 
                 alt="Typing" 
                 className="w-8 h-8 rounded-full object-cover border-2 border-blue-500 shadow-md"
               />

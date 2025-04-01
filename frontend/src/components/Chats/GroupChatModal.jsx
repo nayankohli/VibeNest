@@ -8,7 +8,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTimes, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "sonner";
-
+import API_CONFIG from "../../config/api-config";
 const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
   const [groupChatName, setGroupChatName] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -54,7 +54,7 @@ const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
       };
   
       const res = await axios.get(
-        `http://localhost:5000/api/message/search?query=${query}`,
+        `${API_CONFIG.BASE_URL}/api/message/search?query=${query}`,
         config
       );
   
@@ -88,7 +88,7 @@ const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
         headers: { Authorization: `Bearer ${user.token}` },
       };
       const { data } = await axios.post(
-        `http://localhost:5000/api/chat/group`,
+        `${API_CONFIG.BASE_URL}/api/chat/group`,
         {
           name: groupChatName,
           users: JSON.stringify(selectedUsers.map((u) => u._id)),
@@ -240,7 +240,7 @@ const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
                       <div className={`rounded-full overflow-hidden border-2 
                         ${isDarkMode ? "border-emerald-700" : "border-emerald-500"}`}>
                         <img 
-                          src={user.profileImage ? "http://localhost:5000" + user.profileImage : defaultProfileImage} 
+                          src={user.profileImage ? `${API_CONFIG.BASE_URL}` + user.profileImage : defaultProfileImage} 
                           alt={user.username} 
                           className="w-10 h-10 object-cover"
                         />

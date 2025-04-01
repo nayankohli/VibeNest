@@ -4,7 +4,7 @@ import { ThemeContext } from '../../../context/ThemeContext';
 import { FaEye, FaTrash, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'sonner';
-
+import API_CONFIG from '../../../config/api-config';
 const formatTime = (timestamp) => {
   const date = new Date(timestamp);
   const now = new Date();
@@ -17,7 +17,7 @@ const formatTime = (timestamp) => {
 };
 
 const getMediaUrl = (path) => {
-  return path ? `http://localhost:5000${path}` : 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg';
+  return path ? `${API_CONFIG.BASE_URL}${path}` : 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg';
 };
 
 const StoryPreview = ({ 
@@ -82,7 +82,7 @@ const StoryPreview = ({
   const handleDeleteStory = async (storyId) => {
     try {
       const res = await axios.delete(
-        `http://localhost:5000/api/stories/delete/${storyId}`,
+        `${API_CONFIG.BASE_URL}/api/stories/delete/${storyId}`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -7,7 +7,7 @@ import Loader from "../Loaders/Loader";
 import Navbar from "../NavBarMainScreen/Navbar";
 import CommentDialog from "../Profile/displayPosts/CommentDialog/CommentDialog";
 import { setSelectedPost } from "../../reducers/PostReducers";
-
+import API_CONFIG from "../../config/api-config";
 const SavedPostMedia = ({ post, isDarkMode, onRemoveFromSaved, open, setOpen }) => {
   const dispatch = useDispatch();
   const { selectedPost } = useSelector((store) => store.post);
@@ -34,7 +34,7 @@ const isLiked=post.likes.includes(userInfo._id)?true:false;
       {hasImageMedia ? (
         <>
           <img
-            src={`http://localhost:5000${imageMedia[0]}`}
+            src={`${API_CONFIG.BASE_URL}${imageMedia[0]}`}
             alt="Saved post media"
             className="w-full h-64 object-cover"
           />
@@ -47,7 +47,7 @@ const isLiked=post.likes.includes(userInfo._id)?true:false;
       ) : hasVideoMedia ? (
         <>
           <video
-            src={`http://localhost:5000${videoMedia[0]}`}
+            src={`${API_CONFIG.BASE_URL}${videoMedia[0]}`}
             className="w-full h-64 object-cover"
             preload="metadata"
           />
@@ -104,7 +104,7 @@ const SavedPosts = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/users/saved-posts",
+          `${API_CONFIG.BASE_URL}/api/users/saved-posts`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -135,7 +135,7 @@ const SavedPosts = () => {
       setSavedPosts(savedPosts.filter(post => post._id !== postId));
       
       const res = await axios.get(
-        `http://localhost:5000/api/posts/${postId}/bookmark`,
+        `${API_CONFIG.BASE_URL}/api/posts/${postId}/bookmark`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -147,7 +147,7 @@ const SavedPosts = () => {
 
       if (!res.data.success) {
         const refreshRes = await axios.get(
-          "http://localhost:5000/api/users/saved-posts",
+          `${API_CONFIG.BASE_URL}/api/users/saved-posts`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -161,7 +161,7 @@ const SavedPosts = () => {
     } catch (error) {
       console.error("Error removing post from saved:", error);
       const refreshRes = await axios.get(
-        "http://localhost:5000/api/users/saved-posts",
+        `${API_CONFIG.BASE_URL}/api/users/saved-posts`,
         {
           headers: {
             "Content-Type": "application/json",

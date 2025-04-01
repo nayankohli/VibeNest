@@ -4,6 +4,7 @@ import { fetchAllPosts } from "../../../reducers/PostReducers";
 import { setActiveTab } from "../../../reducers/ProfileSlice";
 import { ThemeContext } from "../../../context/ThemeContext";
 import Loader from "../../Loaders/Loader";
+import API_CONFIG from "../../../config/api-config";
 const Media = () => {
   const dispatch = useDispatch();
   const { isDarkMode } = useContext(ThemeContext);
@@ -58,7 +59,7 @@ const Media = () => {
             return (
               <div key={`${post._id}-${index}`} className="relative overflow-hidden rounded-md aspect-square">
                 <img
-                  src={"http://localhost:5000"+imageMedia[0]}
+                  src={`${API_CONFIG.BASE_URL}`+imageMedia[0]}
                   alt={`Post ${index + 1}`}
                   className="w-full h-full object-cover"
                 />

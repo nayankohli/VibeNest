@@ -12,8 +12,8 @@ import ChatSidebar from "./ChatSidebar";
 import ChatWindow from "./ChatWindow";
 import EmptyChat from "./EmptyChat";
 import "./ChatPage.css";
-
-const ENDPOINT = "http://localhost:5000";
+import API_CONFIG from "../../config/api-config";
+const ENDPOINT = `${API_CONFIG.BASE_URL}`;
 var socket, selectedChatCompare;
 
 function ChatPage() {

@@ -24,7 +24,7 @@ import {
   SET_NEW_MESSAGE,
   ADD_MESSAGE 
 } from "../constants/ChatConstants";
-
+import API_CONFIG from "../config/api-config";
 // Set the currently selected chat
 export const setSelectedChat = (chat) => ({
   type: SET_SELECTED_CHAT,
@@ -141,7 +141,7 @@ export const searchUsers = (searchQuery, token) => async (dispatch,getState) => 
       },
     };
 
-    const { data } = await axios.get(`http://localhost:5000/api/users/search?query=${searchQuery}`, config);
+    const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/search?query=${searchQuery}`, config);
 
     dispatch({
       type: SEARCH_USER_SUCCESS,
@@ -166,7 +166,7 @@ export const accessChat = (userId, token) => async (dispatch) => {
       },
     };
 console.log("frontend user id:"+userId);
-    const { data } = await axios.post(`http://localhost:5000/api/chat/`, { userId }, config);
+    const { data } = await axios.post(`${API_CONFIG.BASE_URL}/api/chat/`, { userId }, config);
 
     console.log("data is:"+data);
 

@@ -10,6 +10,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import "./Message.css";
 import { getSender } from '../../actions/ChatActions';
+import API_CONFIG from '../../config/api-config';
 const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
     const { isDarkMode } = useContext(ThemeContext);
     const selectedUser = useSelector((state) => state.selectedUser?.selectedUser);
@@ -77,18 +78,18 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
     
     const getSenderImage = (msg) => {
         if (msg.senderId._id === userInfo._id) {
-            return userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage;
+            return userInfo?.profileImage ? `${API_CONFIG.BASE_URL}${userInfo.profileImage}` : defaultProfileImage;
         }
         
         if (isGroup) {
             if (selectedChat?.participants) {
                 const sender = selectedChat.participants.find(p => p._id === msg.senderId._id);
-                return sender?.profileImage ? `http://localhost:5000${sender.profileImage}` : defaultProfileImage;
+                return sender?.profileImage ? `${API_CONFIG.BASE_URL}${sender.profileImage}` : defaultProfileImage;
             }
             return defaultProfileImage;
         }
         
-        return selectedUser?.profileImage ? `http://localhost:5000${selectedUser.profileImage}` : defaultProfileImage;
+        return selectedUser?.profileImage ? `${API_CONFIG.BASE_URL}${selectedUser.profileImage}` : defaultProfileImage;
     };
     
     const handleMessageClick = (msg) => {
@@ -137,7 +138,7 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
         try {
             setIsDeleting(true);
             
-            const res = await axios.delete(`http://localhost:5000/api/message/${selectedMessage._id}`, {
+            const res = await axios.delete(`${API_CONFIG.BASE_URL}/api/message/${selectedMessage._id}`, {
                 headers: { "Content-type": "application/json", Authorization: `Bearer ${userInfo.token}` }
             });
             
@@ -171,7 +172,7 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
                 return;
             }
             
-            const res = await axios.delete(`http://localhost:5000/api/message/bulk`, {
+            const res = await axios.delete(`${API_CONFIG.BASE_URL}/api/message/bulk`, {
                 headers: { 
                     "Content-type": "application/json", 
                     Authorization: `Bearer ${userInfo.token}` 
@@ -211,7 +212,7 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
         if (!editingMessage || !editedText.trim()) return;
         
         try {
-            const res = await axios.put(`http://localhost:5000/api/message/${editingMessage}`, 
+            const res = await axios.put(`${API_CONFIG.BASE_URL}/api/message/${editingMessage}`, 
                 { content: editedText },
                 {
                     headers: {
@@ -253,8 +254,8 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
                     <img 
                         src={
                             isGroup
-                                ? "http://localhost:5000" + selectedChat?.profileImage || defaultProfileImage
-                                : selectedUser?.profileImage ? "http://localhost:5000" + selectedUser.profileImage : defaultProfileImage
+                                ? `${API_CONFIG.BASE_URL}` + selectedChat?.profileImage || defaultProfileImage
+                                : selectedUser?.profileImage ? `${API_CONFIG.BASE_URL}` + selectedUser.profileImage : defaultProfileImage
                         }
                         alt={isGroup ? selectedChat?.chatName : selectedUser?.name}
                         className="w-24 h-24 rounded-full object-cover border-4 border-green-500 shadow-lg transition-transform duration-300 transform group-hover:scale-105"
@@ -404,7 +405,7 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
                                     {isSentByCurrentUser && (
                                         <div className="ml-2 self-end">
                                             <img 
-                                                src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage} 
+                                                src={userInfo?.profileImage ? `${API_CONFIG.BASE_URL}${userInfo.profileImage}` : defaultProfileImage} 
                                                 alt="You" 
                                                 className="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-sm"
                                             />

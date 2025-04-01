@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { ThemeContext } from "../../../context/ThemeContext"; // Make sure this path is correct
 import defaultBanner from '../defaultBanner.jpg';
 import { setActiveTab } from "../../../reducers/ProfileSlice";
+import API_CONFIG from "../../../config/api-config";
 const Sidebar = () => {
     const navigate = useNavigate();
     const dispatch=useDispatch();
@@ -29,7 +30,7 @@ const Sidebar = () => {
         <img
           src={
             userInfo.banner?
-            "http://localhost:5000" + userInfo?.banner :
+            `${API_CONFIG.BASE_URL}` + userInfo?.banner :
             defaultBanner
           }
           alt="Banner"
@@ -41,7 +42,7 @@ const Sidebar = () => {
           <img
             src={
               userInfo.profileImage?
-              "http://localhost:5000" + userInfo?.profileImage :
+              `${API_CONFIG.BASE_URL}` + userInfo?.profileImage :
               defaultProfileImage
             }
             alt="Profile"

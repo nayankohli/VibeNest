@@ -4,6 +4,7 @@ import { setSelectedUser } from "../../actions/UserActions";
 import { getSender } from "../../actions/ChatActions";
 import axios from "axios";
 import { ChatState } from "../../context/ChatProvider";
+import API_CONFIG from "../../config/api-config";
 function Notifications( {isNotifiDropdownOpen, setIsNotifiDropdownOpen, isDarkMode} ) {
   const { setUser, notification, setNotification, setSelectedChat } =ChatState();
   const userLogin = useSelector((state) => state.userLogin);
@@ -62,7 +63,7 @@ function Notifications( {isNotifiDropdownOpen, setIsNotifiDropdownOpen, isDarkMo
                   {notifi.chat && !notifi.chat.isGroupChat ? (
                     <img
                       src={getSender(userInfo, notifi.chat.participants)?.profileImage 
-                        ? `http://localhost:5000${getSender(userInfo, notifi.chat.participants).profileImage}`
+                        ? `${API_CONFIG.BASE_URL}${getSender(userInfo, notifi.chat.participants).profileImage}`
                         : defaultProfileImage}
                       alt={getSender(userInfo, notifi.chat.participants)?.name || "User"}
                       className="w-10 h-10 rounded-full object-cover border border-blue-500 mr-3"
@@ -70,7 +71,7 @@ function Notifications( {isNotifiDropdownOpen, setIsNotifiDropdownOpen, isDarkMo
                   ) : notifi.chat && notifi.chat.isGroupChat ? (
                     <img
                       src={notifi.chat.profileImage 
-                        ? `http://localhost:5000${notifi.chat.profileImage}` 
+                        ? `${API_CONFIG.BASE_URL}${notifi.chat.profileImage}` 
                         : defaultProfileImage}
                       alt={notifi.chat.chatName || "Group"}
                       className="w-10 h-10 rounded-full object-cover border border-blue-500 mr-3"

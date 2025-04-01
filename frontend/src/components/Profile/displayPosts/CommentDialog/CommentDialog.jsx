@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import EmojiPicker from "emoji-picker-react";
 import { FaSmile } from "react-icons/fa";
 import { ThemeContext } from "../../../../context/ThemeContext";
+import API_CONFIG from "../../../../config/api-config";
 import {
   faHeart,
   faComment,
@@ -87,7 +88,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
 
     try {
         const action = liked ? 'dislike' : 'like';
-        const res = await axios.get(`http://localhost:5000/api/posts/${post._id}/${action}`, { 
+        const res = await axios.get(`${API_CONFIG.BASE_URL}/api/posts/${post._id}/${action}`, { 
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${userInfo.token}`,
@@ -117,7 +118,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
     if (!text.trim()) return;
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/posts/comment/${post?._id}`,
+        `${API_CONFIG.BASE_URL}/api/posts/comment/${post?._id}`,
         { text },
         {
           headers: {
@@ -201,7 +202,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
   
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/posts/${post?._id}/bookmark`,
+        `${API_CONFIG.BASE_URL}/api/posts/${post?._id}/bookmark`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -320,13 +321,13 @@ const CommentDialog = ({ open, setOpen, post }) => {
               className="max-w-full max-h-full object-scale-down"
             >
               <source
-                src={`http://localhost:5000${mediaItem}`}
+                src={`${API_CONFIG.BASE_URL}${mediaItem}`}
                 type="video/mp4"
               />
             </video>
           ) : (
             <img
-              src={`http://localhost:5000${mediaItem}`}
+              src={`${API_CONFIG.BASE_URL}${mediaItem}`}
               alt="Post content"
               className="max-w-full max-h-full rounded-lg object-scale-down"
               style={{
@@ -396,7 +397,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
                 {/* Avatar */}
                 <div className="rounded-full">
                   <img
-                    src={"http://localhost:5000" + post?.postedBy?.profileImage}
+                    src={`${API_CONFIG.BASE_URL}` + post?.postedBy?.profileImage}
                     alt="avatar"
                     className="w-12 h-12 object-cover mr-4 rounded-full"
                   />

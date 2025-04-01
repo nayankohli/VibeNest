@@ -4,7 +4,8 @@ import defaultBanner from "./defaultBanner.jpg";
 import { ChatState } from "../../../context/ChatProvider";
 import io from "socket.io-client";
 import axios from "axios";
-const ENDPOINT = "http://localhost:5000";
+import API_CONFIG from "../../../config/api-config";
+const ENDPOINT = `${API_CONFIG.BASE_URL}`;
 let socket;
 
 const PrivateProfileCheck = ({ profile, loggedInUser, onFollow }) => {
@@ -116,7 +117,7 @@ useEffect(() => {
         <img
           src={
             profile?.banner
-              ? "http://localhost:5000" + profile?.banner
+              ? `${API_CONFIG.BASE_URL}` + profile?.banner
               : defaultBanner
           }
           alt="Profile banner"
@@ -126,7 +127,7 @@ useEffect(() => {
           <img
             src={
               profile?.profileImage
-                ? "http://localhost:5000" + profile?.profileImage
+                ? `${API_CONFIG.BASE_URL}` + profile?.profileImage
                 : defaultProfileImage
             }
             alt="Profile"

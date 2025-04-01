@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { setPosts } from "../../reducers/PostReducers";
 import EmojiPicker from "emoji-picker-react";
 import { FaSmile } from "react-icons/fa";
-
+import API_CONFIG from "../../config/api-config";
 const CreatePost = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -118,7 +118,7 @@ const CreatePost = () => {
       formData.append("caption", postData.caption);
       postData.media.forEach((file) => formData.append("media", file));
   
-      const res = await axios.post("http://localhost:5000/api/posts/create", formData, config);
+      const res = await axios.post(`${API_CONFIG.BASE_URL}/api/posts/create`, formData, config);
       console.log("API response:", res.data);
       if (res.status === 201 && res.data) {
         console.log("Post created successfully, updating Redux");
@@ -187,7 +187,7 @@ const CreatePost = () => {
         <div className="flex flex-col gap-3 w-full p-4 sm:p-6">
           <div className="flex items-start gap-3">
             <img
-              src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage}
+              src={userInfo?.profileImage ? `${API_CONFIG.BASE_URL}${userInfo.profileImage}` : defaultProfileImage}
               alt="Profile"
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover cursor-pointer border-2 border-gray-200 hover:border-green-500 transition-all duration-300"
               onClick={() => navigate(`/profile/${userInfo._id}`)}
@@ -266,7 +266,7 @@ const CreatePost = () => {
 
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={userInfo?.profileImage ? `http://localhost:5000${userInfo.profileImage}` : defaultProfileImage}
+                src={userInfo?.profileImage ? `${API_CONFIG.BASE_URL}${userInfo.profileImage}` : defaultProfileImage}
                 alt="Profile"
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-gray-200"
               />

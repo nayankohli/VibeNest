@@ -4,6 +4,7 @@ import { listStories, markStorySeen, deleteStory } from '../../../actions/StoryA
 import UploadStory from "./UploadStory";
 import { FaTimes, FaChevronLeft, FaChevronRight, FaTrash, FaEye } from "react-icons/fa";
 import Loader from "../../Loaders/Loader";
+import API_CONFIG from "../../../config/api-config";
 const Stories = ({ isDarkMode }) => {
   const dispatch = useDispatch();
   const { storyGroups, loading, error } = useSelector((state) => state.storyList);
@@ -244,7 +245,7 @@ const Stories = ({ isDarkMode }) => {
     }
   };
   
-  const baseURL = 'http://localhost:5000';
+  const baseURL = `${API_CONFIG.BASE_URL}`;
   const getMediaUrl = (mediaPath) => {
     if (!mediaPath) return '';
     if (mediaPath.startsWith('http')) {

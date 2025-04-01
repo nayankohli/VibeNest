@@ -6,7 +6,7 @@ import CommentDialog from "../../displayPosts/CommentDialog/CommentDialog";
 import { setSelectedPost } from "../../../../reducers/PostReducers";
 import { ThemeContext } from "../../../../context/ThemeContext";
 import Loader from '../../../Loaders/Loader'
-
+import API_CONFIG from "../../../../config/api-config";
 const Videos = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -76,7 +76,7 @@ const Videos = () => {
             >
               <div className="relative">
                 <video
-                  src={`http://localhost:5000${item.videoUrl}`}
+                  src={`${API_CONFIG.BASE_URL}${item.videoUrl}`}
                   className="w-full h-48 object-cover rounded-lg"
                   preload="metadata"
                 />

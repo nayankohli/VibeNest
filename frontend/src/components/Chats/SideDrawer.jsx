@@ -6,7 +6,7 @@ import { fetchSearchUsers } from "./hooks/UseGetSearchUsers";
 import { setSelectedUser } from "../../actions/UserActions";
 import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
-
+import API_CONFIG from "../../config/api-config";
 const SideDrawer = ({ calledBy, isOpen, setIsOpen }) => {
   const { isDarkMode } = useContext(ThemeContext);
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,7 +33,7 @@ const SideDrawer = ({ calledBy, isOpen, setIsOpen }) => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      const { data } = await axios.post(`http://localhost:5000/api/chat/`, { userId }, config);
+      const { data } = await axios.post(`${API_CONFIG.BASE_URL}/api/chat/`, { userId }, config);
 
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
@@ -124,7 +124,7 @@ const SideDrawer = ({ calledBy, isOpen, setIsOpen }) => {
               >
                 <div className="rounded-full">
                   <img 
-                    src={"http://localhost:5000" + user.profileImage || defaultProfileImage} 
+                    src={`${API_CONFIG.BASE_URL}` + user.profileImage || defaultProfileImage} 
                     alt={user.username} 
                     className="w-10 h-10 object-cover rounded-full" 
                   />

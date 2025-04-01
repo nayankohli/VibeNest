@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-
+import API_CONFIG from '../../../config/api-config';
 export const useFollowingService = () => {
   const [following, setFollowing] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ export const useFollowingService = () => {
         },
       };
 
-      const { data } = await axios.get('http://localhost:5000/api/users/following/'+userInfo._id, config);
+      const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/following/`+userInfo._id, config);
       setFollowing(data);
     } catch (err) {
       setError(
@@ -50,7 +50,7 @@ export const useFollowingService = () => {
         },
       };
 
-      await axios.post(`http://localhost:5000/api/user/followUnfollow/${userId}`, config);
+      await axios.post(`${API_CONFIG.BASE_URL}/api/user/followUnfollow/${userId}`, config);
       
       // Refresh following list
       fetchFollowing();
@@ -76,7 +76,7 @@ export const useFollowingService = () => {
         },
       };
 
-      await axios.post(`http://localhost:5000/api/user/followUnfollow/${userId}`, config);
+      await axios.post(`${API_CONFIG.BASE_URL}/api/user/followUnfollow/${userId}`, config);
       fetchFollowing();
       
       return true;

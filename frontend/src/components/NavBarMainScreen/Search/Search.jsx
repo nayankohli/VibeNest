@@ -5,7 +5,7 @@ import { faTimes, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { searchUsers } from "../../../actions/UserActions";
 import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../../context/ThemeContext";
-
+import API_CONFIG from "../../../config/api-config";
 const Search = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,7 +105,7 @@ const Search = () => {
                   >
                     <div className="flex items-center rounded-full space-x-3">
                       <img
-                        src={user.profileImage?`http://localhost:5000${user.profileImage}`: defaultProfileImage}
+                        src={user.profileImage?`${API_CONFIG.BASE_URL}${user.profileImage}`: defaultProfileImage}
                         alt={user.username}
                         className="h-10 w-10 object-cover rounded-full"
                       />

@@ -7,7 +7,7 @@ import { faUserCheck, faMessage } from "@fortawesome/free-solid-svg-icons";
 import { setActiveTab } from "../../../reducers/ProfileSlice";
 import { ThemeContext } from "../../../context/ThemeContext";
 import Loader from "../../Loaders/Loader"; // Import the Loader component
-
+import API_CONFIG from "../../../config/api-config";
 const Followers = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -60,7 +60,7 @@ const Followers = () => {
                   >
                     <div className="rounded-full">
                       <img
-                        src={"http://localhost:5000" + follower.profileImage || "/default-avatar.png"}
+                        src={`${API_CONFIG.BASE_URL}` + follower.profileImage || "/default-avatar.png"}
                         alt={follower.username}
                         className="w-16 h-16 object-cover rounded-full border-2 border-blue-500"
                       />

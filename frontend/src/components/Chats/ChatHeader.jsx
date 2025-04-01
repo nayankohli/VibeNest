@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { FaPhone, FaVideo, FaEllipsisV, FaUserFriends } from "react-icons/fa";
 import { ThemeContext } from "../../context/ThemeContext";
-
+import API_CONFIG from "../../config/api-config";
 function ChatHeader({ selectedUser, selectedChat }) {
   const { isDarkMode } = useContext(ThemeContext);
   const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
@@ -13,7 +13,7 @@ function ChatHeader({ selectedUser, selectedChat }) {
         <div className="flex items-center">
   <div className="rounded-full border-2 border-green-500 p-0.5">
     <img
-      src={selectedChat?.profileImage ? "http://localhost:5000" + selectedChat.profileImage : defaultProfileImage}
+      src={selectedChat?.profileImage ? `${API_CONFIG.BASE_URL}` + selectedChat.profileImage : defaultProfileImage}
       alt="Group"
       className="w-12 h-12 object-cover rounded-full"
     />
@@ -69,7 +69,7 @@ function ChatHeader({ selectedUser, selectedChat }) {
           <div className="relative">
             <div className={`rounded-full border-2 ${selectedUser?.active ? 'border-green-500' : 'border-gray-400'} p-0.5`}>
               <img
-                src={selectedUser?.profileImage ? "http://localhost:5000" + selectedUser.profileImage : defaultProfileImage}
+                src={selectedUser?.profileImage ? `${API_CONFIG.BASE_URL}` + selectedUser.profileImage : defaultProfileImage}
                 alt="User"
                 className="w-12 h-12 object-cover rounded-full"
               />
