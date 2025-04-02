@@ -26,8 +26,8 @@ const useGetSuggestedUsers = () => {  // ✅ Hook names must start with lowercas
             }
         };
         fetchSuggestedUsers();
-    }, [dispatch, userInfo]); // ✅ Added dependencies
+    }, [dispatch, userInfo]); 
 
 };
 
-export default useGetSuggestedUsers;  // ✅ Lowercase "u" to follow React hook conventions
+export default useGetSuggestedUsers; 

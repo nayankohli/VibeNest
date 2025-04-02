@@ -188,7 +188,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 
 app.use(
-  cors(["http://localhost:5000","https://vibenest-lm4w.onrender.com"])
+  cors({
+    origin: ["http://localhost:3000", "https://vibenest-lm4w.onrender.com"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 
 // Improved MongoDB connection with retry logic
@@ -211,9 +216,7 @@ connectDB();
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Modify this condition for production mode to only serve API routes
 if (process.env.NODE_ENV === "production") {
-  // Don't try to serve frontend files since they're deployed separately
   app.get("/", (req, res) => {
     res.json({ message: "VibeNest API is running. Frontend is served from a separate deployment." });
   });
