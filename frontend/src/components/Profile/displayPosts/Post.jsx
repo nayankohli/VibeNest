@@ -478,7 +478,7 @@ const Post = ({ post }) => {
   
       {/* Post content */}
       <div className="px-3 sm:px-4 pb-3">
-        <p className="mb-3 text-center text-sm sm:text-base">{post?.caption}</p>
+        <p className="mb-3 text-center text-sm sm:text-base whitespace-pre-line">{post?.caption}</p>
   
         {post.media && post.media.length > 0 && (
           <div className="w-full h-64 sm:h-96 md:h-[28rem] lg:h-[31rem] relative overflow-hidden rounded-lg border flex justify-center items-center bg-black">

@@ -258,7 +258,7 @@ const server = app.listen(PORT, () => console.log(`Server running on port ${PORT
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ['https://vibenest-lm4w.onrender.com', 'http://localhost:3000'],
+    origin: ['https://vibe-nest-dyyi.vercel.app', 'http://localhost:3000'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   },

@@ -440,7 +440,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
             <div className={`flex-1 overflow-y-auto p-2 md:p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
               {/* Original Post Caption */}
               <div className="flex mb-4">
-                <span className={`text-xs md:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <span className={`text-xs md:text-sm whitespace-pre-line ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {post?.caption}
                 </span>
               </div>

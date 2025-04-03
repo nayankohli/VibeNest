@@ -324,7 +324,7 @@ function ProfilePage() {
               <p
                 className={`${
                   isDarkMode ? "text-gray-300" : "text-gray-800"
-                } mb-3 sm:mb-4 text-sm`}
+                } mb-3 sm:mb-4 text-sm whitespace-pre-line`}
               >
                 {profile?.bio || "No bio available."}
               </p>
