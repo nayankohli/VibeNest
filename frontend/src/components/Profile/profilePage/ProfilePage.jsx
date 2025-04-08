@@ -120,7 +120,7 @@ function ProfilePage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-11 gap-4 lg:max-w-7xl lg:mx-auto md:mx-auto  sm:w-full px-2 sm:my-12 my-4 ">
+        <div className="grid grid-cols-1 lg:grid-cols-11 gap-4 lg:max-w-7xl lg:mx-auto md:mx-auto  sm:w-full px-2 sm:my-12 lg:mt-20 mt-12 ">
           {/* Main Profile Section - Full width on mobile, 7/11 on large screens */}
           <div className="lg:col-span-7 rounded-lg pb-0 w-full">
             <div className="pb-0">

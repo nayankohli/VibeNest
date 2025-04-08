@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTimes, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "sonner";
 import API_CONFIG from "../../config/api-config";
+
 const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
   const [groupChatName, setGroupChatName] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -137,8 +138,8 @@ const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
 
   return (
     <>
-        <div 
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm transition-all duration-300"
+      <div 
+        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm transition-all duration-300 p-4 md:p-0"
         style={{ zIndex: 9999 }}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
@@ -146,138 +147,137 @@ const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
           }
         }}
       >
-        {/* For the inner modal dialog div, update the styling */}
+        {/* Modal dialog with responsive width */}
         <div
-          className={`rounded-xl shadow-2xl w-96 p-6 relative transition-all duration-300 transform scale-100 
+          className={`rounded-xl shadow-2xl w-full max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 relative transition-all duration-300 transform scale-100 
             ${isDarkMode 
               ? "bg-gray-800 text-white border border-gray-700" 
               : "bg-white text-gray-900 border border-gray-200"}`}
           style={{
             maxHeight: "90vh",
             overflow: "auto",
-            // Remove margin: 0 auto and let flexbox handle the centering
           }}
           onClick={(e) => e.stopPropagation()}
         >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className={`text-2xl font-bold ${isDarkMode ? "text-emerald-400" : "text-emerald-600"}`}>
-                Create Group Chat
-              </h2>
-
-              {/* Close Button */}
-              <button
-                className={`rounded-full p-2 transition-colors duration-200 
-                  ${isDarkMode 
-                    ? "bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-white" 
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300 hover:text-gray-800"}`}
-                onClick={() => setIsGroupOpen(false)}
-                aria-label="Close modal"
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-
-            <div className="flex flex-col space-y-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Group Chat Name"
-                  className={`border rounded-lg px-4 py-3 w-full transition-colors duration-200 focus:outline-none focus:ring-2 
-                    ${isDarkMode 
-                      ? "bg-gray-700 border-gray-600 text-white focus:ring-emerald-500 focus:border-emerald-500" 
-                      : "bg-gray-50 border-gray-300 text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"}`}
-                  onChange={(e) => setGroupChatName(e.target.value)}
-                />
-              </div>
-
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FontAwesomeIcon icon={faSearch} className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search users to add..."
-                  className={`border rounded-lg pl-10 pr-4 py-3 w-full transition-colors duration-200 focus:outline-none focus:ring-2
-                    ${isDarkMode 
-                      ? "bg-gray-700 border-gray-600 text-white focus:ring-emerald-500 focus:border-emerald-500" 
-                      : "bg-gray-50 border-gray-300 text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"}`}
-                  onChange={(e) => handleSearch(e.target.value)}
-                />
-              </div>
-
-              {/* Selected Users */}
-              {selectedUsers.length > 0 && (
-                <div className={`flex flex-wrap gap-2 p-2 rounded-lg border border-dashed
-                  ${isDarkMode ? "border-gray-600 bg-gray-700/50" : "border-gray-300 bg-gray-100/50"}`}>
-                  {selectedUsers.map((u) => (
-                    <UserBadgeItem
-                      key={u._id}
-                      user={u}
-                      handleFunction={() => handleDelete(u)}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Search Results */}
-              <div className={`max-h-48 overflow-y-auto rounded-lg 
-                ${isDarkMode ? "scrollbar-thin scrollbar-thumb-gray-600" : "scrollbar-thin scrollbar-thumb-gray-300"}`}>
-                {loading ? (
-                  <div className="flex justify-center items-center py-4">
-                    <div className={`animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 
-                      ${isDarkMode ? "border-emerald-400" : "border-emerald-600"}`}></div>
-                  </div>
-                ) : searchResult.length > 0 ? (
-                  searchResult.map((user) => (
-                    <div 
-                      key={user._id} 
-                      className={`p-3 mb-2 flex items-center gap-3 rounded-lg cursor-pointer transition-all duration-200
-                        ${isDarkMode 
-                          ? "hover:bg-emerald-700/30 border border-gray-700" 
-                          : "hover:bg-emerald-100 border border-gray-200"}`}
-                      onClick={() => handleGroup(user)}
-                    >
-                      <div className={`rounded-full overflow-hidden border-2 
-                        ${isDarkMode ? "border-emerald-700" : "border-emerald-500"}`}>
-                        <img 
-                          src={user.profileImage ? `${API_CONFIG.BASE_URL}` + user.profileImage : defaultProfileImage} 
-                          alt={user.username} 
-                          className="w-10 h-10 object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium">{user.username}</p>
-                        <p className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
-                          {user.email}
-                        </p>
-                      </div>
-                      <FontAwesomeIcon 
-                        icon={faUserPlus} 
-                        className={`text-sm ${isDarkMode ? "text-emerald-400" : "text-emerald-600"}`} 
-                      />
-                    </div>
-                  ))
-                ) : search ? (
-                  <div className={`p-4 text-center rounded-lg 
-                    ${isDarkMode ? "bg-gray-700 text-gray-400" : "bg-gray-100 text-gray-500"}`}>
-                    No users found matching "{search}"
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            <button
-              className={`mt-6 px-4 py-3 w-full font-semibold rounded-lg transition-all duration-300 flex justify-center items-center
-                ${isDarkMode
-                  ? "bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white"
-                  : "bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white"
-                } shadow-md hover:shadow-lg transform hover:-translate-y-1`}
-              onClick={handleSubmit}
-            >
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <h2 className={`text-xl sm:text-2xl font-bold ${isDarkMode ? "text-emerald-400" : "text-emerald-600"}`}>
               Create Group Chat
+            </h2>
+
+            {/* Close Button */}
+            <button
+              className={`rounded-full p-2 transition-colors duration-200 
+                ${isDarkMode 
+                  ? "bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-white" 
+                  : "bg-gray-200 text-gray-600 hover:bg-gray-300 hover:text-gray-800"}`}
+              onClick={() => setIsGroupOpen(false)}
+              aria-label="Close modal"
+            >
+              <FontAwesomeIcon icon={faTimes} />
             </button>
           </div>
+
+          <div className="flex flex-col space-y-3 sm:space-y-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Group Chat Name"
+                className={`border rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-full transition-colors duration-200 focus:outline-none focus:ring-2 
+                  ${isDarkMode 
+                    ? "bg-gray-700 border-gray-600 text-white focus:ring-emerald-500 focus:border-emerald-500" 
+                    : "bg-gray-50 border-gray-300 text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"}`}
+                onChange={(e) => setGroupChatName(e.target.value)}
+              />
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FontAwesomeIcon icon={faSearch} className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`} />
+              </div>
+              <input
+                type="text"
+                placeholder="Search users to add..."
+                className={`border rounded-lg pl-10 pr-3 sm:pr-4 py-2 sm:py-3 w-full transition-colors duration-200 focus:outline-none focus:ring-2
+                  ${isDarkMode 
+                    ? "bg-gray-700 border-gray-600 text-white focus:ring-emerald-500 focus:border-emerald-500" 
+                    : "bg-gray-50 border-gray-300 text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"}`}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+            </div>
+
+            {/* Selected Users */}
+            {selectedUsers.length > 0 && (
+              <div className={`flex flex-wrap gap-2 p-2 rounded-lg border border-dashed
+                ${isDarkMode ? "border-gray-600 bg-gray-700/50" : "border-gray-300 bg-gray-100/50"}`}>
+                {selectedUsers.map((u) => (
+                  <UserBadgeItem
+                    key={u._id}
+                    user={u}
+                    handleFunction={() => handleDelete(u)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Search Results */}
+            <div className={`max-h-32 sm:max-h-48 overflow-y-auto rounded-lg 
+              ${isDarkMode ? "scrollbar-thin scrollbar-thumb-gray-600" : "scrollbar-thin scrollbar-thumb-gray-300"}`}>
+              {loading ? (
+                <div className="flex justify-center items-center py-4">
+                  <div className={`animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-t-2 border-b-2 
+                    ${isDarkMode ? "border-emerald-400" : "border-emerald-600"}`}></div>
+                </div>
+              ) : searchResult.length > 0 ? (
+                searchResult.map((user) => (
+                  <div 
+                    key={user._id} 
+                    className={`p-2 sm:p-3 mb-2 flex items-center gap-2 sm:gap-3 rounded-lg cursor-pointer transition-all duration-200
+                      ${isDarkMode 
+                        ? "hover:bg-emerald-700/30 border border-gray-700" 
+                        : "hover:bg-emerald-100 border border-gray-200"}`}
+                    onClick={() => handleGroup(user)}
+                  >
+                    <div className={`rounded-full overflow-hidden border-2 
+                      ${isDarkMode ? "border-emerald-700" : "border-emerald-500"}`}>
+                      <img 
+                        src={user.profileImage ? `${API_CONFIG.BASE_URL}` + user.profileImage : defaultProfileImage} 
+                        alt={user.username} 
+                        className="w-8 h-8 sm:w-10 sm:h-10 object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm sm:text-base truncate">{user.username}</p>
+                      <p className={`text-xs truncate ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                        {user.email}
+                      </p>
+                    </div>
+                    <FontAwesomeIcon 
+                      icon={faUserPlus} 
+                      className={`text-sm ${isDarkMode ? "text-emerald-400" : "text-emerald-600"}`} 
+                    />
+                  </div>
+                ))
+              ) : search ? (
+                <div className={`p-3 sm:p-4 text-center rounded-lg text-sm sm:text-base
+                  ${isDarkMode ? "bg-gray-700 text-gray-400" : "bg-gray-100 text-gray-500"}`}>
+                  No users found matching "{search}"
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <button
+            className={`mt-4 sm:mt-6 px-3 sm:px-4 py-2 sm:py-3 w-full font-medium sm:font-semibold rounded-lg transition-all duration-300 flex justify-center items-center text-sm sm:text-base
+              ${isDarkMode
+                ? "bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white"
+                : "bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white"
+              } shadow-md hover:shadow-lg transform hover:-translate-y-1`}
+            onClick={handleSubmit}
+          >
+            Create Group Chat
+          </button>
         </div>
+      </div>
     </>
   );
 };

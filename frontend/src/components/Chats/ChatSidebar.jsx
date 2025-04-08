@@ -13,10 +13,11 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { FaUsers, FaCircle, FaEllipsisH, FaUserFriends, FaRegSmile, FaPaperPlane } from "react-icons/fa";
 import API_CONFIG from "../../config/api-config";
-function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
+
+function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setShowChatWindow }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isGroupOpen,setIsGroupOpen]=useState(false);
+  const [isGroupOpen, setIsGroupOpen] = useState(false);
   const { isDarkMode } = useContext(ThemeContext);
   const [loggedUser, setLoggedUser] = useState();
   const { userInfo } = useSelector((state) => state.userLogin);
@@ -55,7 +56,27 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
   const isUserOnline = (userId) => {
     return onlineUsers?.some(user => user.userId === userId);
   };
+  
+  // Handle chat selection
+  const handleChatSelect = (chat) => {
+    setSelectedChat(chat);
+    
+    if (calledBy === "home") {
+      navigate("/chats");
+    }
+    
+    if (!chat.isGroupChat) {
+      dispatch(setSelectedUser(getSender(loggedUser, chat.participants)));
+    }
+    
+    // If on mobile, show the chat window after selecting a chat
+    if (isMobile && setShowChatWindow) {
+      setShowChatWindow(true);
+    }
+  };
+  
   const isRightSide = calledBy == "home" ? true : false;
+  
   return (
     <div
       className={`w-full ${
@@ -73,41 +94,40 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
       </div>
 
       <div
-  className={`py-4 mb-6 flex items-center justify-between border-b ${
-    isDarkMode ? "border-gray-700" : "border-gray-200"
-  } sticky top-0 backdrop-blur-sm z-10 
-  } rounded-t-xl`}
->
-  <h2 className={`text-xl font-bold flex items-center gap-3`}>
-    <div className={`p-2 rounded-full ${
-      isDarkMode ? 'bg-gradient-to-br from-blue-800 to-indigo-900' : 'bg-gradient-to-br from-blue-500 to-indigo-600'
-    } shadow-md`}>
-      <FaUserFriends className="text-white w-5 h-5" />
-    </div>
-    My Chats
-    <span
-      className={`p-1 px-3 rounded-full ${
-      isDarkMode ? 'bg-emerald-900/80' : 'bg-emerald-500'
-    } shadow-lg text-md text-white animate-pulse`}
-    >
-      {chats.length}
-    </span>
-  </h2>
- 
-  <button
-        onClick={() => setIsGroupOpen(true)}
-        className={`inline-flex items-center px-3 py-3 rounded-full 
-          ${
-            isDarkMode 
-              ? 'bg-gradient-to-r from-green-600 to-emerald-700 hover:from-emerald-700 hover:to-green-800' 
-              : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700'
-          } text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1`}
+        className={`py-4 mb-6 flex items-center justify-between border-b ${
+          isDarkMode ? "border-gray-700" : "border-gray-200"
+        } sticky top-0 backdrop-blur-sm z-10 
+        } rounded-t-xl`}
       >
-        <FontAwesomeIcon icon={faPenToSquare} className="mr-2"/>
-        New Group
-      </button>
-
-</div>
+        <h2 className={`text-xl font-bold flex items-center gap-3`}>
+          <div className={`p-2 rounded-full ${
+            isDarkMode ? 'bg-gradient-to-br from-blue-800 to-indigo-900' : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+          } shadow-md`}>
+            <FaUserFriends className="text-white w-5 h-5" />
+          </div>
+          My Chats
+          <span
+            className={`p-1 px-3 rounded-full ${
+            isDarkMode ? 'bg-emerald-900/80' : 'bg-emerald-500'
+          } shadow-lg text-md text-white animate-pulse`}
+          >
+            {chats.length}
+          </span>
+        </h2>
+      
+        <button
+          onClick={() => setIsGroupOpen(true)}
+          className={`inline-flex items-center px-3 py-3 rounded-full 
+            ${
+              isDarkMode 
+                ? 'bg-gradient-to-r from-green-600 to-emerald-700 hover:from-emerald-700 hover:to-green-800' 
+                : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700'
+            } text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1`}
+        >
+          <FontAwesomeIcon icon={faPenToSquare} className="mr-2"/>
+          New Group
+        </button>
+      </div>
 
       {/* Search component with improved styling */}
       <div className="mb-6 relative z-10">
@@ -129,14 +149,7 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
               return (
                 <div
                   key={chat._id}
-                  onClick={() => {
-                    setSelectedChat(chat);
-                    if (calledBy === "home") {
-                      navigate("/chats");
-                    }
-                    if (!chat.isGroupChat)
-                      dispatch(setSelectedUser(getSender(loggedUser, chat.participants)));
-                  }}
+                  onClick={() => handleChatSelect(chat)}
                   className={`cursor-pointer flex items-center gap-3 p-4 py-3 rounded-xl transition-all duration-300 ${
                     selectedChat === chat
                       ? isDarkMode 
@@ -265,7 +278,7 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen }) {
           )}
         </div>
       )}
-      {isGroupOpen&&
+      {isGroupOpen &&
       <GroupChatModal isGroupOpen={isGroupOpen}
       setIsGroupOpen={setIsGroupOpen}/>
       }

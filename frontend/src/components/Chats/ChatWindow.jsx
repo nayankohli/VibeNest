@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { ThemeContext } from "../../context/ThemeContext";
 import { ChatState } from "../../context/ChatProvider";
-import { FaSmile, FaPaperclip, FaPaperPlane } from "react-icons/fa";
+import { FaSmile, FaPaperclip, FaPaperPlane, FaArrowLeft } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 import io from "socket.io-client";
 import ChatHeader from "./ChatHeader";
@@ -12,7 +12,7 @@ import API_CONFIG from "../../config/api-config";
 const ENDPOINT = `${API_CONFIG.BASE_URL}`;
 var socket, selectedChatCompare;
 
-function ChatWindow({ fetchAgain, setFetchAgain }) {
+function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }) {
   const dispatch = useDispatch();
   const { 
     selectedChat, 
@@ -159,11 +159,23 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
     }, timerLength);
   };
 
+  const handleEmojiClick = (emojiObject) => {
+    setNewMessage(prevMessage => prevMessage + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleAttachmentClick = () => {
+    // Implement file attachment functionality
+    console.log("Attachment clicked");
+  };
+
   return (
-    <div className={`w-[60rem] flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} overflow-hidden rounded-r-lg  border-l ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} h-full`}>
-      <ChatHeader selectedUser={selectedUser} selectedChat={selectedChat} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+    <div className={`w-full flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} overflow-hidden rounded-r-lg border-l ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} h-full`}>
+      {/* Mobile Back Button */}
       
-      <div className={`flex-1 px-4 overflow-y-auto scrollbar-hide ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} h-[calc(100vh-180px)]`}>
+      <ChatHeader selectedUser={selectedUser} selectedChat={selectedChat} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} isMobile={isMobile} handleBackToSidebar={handleBackToSidebar} />
+      
+      <div className={`flex-1 px-4 overflow-y-auto scrollbar-hide ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} h-[calc(100vh-230px)] md:h-[calc(100vh-200px)]`}>
         <div className="overflow-y-auto h-full py-4 scrollbar-hide">
           <MessageList loading={loading} messages={messages} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} setMessages={setMessages}/>
           <div ref={messageEndRef} />
@@ -193,59 +205,79 @@ function ChatWindow({ fetchAgain, setFetchAgain }) {
         </div>
       )}
       
-      <div className={`p-4 border-t ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} flex items-end gap-3 shadow-inner`}>
-        <input
-          type="text"
-          className={`flex-1 p-3 border rounded-full focus:ring-2 focus:outline-none transition-all duration-200 ${
-            isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500' 
-              : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-green-500 focus:border-green-500'
-          }`}
-          placeholder="Type a message"
-          value={newMessage}
-          onChange={typingHandler}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage(e)}
-        />
-        <div className="flex gap-2 items-center">
-          <button 
-            className={`p-3 rounded-full transition-all duration-200 ${
-              isDarkMode 
-                ? 'text-yellow-400 hover:bg-gray-700 active:bg-gray-600' 
-                : 'text-yellow-600 hover:bg-gray-100 active:bg-gray-200'
-            }`} 
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+      <div className={`p-4 border-t ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} flex flex-col md:flex-row items-end gap-3 shadow-inner`}>
+        {/* EmojiPicker */}
+        {showEmojiPicker && (
+          <div 
+            ref={emojiPickerRef} 
+            className="absolute bottom-20 left-4 z-50"
           >
-            <FaSmile className="text-xl" />
-          </button>
-          <div ref={emojiPickerRef} className="relative">
-            {showEmojiPicker && (
-              <div className={`absolute bottom-14 right-0 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-lg rounded-lg z-10 border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                <EmojiPicker onEmojiClick={(emojiObject) => setNewMessage(prev => prev + emojiObject.emoji)} theme={isDarkMode ? 'dark' : 'light'} />
-              </div>
-            )}
+            <EmojiPicker 
+              onEmojiClick={handleEmojiClick} 
+              disableAutoFocus={true} 
+              theme={isDarkMode ? "dark" : "light"}
+            />
           </div>
-          <button className={`p-3 rounded-full transition-all duration-200 ${
-            isDarkMode 
-              ? 'text-blue-400 hover:bg-gray-700 active:bg-gray-600' 
-              : 'text-blue-600 hover:bg-gray-100 active:bg-gray-200'
-          }`}>
-            <label htmlFor="image" className="cursor-pointer">
-              <FaPaperclip className="text-xl" />
-              <input type="file" id="image" accept="image/png, image/jpeg, image/jpg" className="hidden" />
-            </label>
-          </button>
+        )}
+
+        <div className="flex w-full items-end gap-2">
           <button 
-            className={`p-3 rounded-full transition-all duration-200 ${
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className={`p-3 rounded-full ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
+          >
+            <FaSmile className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
+          </button>
+          
+          <button 
+            onClick={handleAttachmentClick}
+            className={`p-3 rounded-full ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
+          >
+            <FaPaperclip className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
+          </button>
+          
+          <input
+            type="text"
+            className={`flex-1 p-3 border rounded-full focus:ring-2 focus:outline-none transition-all duration-200 ${
               isDarkMode 
-                ? 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800' 
-                : 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800'
-            }`} 
+                ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500' 
+                : 'bg-gray-100 border-gray-200 text-gray-800 focus:ring-blue-400'
+            }`}
+            placeholder="Type a message..."
+            value={newMessage}
+            onChange={typingHandler}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage(e)}
+          />
+          
+          <button 
             onClick={() => sendMessage("Enter")}
+            disabled={!newMessage.trim()}
+            className={`p-3 rounded-full transition-all duration-200 ${
+              newMessage.trim() 
+                ? isDarkMode 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+                : isDarkMode 
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
           >
             <FaPaperPlane className="text-xl" />
           </button>
         </div>
       </div>
+      
+      {/* Responsive adjustments for mobile */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }
