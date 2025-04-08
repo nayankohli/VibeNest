@@ -66,10 +66,8 @@ import {
       });
     }
   };
-  
-  // In your UserActions.jsx file
 export const logout = () => (dispatch) => {
-  localStorage.removeItem('userInfo'); // Make sure you're removing user info from localStorage
+  localStorage.removeItem('userInfo'); 
   dispatch({ type: USER_LOGOUT });
 };
   
@@ -111,7 +109,7 @@ export const logout = () => (dispatch) => {
   
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data", // Make sure to use multipart/form-data for file uploads
+          "Content-Type": "multipart/form-data", 
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
@@ -124,7 +122,7 @@ export const logout = () => (dispatch) => {
   
       dispatch({ type: USER_UPDATE_SUCCESS, payload: data });
       dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
-      localStorage.setItem("userInfo", JSON.stringify(data)); // Update the localStorage with new user data
+      localStorage.setItem("userInfo", JSON.stringify(data)); 
     } catch (error) {
       dispatch({
         type: USER_UPDATE_FAIL,
@@ -151,7 +149,7 @@ export const logout = () => (dispatch) => {
   
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`, // Include token if the route is protected
+          Authorization: `Bearer ${userInfo.token}`,
         },
       };
   
@@ -183,13 +181,13 @@ export const logout = () => (dispatch) => {
   
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`, // Include token if the route is protected
+          Authorization: `Bearer ${userInfo.token}`,
         },
       };
   
       const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/profile/${id}`,
         config
-      ); // Replace with your actual API route
+      ); 
   
       dispatch({ type: FETCH_PROFILE_SUCCESS, payload: data });
     } catch (error) {
@@ -250,12 +248,12 @@ export const logout = () => (dispatch) => {
   
       const config = {
           headers: {
-            Authorization: `Bearer ${userInfo.token}`, // Include token if the route is protected
+            Authorization: `Bearer ${userInfo.token}`, 
           },
         };
       const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/followers/${id}`,
           config
-      ); // Your API route
+      ); 
       dispatch({ type: FOLLOWER_FETCH_SUCCESS, payload: data });
         } catch (error) {
           dispatch({
@@ -274,12 +272,12 @@ export const logout = () => (dispatch) => {
       
           const config = {
               headers: {
-                Authorization: `Bearer ${userInfo.token}`, // Include token if the route is protected
+                Authorization: `Bearer ${userInfo.token}`,
               },
             };
           const { data } = await axios.get(`${API_CONFIG.BASE_URL}/api/users/following/${id}`,
               config
-          ); // Your API route
+          ); 
           dispatch({ type: FOLLOWING_FETCH_SUCCESS, payload: data });
             } catch (error) {
               dispatch({
@@ -296,21 +294,15 @@ export const logout = () => (dispatch) => {
       export const updatePrivacy = (privacyStatus) => async (dispatch, getState) => {
         try {
           dispatch({ type: USER_UPDATE_PRIVACY_REQUEST });
-      
-          // Get the user info from state to access the token
           const {
             userLogin: { userInfo },
           } = getState();
-      
-          // Configure headers with authorization token
           const config = {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${userInfo.token}`,
             },
           };
-      
-          // Make API request to update privacy
           const { data } = await axios.put(
             `${API_CONFIG.BASE_URL}/api/users/privacy`,
             { privacy: privacyStatus },
@@ -366,8 +358,6 @@ export const logout = () => (dispatch) => {
           })
         }
       }
-      
-      // Reset Password Update
       export const resetPasswordUpdate = () => (dispatch) => {
         dispatch({ type: USER_PASSWORD_UPDATE_RESET })
       }

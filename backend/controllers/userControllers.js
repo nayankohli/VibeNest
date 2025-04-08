@@ -4,7 +4,6 @@ const generateToken = require("../utils/generateToken.js");
 const multer = require("multer");
 const path = require("path");
 const bcrypt=require("bcryptjs")
-// Configure Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads"),
   filename: (req, file, cb) => {
@@ -17,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB size limit
+  limits: { fileSize: 2 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const fileTypes = /jpeg|jpg|png/;
     const extName = fileTypes.test(
@@ -35,7 +34,6 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
-    // Convert to plain object first, then add token
     const userToReturn = user.toObject();
     
     res.json({
@@ -114,7 +112,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
-    // Update text fields
     user.name = req.body.name || user.name;
     user.username = req.body.username || user.username;
     user.bio = req.body.bio || user.bio;
@@ -122,13 +119,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.gender = req.body.gender || user.gender;
     user.jobProfile = req.body.jobProfile || user.jobProfile;
     user.location = req.body.location || user.location;
-
-    // Update profileImage if uploaded
     if (req.files && req.files.profileImage) {
       user.profileImage = `/uploads/${req.files.profileImage[0].filename}`;
     }
-
-    // Update banner if uploaded
     if (req.files && req.files.banner) {
       user.banner = `/uploads/${req.files.banner[0].filename}`;
     }
@@ -156,8 +149,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
-
-// Search users by username
 const searchUsers = asyncHandler(async (req, res) => {
   try {
     const query = req.query.query;
@@ -201,8 +192,8 @@ const allUsers = asyncHandler(async (req, res) => {
 
 const followOrUnfollow = async (req, res) => {
   try {
-    const followKrneWala = req.user._id; // patel
-    const jiskoFollowKrunga = req.params.id; // shivani
+    const followKrneWala = req.user._id; 
+    const jiskoFollowKrunga = req.params.id; 
     if (followKrneWala === jiskoFollowKrunga) {
       return res.status(400).json({
         message: "You cannot follow/unfollow yourself",

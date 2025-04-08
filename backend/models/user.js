@@ -14,10 +14,10 @@ const UserSchema = new mongoose.Schema({
     banner: { type: String, required: false },
     bio: { type: String, required: false },
     gender: { type: String, enum: ['male', 'female'] },
-    dob: { type: Date, required: false }, // Added Date of Birth
-    location: { type: String, required: false }, // Added Location
-    jobProfile: { type: String, required: false }, // Added Job Profile
-    joinedOn: { type: Date, default: Date.now }, // Added Joined On (defaults to account creation date)
+    dob: { type: Date, required: false },
+    location: { type: String, required: false }, 
+    jobProfile: { type: String, required: false }, 
+    joinedOn: { type: Date, default: Date.now }, 
     followers: { type: [String], required: false },
     following: { type: [String], required: false },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: false }],

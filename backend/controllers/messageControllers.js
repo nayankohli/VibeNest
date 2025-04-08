@@ -3,7 +3,7 @@ const { getReceiverSocketId, io } =require("../socket/socket.js");
 const {Message}=require("../models/message.js");
 const asyncHandler = require('express-async-handler');
 const {User}=require("../models/user.js");
-// for chatting
+
 const sendMessage = asyncHandler(async (req, res) => {
   const { content, chatId } = req.body;
 
@@ -64,29 +64,25 @@ const getMessage = async (req, res) => {
 
 const searchUsers = asyncHandler(async (req, res) => {
     try {
-        // Get the search query from the request
         const query = req.query.query;
         console.log(query);
-        // Validate the query
         if (!query || query.trim() === "") {
             return res.status(400).json({ message: "Search query is required" });
         }
 
-        // Fetch the logged-in user's followers
         const user = await User.findById(req.user._id).populate("following");
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        // Search within followers
         const filteredFollowing = await User.find({
-            _id: { $in: user.following}, // Only users who are followers
-            username: { $regex: query, $options: "i" } // Case-insensitive search
+            _id: { $in: user.following},
+            username: { $regex: query, $options: "i" }
         }).select("username profileImage email name");
         console.log(filteredFollowing);
         res.status(200).json({ 
             success: true, 
-            users: filteredFollowing, // Include conversation date
+            users: filteredFollowing, 
         });
     } catch (error) {
         console.error("Error searching users:", error);
@@ -139,7 +135,7 @@ const deleteMessage = asyncHandler(async (req, res) => {
 
 const deleteBulkMessages = asyncHandler(async (req, res) => {
   try {
-    console.log("Request body:", req.body); // Log the entire request body
+    console.log("Request body:", req.body); 
     const { messageIds } = req.body;
     
     if (!messageIds) {
@@ -160,7 +156,6 @@ const deleteBulkMessages = asyncHandler(async (req, res) => {
       });
     }
     
-    // Log user info to verify authentication
     console.log("User ID from auth:", req.user._id);
     
     const messages = await Message.find({ 
@@ -202,13 +197,11 @@ const updateMessage = asyncHandler(async (req, res) => {
   const { content } = req.body;
   const messageId = req.params.id;
   
-  // Validate content
   if (!content || content.trim() === '') {
       res.status(400);
       throw new Error('Message content cannot be empty');
   }
   
-  // Find message
   const message = await Message.findById(messageId);
   
   if (!message) {
@@ -216,19 +209,16 @@ const updateMessage = asyncHandler(async (req, res) => {
       throw new Error('Message not found');
   }
   
-  // Verify ownership - only message sender can edit
   if (message.senderId.toString() !== req.user._id.toString()) {
       res.status(403);
       throw new Error('You can only edit your own messages');
   }
   
-  // Update message
   message.content = content;
   message.isEdited = true;
   
   const updatedMessage = await message.save();
   
-  // Return updated message
   res.status(200).json({
       success: true,
       message: 'Message updated successfully',
@@ -245,5 +235,4 @@ module.exports = {
     deleteBulkMessages,
     deleteMessage,
     updateMessage
-    // Exporting upload middleware for potential direct usage
   };

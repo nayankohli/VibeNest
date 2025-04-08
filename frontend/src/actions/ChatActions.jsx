@@ -25,26 +25,22 @@ import {
   ADD_MESSAGE 
 } from "../constants/ChatConstants";
 import API_CONFIG from "../config/api-config";
-// Set the currently selected chat
+
 export const setSelectedChat = (chat) => ({
   type: SET_SELECTED_CHAT,
   payload: chat,
 });
 
-// Clear the selected chat
 export const clearSelectedChat = () => ({
   type: CLEAR_SELECTED_CHAT,
 });
 
-// Optional: Set chats list
 export const setChats = (chats) => ({
   type: SET_CHATS,
   payload: chats,
 });
 
 export const isSameSenderMargin = (messages, m, i, userId) => {
-    // console.log(i === messages.length - 1);
-  
     if (
       i < messages.length - 1 &&
       messages[i + 1].sender._id === m.sender._id &&
@@ -171,14 +167,14 @@ console.log("frontend user id:"+userId);
     console.log("data is:"+data);
 
     dispatch({ type: ACCESS_CHAT_SUCCESS, payload: data });
-    return data; // Return chat data
+    return data;
   } catch (error) {
     dispatch({
       type: ACCESS_CHAT_FAIL,
       payload: error.response?.data?.message || error.message,
     });
     console.error("Error accessing chat:", error);
-    return null; // Explicitly return null for error cases
+    return null;
   }
 };
 

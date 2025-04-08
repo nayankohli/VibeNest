@@ -51,13 +51,9 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
   }, [fetchAgain]);
-
-  // Check if user is online
   const isUserOnline = (userId) => {
     return onlineUsers?.some(user => user.userId === userId);
   };
-  
-  // Handle chat selection
   const handleChatSelect = (chat) => {
     setSelectedChat(chat);
     
@@ -68,8 +64,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
     if (!chat.isGroupChat) {
       dispatch(setSelectedUser(getSender(loggedUser, chat.participants)));
     }
-    
-    // If on mobile, show the chat window after selecting a chat
     if (isMobile && setShowChatWindow) {
       setShowChatWindow(true);
     }
@@ -83,7 +77,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
         isDarkMode ? "bg-gray-800 text-white" : "bg-white "
       } p-4 overflow-auto rounded-l-lg ${isRightSide?"h-screen":"h-full"} flex flex-col relative`}
     >
-      {/* Background decoration elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute -right-16 -top-16 w-64 h-64 rounded-full ${
           isDarkMode ? 'bg-blue-900/20' : 'bg-blue-200/30'
@@ -128,13 +121,9 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
           New Group
         </button>
       </div>
-
-      {/* Search component with improved styling */}
       <div className="mb-6 relative z-10">
         <SideDrawer calledBy={calledBy} isOpen={isOpen} setIsOpen={setIsOpen} />
       </div>
-
-      {/* Chat list with enhanced styling */}
       {followingLoading ? (
         <div className="flex-1 flex items-center justify-center">
           <Loading />
@@ -160,7 +149,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
                         : "hover:bg-white/90 bg-white/70 backdrop-blur-sm hover:shadow-lg"
                   } ${selectedChat === chat ? "shadow-xl" : "shadow-md"}  overflow-hidden`}
                 >
-                  {/* Selected chat decorative element */}
                   {selectedChat === chat && (
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                       <div className={`absolute -right-4 -bottom-4 w-16 h-16 rounded-full ${
@@ -168,8 +156,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
                       }`}></div>
                     </div>
                   )}
-                  
-                  {/* User/Group Avatar with online indicator and enhanced styling */}
                   <div className="">
                     <div className={`w-14 h-14 rounded-full overflow-hidden border-2 ${
                       selectedChat === chat 
@@ -204,8 +190,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
                         )
                       )}
                     </div>
-                    
-                    {/* Enhanced online indicator for individual chats */}
                     {!chat.isGroupChat && isOnline && (
                       <>
                         <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow-lg"></div>
@@ -213,8 +197,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
                       </>
                     )}
                   </div>
-                  
-                  {/* Chat details with enhanced typography */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
                       <h3 className={`font-semibold truncate text-base ${
@@ -226,8 +208,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
                           ? chat.chatName
                           : chatSender.name}
                       </h3>
-                      
-                      {/* Enhanced status indicator */}
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         isDarkMode 
                           ? isOnline ? "bg-green-900/40 text-green-300" : "bg-gray-700 text-gray-400"
@@ -236,8 +216,6 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
                         {chat.isGroupChat ? `${chat.participants.length} members` : (isOnline ? "Online" : "Offline")}
                       </span>
                     </div>
-                    
-                    {/* Latest message with enhanced styling */}
                     {chat.latestMessage ? (
                       <div className={`text-sm truncate ${
                         isDarkMode ? "text-gray-300" : "text-gray-600"

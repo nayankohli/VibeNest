@@ -17,7 +17,6 @@ import {
   } from "../constants/PostConstants";
   import axios from "axios";
   import API_CONFIG from "../config/api-config";
-  // Create Post
   export const createPost = (caption, mediaFiles) => async (dispatch, getState) => {
     try {
       dispatch({ type: POST_CREATE_REQUEST });
@@ -52,8 +51,6 @@ import {
     }
   };
   
-  
-  // Like Post
   export const likePost = (postId) => async (dispatch, getState) => {
     try {
       dispatch({ type: POST_LIKE_REQUEST });
@@ -82,8 +79,6 @@ import {
       });
     }
   };
-  
-  // Comment on Post
   export const commentOnPost = (postId, comment) => async (dispatch, getState) => {
     try {
       dispatch({ type: POST_COMMENT_REQUEST });
@@ -113,14 +108,9 @@ import {
       });
     }
   };
-  
-  // Fetch All Posts
-  // Fetch All Posts
 export const fetchAllPosts = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: POST_FETCH_ALL_REQUEST });
-
-    // Access the user token from state
     const {
       userLogin: { userInfo },
     } = getState();
@@ -141,9 +131,6 @@ export const fetchAllPosts = (id) => async (dispatch, getState) => {
     });
   }
 };
-
-  
-  // Delete Post
   export const deletePost = (postId) => async (dispatch, getState) => {
     try {
       dispatch({ type: POST_DELETE_REQUEST });

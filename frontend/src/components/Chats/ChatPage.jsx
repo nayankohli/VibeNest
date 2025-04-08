@@ -29,50 +29,33 @@ function ChatPage() {
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
   const { notification, setNotification } = ChatState();
 
-  // Initialize socket connection
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", userInfo);
     socket.on("connected", () => setSocketConnected(true));
-
-    // eslint-disable-next-line
   }, []);
-
-  // Check if device is mobile
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
-    // Initial check
     checkIsMobile();
-    
-    // Add listener for window resize
     window.addEventListener('resize', checkIsMobile);
-    
-    // Clean up
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
-
-  // Handle showing chat window on mobile when chat is selected
   useEffect(() => {
     if (selectedChat && isMobile) {
       setShowChatWindow(true);
     }
   }, [selectedChat, isMobile]);
-
-  // Fetch user's following list
   useEffect(() => {
     if (userInfo && userInfo._id) {
       dispatch(fetchFollowing(userInfo._id));
     }
   }, [dispatch, userInfo]);
-
-  // Handle incoming messages
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
       if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
+        !selectedChatCompare || 
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         if (!notification.includes(newMessageRecieved)) {
@@ -84,14 +67,9 @@ function ChatPage() {
       }
     });
   });
-
-  // Update selectedChatCompare when selectedChat changes
   useEffect(() => {
     selectedChatCompare = selectedUser;
-    // eslint-disable-next-line
   }, [selectedUser]);
-
-  // Handle back button click to return to sidebar on mobile
   const handleBackToSidebar = () => {
     setShowChatWindow(false);
   };
@@ -103,7 +81,6 @@ function ChatPage() {
       </div>
 
       <div className={`flex sm:w-full lg:h-[60rem] mt-20 lg:w-[80rem] mb-14 lg:mb-3 ${isDarkMode ? "" : "border"} rounded-lg overflow-hidden`}>
-        {/* Chat Sidebar - show on desktop or when not showing chat window on mobile */}
         <div className={`${isMobile && showChatWindow ? 'hidden' : 'flex'} w-full lg:w-1/3 md:border-r h-full flex-col ${
           isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white"
         }`}>
@@ -116,8 +93,6 @@ function ChatPage() {
             setShowChatWindow={setShowChatWindow}
           />
         </div>
-        
-        {/* Chat Window - show on desktop or when showing chat window on mobile */}
         <div className={`${isMobile && !showChatWindow ? 'hidden' : 'flex'} flex-grow h-full`}>
           {selectedChat ? (
             <ChatWindow 

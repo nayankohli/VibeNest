@@ -12,10 +12,9 @@ import {
   STORY_DELETE_REQUEST,
   STORY_DELETE_SUCCESS,
   STORY_DELETE_FAIL,
-  STORY_UPLOAD_RESET, // Add this constant
+  STORY_UPLOAD_RESET,
 } from "../constants/StoryConstants";
 import API_CONFIG from "../config/api-config";
-// List all stories
 export const listStories = () => async (dispatch, getState) => {
   try {
     dispatch({ type: STORY_LIST_REQUEST });
@@ -47,8 +46,6 @@ export const listStories = () => async (dispatch, getState) => {
     });
   }
 };
-
-// Upload a new story
 export const uploadStory = (formData) => async (dispatch, getState) => {
   try {
     dispatch({ type: STORY_UPLOAD_REQUEST });
@@ -81,13 +78,9 @@ export const uploadStory = (formData) => async (dispatch, getState) => {
     });
   }
 };
-
-// Reset story upload state
 export const resetUploadSuccess = () => (dispatch) => {
   dispatch({ type: STORY_UPLOAD_RESET });
 };
-
-// Mark a story as seen
 export const markStorySeen = (storyId) => async (dispatch, getState) => {
   try {
     dispatch({ type: STORY_SEEN_REQUEST });
@@ -118,8 +111,6 @@ export const markStorySeen = (storyId) => async (dispatch, getState) => {
     });
   }
 };
-
-// Delete a story
 export const deleteStory = (storyId) => async (dispatch, getState) => {
   try {
     dispatch({ type: STORY_DELETE_REQUEST });

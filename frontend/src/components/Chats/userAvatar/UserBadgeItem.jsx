@@ -12,24 +12,17 @@ const UserBadgeItem = ({ user, handleFunction, admin }) => {
       }}
       onClick={handleFunction}
     >
-      {/* User initial circle */}
       <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-indigo-700 text-xs font-bold mr-1">
         {user.name.charAt(0).toUpperCase()}
       </div>
-      
-      {/* User name */}
       <span className="text-white">
         {user.name}
       </span>
-      
-      {/* Admin badge */}
       {isAdmin && (
         <span className="ml-1 px-1.5 py-0.5 text-xs font-semibold bg-white bg-opacity-20 text-white rounded-md">
           Admin
         </span>
       )}
-      
-      {/* Remove button */}
       <button 
         className="ml-1 flex items-center justify-center w-4 h-4 rounded-full text-white text-xs opacity-70 group-hover:opacity-100 group-hover:bg-red-500 transition-all duration-300"
         aria-label="Remove user"

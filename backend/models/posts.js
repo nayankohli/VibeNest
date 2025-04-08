@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const PostSchema = new mongoose.Schema({
     caption: { type: String, required: false },
     media: {
-        type: [String], // An array of strings
+        type: [String], 
         validate: {
           validator: function (val) {
             console.log('Array Length:', val.length);
-            return val.length <= 5; // Validate the length of the array
+            return val.length <= 5; 
           },
           message: 'Exceeds the limit of 5 media files per post',
         },
@@ -18,7 +18,7 @@ const PostSchema = new mongoose.Schema({
         required: true
     },
     comments: [{
-        type: mongoose.Schema.Types.ObjectId, // Store reference IDs instead of full objects
+        type: mongoose.Schema.Types.ObjectId, 
         ref: "Comment"
     }],
     likes: [{
@@ -31,7 +31,7 @@ const PostSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-// Validator for media array limit
+
 function arrayLimit(val) {
     console.log(val);
     console.log(val.length)

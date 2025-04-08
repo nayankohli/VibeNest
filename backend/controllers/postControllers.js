@@ -5,7 +5,6 @@ const multer = require('multer');
 const path = require('path');
 const cloudinary =require("../utils/cloudinary.js");
 const {Comment ,Reply}= require("../models/comment.js");
-// Configure Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
   filename: (req, file, cb) => {
@@ -19,11 +18,9 @@ const fileFilter = (req, file, cb) => {
   const videoTypes = /mp4|mov/;
   
   if (imageTypes.test(file.mimetype)) {
-    // For images: 5MB limit
     req.fileTypeLimit = 5 * 1024 * 1024;
     return cb(null, true);
   } else if (videoTypes.test(file.mimetype)) {
-    // For videos: 50MB limit
     req.fileTypeLimit = 50 * 1024 * 1024;
     return cb(null, true);
   }
@@ -33,13 +30,12 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 2MB size limit
+  limits: { fileSize: 50 * 1024 * 1024 }, 
   fileFilter
 });
 
-// Create a post with media upload
 const createPost = [
-  upload.array('media', 5), // Middleware for handling file uploads
+  upload.array('media', 5),
   asyncHandler(async (req, res) => {
     console.log('Create Post Endpoint Hit');
     const { caption } = req.body;
@@ -58,7 +54,6 @@ const createPost = [
         return res.status(400).json({ message: 'Exceeds the limit of 5 media files per post' });
       }
 
-      // Create a new post
       const post = await Post.create({
         caption,
         media: mediaPaths,
@@ -67,7 +62,6 @@ const createPost = [
         likes: [],
       });
 
-      // Populate the postedBy field with username and profile image
       await post.populate({
         path: 'postedBy',
         select: 'username profileImage jobProfile _id'
@@ -91,8 +85,6 @@ const createPost = [
   }),
 ];
 
-
-// Like or unlike a post
 const likePost = asyncHandler(async (req, res) => {
   try {
     const likeKrneWalaUserKiId = req.user._id;
@@ -100,10 +92,7 @@ const likePost = asyncHandler(async (req, res) => {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-    // Add like to post
     await post.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } });
-
-    // Implement socket.io for real-time notification
     const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
     const postOwnerId = post.postedBy.toString();
 
@@ -134,11 +123,7 @@ const dislikePost = asyncHandler(async (req, res) => {
     const postId = req.params.id;
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: 'Post not found', success: false });
-
-    // Remove like from post
     await post.updateOne({ $pull: { likes: likeKrneWalaUserKiId } });
-
-    // Implement socket.io for real-time notification
     const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
     const postOwnerId = post.postedBy.toString();
 
@@ -573,9 +558,7 @@ const createReply = async (req, res) => {
       });
     }
     
-    const userId = req.user._id; // Assuming you have user authentication middleware
-    
-    // Verify the comment exists first
+    const userId = req.user._id;
     const commentExists = await Comment.findById(commentId);
     if (!commentExists) {
       return res.status(404).json({
@@ -587,10 +570,8 @@ const createReply = async (req, res) => {
     const newReply = await Reply.create({
       text,
       repliedBy: userId,
-      comment: commentId  // This field must match your Reply schema definition
+      comment: commentId 
     });
-    
-    // Increment the reply count on the parent comment
     await Comment.findByIdAndUpdate(commentId, { $inc: { replyCount: 1 } });
     
     const populatedReply = await Reply.findById(newReply._id)
@@ -618,7 +599,6 @@ const toggleReplyLike = async (req, res) => {
     const { replyId } = req.params;
     const userId = req.user._id;
 
-    // Check if reply exists
     const reply = await Reply.findById(replyId);
     if (!reply) {
       return res.status(404).json({
@@ -626,13 +606,8 @@ const toggleReplyLike = async (req, res) => {
         message: "Reply not found"
       });
     }
-
-    // Check if user has already liked the reply
     const isLiked = reply.likes.includes(userId);
-
-    // Toggle like status
     if (isLiked) {
-      // Unlike: Remove user ID from likes array
       await Reply.findByIdAndUpdate(replyId, {
         $pull: { likes: userId }
       });
@@ -643,7 +618,6 @@ const toggleReplyLike = async (req, res) => {
         liked: false
       });
     } else {
-      // Like: Add user ID to likes array
       await Reply.findByIdAndUpdate(replyId, {
         $addToSet: { likes: userId }
       });
@@ -664,13 +638,10 @@ const toggleReplyLike = async (req, res) => {
   }
 };
 
-// Delete a reply
 const deleteReply = async (req, res) => {
   try {
     const { replyId } = req.params;
     const userId = req.user._id;
-
-    // Find the reply
     const reply = await Reply.findById(replyId);
     
     if (!reply) {
@@ -679,8 +650,6 @@ const deleteReply = async (req, res) => {
         message: "Reply not found"
       });
     }
-
-    // Check if user is authorized to delete (either the reply creator or an admin)
     if (reply.repliedBy.toString() !== userId.toString() ) {
       return res.status(403).json({
         success: false,
@@ -726,5 +695,5 @@ module.exports = {
   getRepliesOfComment,
   createReply,
   deleteReply,
-  toggleReplyLike// Exporting upload middleware for potential direct usage
+  toggleReplyLike
 };

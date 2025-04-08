@@ -58,7 +58,6 @@ function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
-    // eslint-disable-next-line
   }, []); 
 
   useEffect(() => {
@@ -67,7 +66,6 @@ function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }
   }, [selectedUser]);
 
   useEffect(() => {
-    // Scroll to bottom when messages change
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -165,13 +163,11 @@ function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }
   };
 
   const handleAttachmentClick = () => {
-    // Implement file attachment functionality
     console.log("Attachment clicked");
   };
 
   return (
     <div className={`w-full flex flex-col ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} overflow-hidden rounded-r-lg border-l ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} h-full`}>
-      {/* Mobile Back Button */}
       
       <ChatHeader selectedUser={selectedUser} selectedChat={selectedChat} fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} isMobile={isMobile} handleBackToSidebar={handleBackToSidebar} />
       
@@ -181,8 +177,6 @@ function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }
           <div ref={messageEndRef} />
         </div>
       </div>
-      
-      {/* Typing indicator with correct positioning */}
       {isTyping && (
         <div className="px-4 py-2">
           <div className="flex items-center">
@@ -206,7 +200,6 @@ function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }
       )}
       
       <div className={`p-4 border-t ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} flex flex-col md:flex-row items-end gap-3 shadow-inner`}>
-        {/* EmojiPicker */}
         {showEmojiPicker && (
           <div 
             ref={emojiPickerRef} 
@@ -265,8 +258,6 @@ function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }
           </button>
         </div>
       </div>
-      
-      {/* Responsive adjustments for mobile */}
       <style jsx>{`
         @media (max-width: 768px) {
           .scrollbar-hide::-webkit-scrollbar {

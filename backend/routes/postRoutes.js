@@ -6,8 +6,7 @@ deleteReply,toggleReplyLike
 } = require('../controllers/postControllers.js');
 const { protect } = require('../middlewares/authMiddleware.js');
 
-// Route for creating a post (uploading up to 5 media files)
-router.post('/create',protect, createPost ); // Accepts up to 5 media files
+router.post('/create',protect, createPost );
 router.get('/:id/like', protect, likePost);
 router.get('/:id/dislike', protect, dislikePost);
 router.post('/comment/:id', protect, addComment);

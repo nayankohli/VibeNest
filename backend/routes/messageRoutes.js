@@ -5,7 +5,7 @@ const { getMessage, sendMessage,searchUsers,deleteBulkMessages,deleteMessage,upd
 const router = express.Router();
 
 router.post('/send', protect, sendMessage);
-router.get('/search', protect, searchUsers); // 🔹 Move this above
+router.get('/search', protect, searchUsers); 
 router.delete('/bulk', protect, deleteBulkMessages);
 router.get('/:id', protect, getMessage);
 router.delete('/:id', protect, deleteMessage);

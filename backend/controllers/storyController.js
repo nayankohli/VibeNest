@@ -48,8 +48,6 @@ const getStories = asyncHandler(async (req, res) => {
       user: { $in: following },
       createdAt: { $gte: oneDayAgo }
     }).populate("user", "username profileImage");
-
-    // Group stories by user
     const storyGroups = [];
     const userMap = {};
 
@@ -70,13 +68,9 @@ const getStories = asyncHandler(async (req, res) => {
         }
       }
     }
-
-    // Convert map to array
     for (const userId in userMap) {
       storyGroups.push(userMap[userId]);
     }
-
-    // Sort groups - unseen first
     storyGroups.sort((a, b) => {
       if (a.hasUnseenStories && !b.hasUnseenStories) return -1;
       if (!a.hasUnseenStories && b.hasUnseenStories) return 1;

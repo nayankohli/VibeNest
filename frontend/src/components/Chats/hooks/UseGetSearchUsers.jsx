@@ -22,10 +22,10 @@ export const fetchSearchUsers = (query) => async (dispatch, getState) => {
         console.log(res.data.users);
       dispatch(setUsers(res.data.users));
     } else {
-      dispatch(setUsers([])); // Empty state if no users found
+      dispatch(setUsers([])); 
     }
   } catch (error) {
     console.error("Error fetching users:", error);
-    dispatch(setUsers([])); // Prevent breaking the app
+    dispatch(setUsers([])); 
   }
 };

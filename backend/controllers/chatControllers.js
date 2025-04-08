@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB size limit
+  limits: { fileSize: 2 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const fileTypes = /jpeg|jpg|png/;
     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
@@ -29,7 +29,6 @@ const upload = multer({
 const accessChat = asyncHandler(async (req, res) => {
     const { userId } = req.body;
 
-    // ✅ Check if `userId` is provided
     if (!userId) {
         console.log("❌ UserId param not sent with request");
         return res.status(400).json({ message: "UserId is required" });
@@ -40,11 +39,9 @@ const accessChat = asyncHandler(async (req, res) => {
     console.log("Target user:", userId);
 
     try {
-        // ✅ Ensure both `req.user._id` and `userId` are ObjectIds
         const userObjectId = req.user._id.toString();
         const targetUserObjectId = userId.toString();
 
-        // ✅ Fetch existing conversation (using `$all` instead of `$and`)
         let isChat = await Conversation.findOne({
             isGroupChat: false,
             participants: { $all: [userObjectId, targetUserObjectId] }
@@ -63,7 +60,6 @@ const accessChat = asyncHandler(async (req, res) => {
         } else {
             console.log("❌ No existing chat found, creating a new one...");
 
-            // ✅ Create a new chat
             const chatData = {
                 chatName: "senderId",
                 isGroupChat: false,
@@ -73,7 +69,6 @@ const accessChat = asyncHandler(async (req, res) => {
             const createdChat = await Conversation.create(chatData);
             console.log("🆕 Created Chat:", createdChat);
 
-            // ✅ Fetch the full chat with populated fields
             const fullChat = await Conversation.findById(createdChat._id)
                 .populate("participants", "-password");
 
@@ -142,28 +137,23 @@ const accessChat = asyncHandler(async (req, res) => {
 
   const updateGroup = asyncHandler(async (req, res) => {
     const { chatId, chatName } = req.body;
-
-    // Fetch existing chat to check profileImage
     const existingChat = await Conversation.findById(chatId);
     if (!existingChat) {
         res.status(404);
         throw new Error("Chat Not Found");
     }
 
-    // If a new profile image is uploaded, update it; otherwise, keep the existing one.
-    let profileImage = existingChat.profileImage || "/uploads/default-group.jpg"; // Set default if missing
+    let profileImage = existingChat.profileImage || "/uploads/default-group.jpg"; 
     if (req.files && req.files.profileImage) {
         profileImage = `/uploads/${req.files.profileImage[0].filename}`;
     }
 
-    // Prepare update fields
     const updateFields = { 
-        chatName: chatName || existingChat.chatName, // Keep existing name if not provided
-        profileImage: profileImage // Update profile image if provided
+        chatName: chatName || existingChat.chatName, 
+        profileImage: profileImage 
     };
 
 
-    // Update the conversation
     const updatedChat = await Conversation.findByIdAndUpdate(
         chatId,
         updateFields,
@@ -178,8 +168,7 @@ const accessChat = asyncHandler(async (req, res) => {
   const removeFromGroup = asyncHandler(async (req, res) => {
     const { chatId, userId } = req.body;
   
-    // check if the requester is admin
-  
+
     const removed = await Conversation.findByIdAndUpdate(
       chatId,
       {
@@ -202,8 +191,6 @@ const accessChat = asyncHandler(async (req, res) => {
 
   const addToGroup = asyncHandler(async (req, res) => {
     const { chatId, userId } = req.body;
-  
-    // check if the requester is admin
   
     const added = await Conversation.findByIdAndUpdate(
       chatId,
@@ -233,5 +220,4 @@ const accessChat = asyncHandler(async (req, res) => {
       removeFromGroup,
       addToGroup, 
       upload
-      // Exporting upload middleware for potential direct usage
     };
