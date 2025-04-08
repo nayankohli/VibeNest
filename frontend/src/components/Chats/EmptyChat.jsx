@@ -6,7 +6,7 @@ function EmptyChat({isOpen, setIsOpen}) {
   const { isDarkMode } = useContext(ThemeContext);
   
   return (
-    <div className={`flex flex-col items-center justify-center h-full w-[60rem] mx-auto ${
+    <div className={`flex flex-col items-center justify-center h-full w-full mx-auto ${
       isDarkMode ? 'bg-gray-800' : 'bg-gradient-to-br from-white to-blue-50'
     } relative overflow-hidden`}>
       {/* Background decoration elements */}

@@ -104,7 +104,7 @@ function ChatPage() {
 
       <div className={`flex sm:w-full lg:h-[60rem] mt-20 lg:w-[80rem] mb-14 lg:mb-3 ${isDarkMode ? "" : "border"} rounded-lg overflow-hidden`}>
         {/* Chat Sidebar - show on desktop or when not showing chat window on mobile */}
-        <div className={`${isMobile && showChatWindow ? 'hidden' : 'flex'} w-full  lg:w-1/3 md:border-r h-full flex-col ${
+        <div className={`${isMobile && showChatWindow ? 'hidden' : 'flex'} w-full lg:w-1/3 md:border-r h-full flex-col ${
           isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white"
         }`}>
           <ChatSidebar 

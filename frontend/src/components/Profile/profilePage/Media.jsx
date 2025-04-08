@@ -8,18 +8,12 @@ import API_CONFIG from "../../../config/api-config";
 const Media = () => {
   const dispatch = useDispatch();
   const { isDarkMode } = useContext(ThemeContext);
-  
-  // Get posts from Redux store
   const { posts, loading, error } = useSelector((store) => store.post);
-  
   const fetchProfileState = useSelector((state) => state.fetchProfile);
   const { profile } = fetchProfileState || {};
-  
   useEffect(() => {
-    dispatch(fetchAllPosts(profile._id)); // Fetch posts when component mounts
+    dispatch(fetchAllPosts(profile._id));
   }, [dispatch, profile]);
-
-  // Only show image media (not videos)
   const getImageMediaFromPosts = (posts) => {
     if (!posts || posts.length === 0) return [];
     
@@ -28,9 +22,7 @@ const Media = () => {
       post.media.some(media => !media.endsWith(".mp4"))
     );
   };
-  
   const postsWithImages = getImageMediaFromPosts(posts);
-  
   return (
     <div className={`w-full rounded-lg shadow-md ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} p-4 mb-4`}>
       <div className="flex justify-between items-center mb-4">
@@ -50,12 +42,9 @@ const Media = () => {
       )  : postsWithImages.length > 0 ? (
         <div className="grid grid-cols-3 gap-2">
           {postsWithImages.slice(0, 6).map((post, index) => {
-            // Get only image media
             const imageMedia = post.media.filter(media => !media.endsWith(".mp4"));
             
             if (imageMedia.length === 0) return null;
-            
-            // Display only the first image from each post
             return (
               <div key={`${post._id}-${index}`} className="relative overflow-hidden rounded-md aspect-square">
                 <img
@@ -63,8 +52,6 @@ const Media = () => {
                   alt={`Post ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
-                
-                {/* Image counter badge */}
                 {imageMedia.length > 1 && (
                   <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-md">
                     1/{imageMedia.length}
