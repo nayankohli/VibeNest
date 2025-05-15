@@ -85,6 +85,7 @@ const createPost = [
   }),
 ];
 
+
 const likePost = asyncHandler(async (req, res) => {
   try {
     const likeKrneWalaUserKiId = req.user._id;
@@ -93,6 +94,7 @@ const likePost = asyncHandler(async (req, res) => {
     if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
     await post.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } });
+
     const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
     const postOwnerId = post.postedBy.toString();
 
@@ -123,7 +125,9 @@ const dislikePost = asyncHandler(async (req, res) => {
     const postId = req.params.id;
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: 'Post not found', success: false });
+
     await post.updateOne({ $pull: { likes: likeKrneWalaUserKiId } });
+
     const user = await User.findById(likeKrneWalaUserKiId).select('username profileImage');
     const postOwnerId = post.postedBy.toString();
 
@@ -558,7 +562,8 @@ const createReply = async (req, res) => {
       });
     }
     
-    const userId = req.user._id;
+    const userId = req.user._id; 
+    
     const commentExists = await Comment.findById(commentId);
     if (!commentExists) {
       return res.status(404).json({
@@ -572,6 +577,7 @@ const createReply = async (req, res) => {
       repliedBy: userId,
       comment: commentId 
     });
+    
     await Comment.findByIdAndUpdate(commentId, { $inc: { replyCount: 1 } });
     
     const populatedReply = await Reply.findById(newReply._id)
@@ -606,7 +612,9 @@ const toggleReplyLike = async (req, res) => {
         message: "Reply not found"
       });
     }
+
     const isLiked = reply.likes.includes(userId);
+
     if (isLiked) {
       await Reply.findByIdAndUpdate(replyId, {
         $pull: { likes: userId }
@@ -642,6 +650,7 @@ const deleteReply = async (req, res) => {
   try {
     const { replyId } = req.params;
     const userId = req.user._id;
+
     const reply = await Reply.findById(replyId);
     
     if (!reply) {
@@ -650,6 +659,7 @@ const deleteReply = async (req, res) => {
         message: "Reply not found"
       });
     }
+
     if (reply.repliedBy.toString() !== userId.toString() ) {
       return res.status(403).json({
         success: false,
