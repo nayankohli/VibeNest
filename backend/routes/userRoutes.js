@@ -4,7 +4,7 @@ const {
   registerUser,
   authUser,
   updateUserProfile,
-  upload,
+  profileUpload,
   searchUsers,
   fetchProfile,
   allUsers,
@@ -23,7 +23,7 @@ router.post("/login", authUser);
 router.put(
   "/edit-profile",
   protect,
-  upload.fields([
+  profileUpload.fields([
     { name: "profileImage", maxCount: 1 },
     { name: "banner", maxCount: 1 },
   ]),

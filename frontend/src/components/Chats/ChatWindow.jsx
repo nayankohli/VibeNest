@@ -182,7 +182,7 @@ function ChatWindow({ fetchAgain, setFetchAgain, isMobile, handleBackToSidebar }
           <div className="flex items-center">
             <div className="mr-2">
               <img 
-                src={selectedUser?.profileImage ? `${API_CONFIG.BASE_URL}${selectedUser.profileImage}` : defaultProfileImage} 
+                src={selectedUser?.profileImage ? selectedUser.profileImage: defaultProfileImage} 
                 alt="Typing" 
                 className="w-8 h-8 rounded-full object-cover border-2 border-blue-500 shadow-md"
               />

@@ -30,7 +30,7 @@ const Sidebar = () => {
         <img
           src={
             userInfo.banner?
-            `${API_CONFIG.BASE_URL}` + userInfo?.banner :
+            userInfo?.banner :
             defaultBanner
           }
           alt="Banner"
@@ -42,7 +42,7 @@ const Sidebar = () => {
           <img
             src={
               userInfo.profileImage?
-              `${API_CONFIG.BASE_URL}` + userInfo?.profileImage :
+               userInfo?.profileImage :
               defaultProfileImage
             }
             alt="Profile"

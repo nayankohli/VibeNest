@@ -4,7 +4,6 @@ import { listStories, markStorySeen, deleteStory } from '../../../actions/StoryA
 import UploadStory from "./UploadStory";
 import { FaTimes, FaChevronLeft, FaChevronRight, FaTrash, FaEye } from "react-icons/fa";
 import Loader from "../../Loaders/Loader";
-import API_CONFIG from "../../../config/api-config";
 const Stories = ({ isDarkMode }) => {
   const dispatch = useDispatch();
   const { storyGroups, loading, error } = useSelector((state) => state.storyList);
@@ -245,15 +244,13 @@ const Stories = ({ isDarkMode }) => {
     }
   };
   
-  const baseURL = `${API_CONFIG.BASE_URL}`;
   const getMediaUrl = (mediaPath) => {
     if (!mediaPath) return '';
     if (mediaPath.startsWith('http')) {
       return mediaPath;
     }
     const formattedPath = mediaPath.startsWith('/') ? mediaPath : `/${mediaPath}`;
-    const formattedBaseUrl = baseURL.endsWith('/') ? baseURL.slice(0, -1) : baseURL;
-    return `${formattedBaseUrl}${formattedPath}`;
+    return formattedPath;
   };
   
   // Handle image load error

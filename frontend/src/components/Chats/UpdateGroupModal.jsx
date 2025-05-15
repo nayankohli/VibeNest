@@ -206,7 +206,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     if (previewImage) {
       return previewImage;
     } else if (selectedChat?.profileImage) {
-      return `${API_CONFIG.BASE_URL}${selectedChat.profileImage}`;
+      return selectedChat.profileImage;
     } else {
       return defaultProfileImage;
     }

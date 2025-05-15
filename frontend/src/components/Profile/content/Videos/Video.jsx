@@ -76,7 +76,7 @@ const Videos = () => {
             >
               <div className="relative">
                 <video
-                  src={`${API_CONFIG.BASE_URL}${item.videoUrl}`}
+                  src={item.videoUrl}
                   className="w-full h-48 object-cover rounded-lg"
                   preload="metadata"
                 />

@@ -164,14 +164,14 @@ function ChatSidebar({ fetchAgain, calledBy, isOpen, setIsOpen, isMobile, setSho
                     } shadow-md transform transition-transform ${selectedChat === chat ? "scale-110" : "hover:scale-105"}`}>
                       {!chat.isGroupChat ? (
                         <img
-                          src={chatSender.profileImage ? `${API_CONFIG.BASE_URL}${chatSender.profileImage}` : defaultProfileImage}
+                          src={chatSender.profileImage ? chatSender.profileImage : defaultProfileImage}
                           alt={chatSender.name}
                           className="w-full h-full object-cover"
                         />
                       ) : (
                         chat.profileImage ? (
                           <img
-                            src={`${API_CONFIG.BASE_URL}${chat.profileImage}`}
+                            src={chat.profileImage}
                             alt="Group Profile"
                             className="w-full h-full object-cover"
                           />

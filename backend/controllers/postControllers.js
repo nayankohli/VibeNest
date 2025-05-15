@@ -5,13 +5,34 @@ const multer = require('multer');
 const path = require('path');
 const cloudinary =require("../utils/cloudinary.js");
 const {Comment ,Reply}= require("../models/comment.js");
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads'),
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  },
-});
+const fs = require('fs');
+const storage = multer.memoryStorage();
+const { Readable } = require('stream');
+const getPublicIdFromUrl = (url, folder) => {
+  try {
+    if (!url) return null;
+    
+    const urlParts = url.split('/');
+    const filenameWithExtension = urlParts[urlParts.length - 1];
+    const filename = filenameWithExtension.split('.')[0];
+    
+    return `${folder}/${filename}`;
+  } catch (error) {
+    console.error('Error extracting public ID:', error);
+    return null;
+  }
+};
+
+const deleteFromCloudinary = async (publicId, resourceType = 'image') => {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
+    console.log(`Resource deleted from Cloudinary: ${publicId}`, result);
+    return result;
+  } catch (error) {
+    console.error(`Failed to delete resource from Cloudinary: ${publicId}`, error);
+    return null;
+  }
+};
 
 const fileFilter = (req, file, cb) => {
   const imageTypes = /jpeg|jpg|png/;
@@ -21,7 +42,7 @@ const fileFilter = (req, file, cb) => {
     req.fileTypeLimit = 5 * 1024 * 1024;
     return cb(null, true);
   } else if (videoTypes.test(file.mimetype)) {
-    req.fileTypeLimit = 50 * 1024 * 1024;
+    req.fileTypeLimit = 50 * 1024 * 1024; 
     return cb(null, true);
   }
   
@@ -34,26 +55,50 @@ const upload = multer({
   fileFilter
 });
 
+const uploadBufferToCloudinary = (buffer, fileType) => {
+  return new Promise((resolve, reject) => {
+    const resourceType = fileType.includes('video') ? 'video' : 'image';
+    
+    const stream = Readable.from(buffer);
+    
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: resourceType,
+        folder: 'SocialMedia/Posts',
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result.secure_url);
+        }
+      }
+    );
+    stream.pipe(uploadStream);
+  });
+};
+
 const createPost = [
   upload.array('media', 5),
   asyncHandler(async (req, res) => {
-    console.log('Create Post Endpoint Hit');
     const { caption } = req.body;
 
-    console.log(caption);
-    console.log(req.files);
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'No files were uploaded' });
+    }
 
-    if (!req.files || req.files.length > 5) {
-      res.status(400);
-      throw new Error('You can upload a maximum of 5 media items per post.');
+    if (req.files.length > 5) {
+      return res.status(400).json({ message: 'You can upload a maximum of 5 media items per post.' });
     }
 
     try {
-      const mediaPaths = req.files.map((file) => `/uploads/${file.filename}`);
-      if (mediaPaths.length > 5) {
-        return res.status(400).json({ message: 'Exceeds the limit of 5 media files per post' });
+      const mediaPaths = [];
+      
+      for (const file of req.files) {
+        const cloudinaryUrl = await uploadBufferToCloudinary(file.buffer, file.mimetype);
+        mediaPaths.push(cloudinaryUrl);
       }
-
+      
       const post = await Post.create({
         caption,
         media: mediaPaths,
@@ -71,7 +116,6 @@ const createPost = [
       if (user) {
         user.posts.unshift(post._id);
         await user.save();
-        console.log('Post added to user:', user);
       }
 
       res.status(201).json({
@@ -224,6 +268,7 @@ const getAllPosts = asyncHandler(async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 const deletePost = asyncHandler(async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -233,6 +278,17 @@ const deletePost = asyncHandler(async (req, res) => {
 
     if (post.postedBy.toString() !== req.user._id.toString() && !req.user.isAdmin) {
       return res.status(403).json({ message: 'Unauthorized to delete this post', success: false });
+    }
+    if (post.media && post.media.length > 0) {
+      const deletePromises = post.media.map(mediaUrl => {
+        const publicId = getPublicIdFromUrl(mediaUrl, 'SocialMedia/Posts');
+        if (publicId) {
+          return deleteFromCloudinary(publicId, mediaUrl.includes('video') ? 'video' : 'image');
+        }
+        return Promise.resolve();
+      });
+      
+      await Promise.all(deletePromises);
     }
     const user = await User.findById(post.postedBy);
     if (user) {

@@ -17,7 +17,7 @@ const formatTime = (timestamp) => {
 };
 
 const getMediaUrl = (path) => {
-  return path ? `${API_CONFIG.BASE_URL}${path}` : 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg';
+  return path ? path : 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg';
 };
 
 const StoryPreview = ({ 

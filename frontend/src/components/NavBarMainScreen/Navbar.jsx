@@ -211,7 +211,7 @@ const Navbar = () => {
               <img
                 src={
                   userInfo.profileImage
-                    ? `${API_CONFIG.BASE_URL}` + userInfo?.profileImage
+                    ?  userInfo?.profileImage
                     : defaultProfileImage
                 }
                 alt="Profile"
@@ -233,7 +233,7 @@ const Navbar = () => {
                     <img
                       src={
                         userInfo.profileImage
-                          ? `${API_CONFIG.BASE_URL}` + userInfo?.profileImage
+                          ?  userInfo?.profileImage
                           : defaultProfileImage
                       }
                       alt="Profile"

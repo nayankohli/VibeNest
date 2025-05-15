@@ -39,7 +39,7 @@ const SavedPostMedia = ({ post, isDarkMode, onRemoveFromSaved, open, setOpen }) 
       {hasImageMedia ? (
         <>
           <img
-            src={`${API_CONFIG.BASE_URL}${imageMedia[0]}`}
+            src={imageMedia[0]}
             alt="Saved post media"
             className="w-full h-full object-cover"
             loading="lazy"
@@ -53,7 +53,7 @@ const SavedPostMedia = ({ post, isDarkMode, onRemoveFromSaved, open, setOpen }) 
       ) : hasVideoMedia ? (
         <>
           <video
-            src={`${API_CONFIG.BASE_URL}${videoMedia[0]}`}
+            src={videoMedia[0]}
             className="w-full h-full object-cover"
             preload="metadata"
           />

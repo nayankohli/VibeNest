@@ -240,7 +240,7 @@ const GroupChatModal = ({isGroupOpen, setIsGroupOpen}) => {
                     <div className={`rounded-full overflow-hidden border-2 
                       ${isDarkMode ? "border-emerald-700" : "border-emerald-500"}`}>
                       <img 
-                        src={user.profileImage ? `${API_CONFIG.BASE_URL}` + user.profileImage : defaultProfileImage} 
+                        src={user.profileImage ? user.profileImage : defaultProfileImage} 
                         alt={user.username} 
                         className="w-8 h-8 sm:w-10 sm:h-10 object-cover"
                       />

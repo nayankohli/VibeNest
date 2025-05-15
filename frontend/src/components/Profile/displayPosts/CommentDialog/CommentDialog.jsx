@@ -325,13 +325,13 @@ const CommentDialog = ({ open, setOpen, post }) => {
                           className="max-w-full max-h-full object-scale-down"
                         >
                           <source
-                            src={`${API_CONFIG.BASE_URL}${mediaItem}`}
+                            src={mediaItem}
                             type="video/mp4"
                           />
                         </video>
                       ) : (
                         <img
-                          src={`${API_CONFIG.BASE_URL}${mediaItem}`}
+                          src={mediaItem}
                           alt="Post content"
                           className="max-w-full max-h-full rounded-lg object-scale-down"
                           style={{
@@ -401,7 +401,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
                 {/* Avatar */}
                 <div className="rounded-full">
                   <img
-                    src={`${API_CONFIG.BASE_URL}` + post?.postedBy?.profileImage}
+                    src={post?.postedBy?.profileImage}
                     alt="avatar"
                     className="w-10 h-10 md:w-12 md:h-12 object-cover mr-2 md:mr-4 rounded-full"
                   />

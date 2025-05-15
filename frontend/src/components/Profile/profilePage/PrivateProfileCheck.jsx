@@ -117,7 +117,7 @@ useEffect(() => {
         <img
           src={
             profile?.banner
-              ? `${API_CONFIG.BASE_URL}` + profile?.banner
+              ?profile?.banner
               : defaultBanner
           }
           alt="Profile banner"
@@ -127,7 +127,7 @@ useEffect(() => {
           <img
             src={
               profile?.profileImage
-                ? `${API_CONFIG.BASE_URL}` + profile?.profileImage
+                ?profile?.profileImage
                 : defaultProfileImage
             }
             alt="Profile"

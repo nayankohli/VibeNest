@@ -265,7 +265,7 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
           {/* Profile Image */}
           <div className="mr-3">
             <img
-              src={`${API_CONFIG.BASE_URL}` + comment?.commentedBy?.profileImage}
+              src={comment?.commentedBy?.profileImage}
               alt="Profile"
               className="object-cover rounded-full w-10 h-10"
             />
@@ -556,7 +556,7 @@ const Reply = ({ reply, currentUserId, postOwnerId, commentId }) => {
           {/* Profile Image */}
           <div className="mr-3">
             <img
-              src={`${API_CONFIG.BASE_URL}` + reply?.repliedBy?.profileImage}
+              src={reply?.repliedBy?.profileImage}
               alt="Profile"
               className="object-cover rounded-full w-8 h-8"
             />

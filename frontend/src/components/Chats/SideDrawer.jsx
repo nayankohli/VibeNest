@@ -124,7 +124,7 @@ const SideDrawer = ({ calledBy, isOpen, setIsOpen }) => {
               >
                 <div className="rounded-full">
                   <img 
-                    src={`${API_CONFIG.BASE_URL}` + user.profileImage || defaultProfileImage} 
+                    src={user.profileImage || defaultProfileImage} 
                     alt={user.username} 
                     className="w-10 h-10 object-cover rounded-full" 
                   />

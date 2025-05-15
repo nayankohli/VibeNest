@@ -107,7 +107,7 @@ const Search = ({ isSearchPopupOpen, setIsSearchPopupOpen }) => {
                   >
                     <div className="flex items-center space-x-3 w-full">
                       <img
-                        src={user.profileImage ? `${API_CONFIG.BASE_URL}${user.profileImage}` : defaultProfileImage}
+                        src={user.profileImage ?user.profileImage : defaultProfileImage}
                         alt={user.username}
                         className="h-10 w-10 object-cover rounded-full flex-shrink-0"
                       />

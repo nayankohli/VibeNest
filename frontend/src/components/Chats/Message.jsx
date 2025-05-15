@@ -78,18 +78,18 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
     
     const getSenderImage = (msg) => {
         if (msg.senderId._id === userInfo._id) {
-            return userInfo?.profileImage ? `${API_CONFIG.BASE_URL}${userInfo.profileImage}` : defaultProfileImage;
+            return userInfo?.profileImage ? userInfo.profileImage: defaultProfileImage;
         }
         
         if (isGroup) {
             if (selectedChat?.participants) {
                 const sender = selectedChat.participants.find(p => p._id === msg.senderId._id);
-                return sender?.profileImage ? `${API_CONFIG.BASE_URL}${sender.profileImage}` : defaultProfileImage;
+                return sender?.profileImage ? sender.profileImage : defaultProfileImage;
             }
             return defaultProfileImage;
         }
         
-        return selectedUser?.profileImage ? `${API_CONFIG.BASE_URL}${selectedUser.profileImage}` : defaultProfileImage;
+        return selectedUser?.profileImage ? selectedUser.profileImage : defaultProfileImage;
     };
     
     const handleMessageClick = (msg) => {
@@ -254,8 +254,8 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
                     <img 
                         src={
                             isGroup
-                                ? `${API_CONFIG.BASE_URL}` + selectedChat?.profileImage || defaultProfileImage
-                                : selectedUser?.profileImage ? `${API_CONFIG.BASE_URL}` + selectedUser.profileImage : defaultProfileImage
+                                ?  selectedChat?.profileImage || defaultProfileImage
+                                : selectedUser?.profileImage ? selectedUser.profileImage : defaultProfileImage
                         }
                         alt={isGroup ? selectedChat?.chatName : selectedUser?.name}
                         className="w-24 h-24 rounded-full object-cover border-4 border-green-500 shadow-lg transition-transform duration-300 transform group-hover:scale-105"
@@ -405,7 +405,7 @@ const Message = ({ messages, fetchAgain, setFetchAgain, setMessages }) => {
                                     {isSentByCurrentUser && (
                                         <div className="ml-2 self-end">
                                             <img 
-                                                src={userInfo?.profileImage ? `${API_CONFIG.BASE_URL}${userInfo.profileImage}` : defaultProfileImage} 
+                                                src={userInfo?.profileImage ? userInfo.profileImage : defaultProfileImage} 
                                                 alt="You" 
                                                 className="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-sm"
                                             />

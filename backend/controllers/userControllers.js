@@ -4,29 +4,67 @@ const generateToken = require("../utils/generateToken.js");
 const multer = require("multer");
 const path = require("path");
 const bcrypt=require("bcryptjs")
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads"),
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${Math.round(
-      Math.random() * 1e9
-    )}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  },
-});
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, 
+const profileUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const fileTypes = /jpeg|jpg|png/;
-    const extName = fileTypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
+    const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimeType = fileTypes.test(file.mimetype);
-    if (extName && mimeType) return cb(null, true);
+    
+    if (extName && mimeType) {
+      return cb(null, true);
+    }
     cb(new Error("Only .jpeg, .jpg, and .png files are allowed!"));
   },
 });
+
+const getPublicIdFromUrl = (url, folder) => {
+  try {
+    if (!url) return null;
+    const urlParts = url.split('/');
+    const filenameWithExtension = urlParts[urlParts.length - 1];
+    const filename = filenameWithExtension.split('.')[0];
+    return `${folder}/${filename}`;
+  } catch (error) {
+    console.error('Error extracting public ID:', error);
+    return null;
+  }
+};
+
+
+const uploadBufferToCloudinary = (buffer, fileType, folder) => {
+  return new Promise((resolve, reject) => {
+    const resourceType = fileType.includes('video') ? 'video' : 'image';
+    const stream = Readable.from(buffer);
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: resourceType,
+        folder: folder,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result.secure_url);
+        }
+      }
+    );
+    stream.pipe(uploadStream);
+  });
+};
+
+const deleteFromCloudinary = async (publicId) => {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    console.log(`Resource deleted from Cloudinary: ${publicId}`, result);
+    return result;
+  } catch (error) {
+    console.error(`Failed to delete resource from Cloudinary: ${publicId}`, error);
+    return null;
+  }
+};
 
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -108,10 +146,16 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
-  if (user) {
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  try {
     user.name = req.body.name || user.name;
     user.username = req.body.username || user.username;
     user.bio = req.body.bio || user.bio;
@@ -119,11 +163,45 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.gender = req.body.gender || user.gender;
     user.jobProfile = req.body.jobProfile || user.jobProfile;
     user.location = req.body.location || user.location;
-    if (req.files && req.files.profileImage) {
-      user.profileImage = `/uploads/${req.files.profileImage[0].filename}`;
+
+    // Handle profile image update
+    if (req.files && req.files.profileImage && req.files.profileImage.length > 0) {
+      const file = req.files.profileImage[0];
+      
+      // Delete existing profile image if it exists
+      if (user.profileImage) {
+        const publicId = getPublicIdFromUrl(user.profileImage, 'SocialMedia/ProfilePhotos');
+        if (publicId) {
+          await deleteFromCloudinary(publicId);
+        }
+      }
+      
+      const cloudinaryUrl = await uploadBufferToCloudinary(
+        file.buffer, 
+        file.mimetype, 
+        'SocialMedia/ProfilePhotos'
+      );
+      user.profileImage = cloudinaryUrl;
     }
-    if (req.files && req.files.banner) {
-      user.banner = `/uploads/${req.files.banner[0].filename}`;
+
+    // Handle banner update
+    if (req.files && req.files.banner && req.files.banner.length > 0) {
+      const file = req.files.banner[0];
+      
+      // Delete existing banner if it exists
+      if (user.banner) {
+        const publicId = getPublicIdFromUrl(user.banner, 'SocialMedia/Banners');
+        if (publicId) {
+          await deleteFromCloudinary(publicId);
+        }
+      }
+      
+      const cloudinaryUrl = await uploadBufferToCloudinary(
+        file.buffer, 
+        file.mimetype, 
+        'SocialMedia/Banners'
+      );
+      user.banner = cloudinaryUrl;
     }
 
     const updatedUser = await user.save();
@@ -144,11 +222,27 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       posts: updatedUser.posts,
       token: generateToken(updatedUser._id),
     });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'Server error', success: false });
   }
 });
+
+const handleProfileUploads = (req, res, next) => {
+  const uploadFields = profileUpload.fields([
+    { name: 'profileImage', maxCount: 1 },
+    { name: 'banner', maxCount: 1 }
+  ]);
+
+  uploadFields(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ message: `Upload error: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+};
 const searchUsers = asyncHandler(async (req, res) => {
   try {
     const query = req.query.query;
@@ -436,7 +530,6 @@ module.exports = {
   registerUser,
   authUser,
   updateUserProfile,
-  upload,
   getSuggestedUsers,
   searchUsers,
   fetchProfile,
@@ -446,5 +539,6 @@ module.exports = {
   getFollowing,
   updateUserPrivacy,
   getSavedPosts,
-  changeUserPassword
+  changeUserPassword,
+  profileUpload
 };

@@ -56,11 +56,11 @@ const Followers = () => {
                 <div className="flex flex-col items-center">
                   <div
                     className="flex flex-col items-center"
-                    onClick={() => navigate(`profile/${follower._id}`)}
+                    onClick={() => navigate(`/profile/${follower._id}`)}
                   >
                     <div className="rounded-full">
                       <img
-                        src={`${API_CONFIG.BASE_URL}` + follower.profileImage || "/default-avatar.png"}
+                        src={follower.profileImage || "/default-avatar.png"}
                         alt={follower.username}
                         className="w-16 h-16 object-cover rounded-full border-2 border-blue-500"
                       />

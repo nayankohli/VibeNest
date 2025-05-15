@@ -48,7 +48,7 @@ const Media = () => {
             return (
               <div key={`${post._id}-${index}`} className="relative overflow-hidden rounded-md aspect-square">
                 <img
-                  src={`${API_CONFIG.BASE_URL}`+imageMedia[0]}
+                  src={imageMedia[0]}
                   alt={`Post ${index + 1}`}
                   className="w-full h-full object-cover"
                 />

@@ -385,7 +385,7 @@ const Post = ({ post }) => {
           >
             <img
               src={
-                post?.postedBy?.profileImage ? `${API_CONFIG.BASE_URL}` + post?.postedBy?.profileImage : defaultProfileImage
+                post?.postedBy?.profileImage ?  post?.postedBy?.profileImage : defaultProfileImage
               }
               alt={`${post?.postedBy?.username}'s avatar`}
               className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full mr-2 sm:mr-3"
@@ -501,13 +501,13 @@ const Post = ({ post }) => {
                       className="max-w-full max-h-full object-scale-down"
                     >
                       <source
-                        src={`${API_CONFIG.BASE_URL}${mediaItem}`}
+                        src={mediaItem}
                         type="video/mp4"
                       />
                     </video>
                   ) : (
                     <img
-                      src={`${API_CONFIG.BASE_URL}${mediaItem}`}
+                      src={mediaItem}
                       alt="Post content"
                       className="max-w-full max-h-full object-scale-down"
                       style={{
@@ -689,7 +689,7 @@ const Post = ({ post }) => {
       >
         <div className="flex-shrink-0">
           <img
-            src={`${API_CONFIG.BASE_URL}` + userInfo.profileImage}
+            src={ userInfo.profileImage}
             alt="Your avatar"
             className="rounded-full object-cover w-6 h-6 sm:w-8 sm:h-8"
           />

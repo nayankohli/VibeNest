@@ -50,7 +50,7 @@ const Following = ({ profile }) => {
           >
             <div className="rounded-full">
               <img
-                src={user?.profileImage ? `${API_CONFIG.BASE_URL}${user.profileImage}` : "/default-avatar.png"}
+                src={user?.profileImage ? user.profileImage : "/default-avatar.png"}
                 alt={user?.name || "User"}
                 className="w-12 h-12 object-cover rounded-full"
               />
