@@ -26,7 +26,7 @@ function ProfileContent({ activeTab }) {
                             <CreatePost />
                         </div>
                 )}
-                        <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg`}>
+                        <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} lg:px-1 rounded-lg`}>
                             <DisplayPosts />
                         </div>
                     </div>

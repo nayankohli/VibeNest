@@ -362,7 +362,7 @@ const Post = ({ post }) => {
   return (
     <div
       key={post?._id}
-      className={`rounded-lg shadow mb-4 overflow-hidden ${
+      className={`rounded-lg shadow mb-4 overflow-hidden sm:p-0 lg:p-3 ${
         isDarkMode ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-800"
       }`}
     >
