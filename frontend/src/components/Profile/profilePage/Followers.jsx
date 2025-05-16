@@ -18,6 +18,9 @@ const Followers = () => {
   const followersList = useSelector((state) => state.followersList);
   const { followers, followersLoading } = followersList;
   
+  const defaultProfileImage =
+    "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+
   useEffect(() => {
     if (profile && profile._id) {
       dispatch(fetchFollowers(profile._id)); // Pass the profile ID
@@ -60,7 +63,7 @@ const Followers = () => {
                   >
                     <div className="rounded-full">
                       <img
-                        src={follower.profileImage || "/default-avatar.png"}
+                        src={follower.profileImage || defaultProfileImage}
                         alt={follower.username}
                         className="w-16 h-16 object-cover rounded-full border-2 border-blue-500"
                       />
