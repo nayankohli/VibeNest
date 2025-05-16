@@ -27,7 +27,7 @@ function ChatHeader({ selectedUser, selectedChat, isMobile, handleBackToSidebar 
           <div className="flex items-center flex-shrink-0">
             <div className="rounded-full border-2 border-green-500 p-0.5">
               <img
-                src={selectedChat?.profileImage ? `${API_CONFIG.BASE_URL}` + selectedChat.profileImage : defaultProfileImage}
+                src={selectedChat?.profileImage ? selectedChat.profileImage : defaultProfileImage}
                 alt="Group"
                 className="w-8 h-8 sm:w-12 sm:h-12 object-cover rounded-full"
               />
