@@ -2,9 +2,32 @@ const asyncHandler = require("express-async-handler");
 const Story = require("../models/stories.js");
 const {User} = require("../models/user.js");
 const fs = require("fs");
-const path = require("path");
 const cloudinary =require("../utils/cloudinary.js");
 const { Readable } = require('stream');
+const multer = require("multer");
+const path = require("path");
+const storage = multer.memoryStorage();
+
+const fileFilter = (req, file, cb) => {
+  const imageTypes = /jpeg|jpg|png/;
+  const videoTypes = /mp4|mov/;
+  
+  if (imageTypes.test(file.mimetype)) {
+    req.fileTypeLimit = 2 * 1024 * 1024; 
+    return cb(null, true);
+  } else if (videoTypes.test(file.mimetype)) {
+    req.fileTypeLimit = 50 * 1024 * 1024;
+    return cb(null, true);
+  }
+  
+  cb(new Error("Only .jpeg, .jpg, .png, .mp4, and .mov files are allowed!"));
+};
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter
+});
 const uploadBufferToCloudinary = (buffer, fileType) => {
   return new Promise((resolve, reject) => {
     const resourceType = fileType.includes("video") ? "video" : "image";
