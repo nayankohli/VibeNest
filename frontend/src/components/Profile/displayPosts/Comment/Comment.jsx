@@ -31,6 +31,8 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
   const { userInfo } = userLogin;
   const { comments, replies } = useSelector((store) => store.post); // Update to access replies
   const dispatch = useDispatch();
+
+  const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
   
   const [isDeleted, setIsDeleted] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
@@ -265,7 +267,7 @@ const Comment = ({ comment, currentUserId, postOwnerId, postId }) => {
           {/* Profile Image */}
           <div className="mr-3">
             <img
-              src={comment?.commentedBy?.profileImage}
+              src={comment?.commentedBy?.profileImage?comment?.commentedBy?.profileImage:defaultProfileImage}
               alt="Profile"
               className="object-cover rounded-full w-10 h-10"
             />

@@ -12,6 +12,8 @@ const Followers = ({ profile }) => {
   const { followers } = followersList || { followers: [] }; // Ensure it's always an array
   const { userInfo } = useSelector((state) => state.userLogin);
 
+  const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+
   useEffect(() => {
     if (profile && profile._id) {
       dispatch(fetchFollowing(profile._id)); // Fetch the following list of the viewed profile
@@ -50,7 +52,7 @@ const Followers = ({ profile }) => {
           >
             <div className="rounded-full">
               <img
-                src={user?.profileImage ? user.profileImage : "/default-avatar.png"}
+                src={user?.profileImage ? user.profileImage : defaultProfileImage}
                 alt={user?.name || "User"}
                 className="w-12 h-12 object-cover rounded-full"
               />

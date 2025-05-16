@@ -64,6 +64,8 @@ const CommentDialog = ({ open, setOpen, post }) => {
 
   const [currentMedia, setCurrentMedia] = useState(0);
   const carouselRef = useRef(null);
+
+  const defaultProfileImage = "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
   
   // Reset current media index when post changes
   useEffect(() => {
@@ -401,7 +403,7 @@ const CommentDialog = ({ open, setOpen, post }) => {
                 {/* Avatar */}
                 <div className="rounded-full">
                   <img
-                    src={post?.postedBy?.profileImage}
+                    src={post?.postedBy?.profileImage?post?.postedBy?.profileImage:defaultProfileImage}
                     alt="avatar"
                     className="w-10 h-10 md:w-12 md:h-12 object-cover mr-2 md:mr-4 rounded-full"
                   />
