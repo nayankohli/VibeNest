@@ -5,24 +5,27 @@ const { uploadStory, getStories, markStorySeen, deleteStory } = require("../cont
 const multer = require("multer");
 const path = require("path");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/stories'),
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  },
-});
+const storage = multer.memoryStorage();
+
+const fileFilter = (req, file, cb) => {
+  const imageTypes = /jpeg|jpg|png/;
+  const videoTypes = /mp4|mov/;
+  
+  if (imageTypes.test(file.mimetype)) {
+    req.fileTypeLimit = 2 * 1024 * 1024; 
+    return cb(null, true);
+  } else if (videoTypes.test(file.mimetype)) {
+    req.fileTypeLimit = 50 * 1024 * 1024;
+    return cb(null, true);
+  }
+  
+  cb(new Error("Only .jpeg, .jpg, .png, .mp4, and .mov files are allowed!"));
+};
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|mp4|mov/;
-    const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimeType = fileTypes.test(file.mimetype);
-    if (extName && mimeType) return cb(null, true);
-    cb(new Error('Only .jpeg, .jpg, .png, .mp4, and .mov files are allowed!'));
-  },
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter
 });
 
 router.post("/", protect, upload.single('media'), uploadStory);
