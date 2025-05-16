@@ -481,7 +481,7 @@ const Post = ({ post }) => {
         <p className="mb-3 text-center text-sm sm:text-base whitespace-pre-line">{post?.caption}</p>
   
         {post.media && post.media.length > 0 && (
-          <div className="w-full h-64 sm:h-96 md:h-[28rem] lg:h-[31rem] relative overflow-hidden rounded-lg border flex justify-center items-center bg-black">
+          <div className="w-full h-auto sm:h-96 md:h-[28rem] lg:h-[31rem] relative overflow-hidden rounded-lg border flex justify-center items-center bg-black">
             <div 
               ref={carouselRef}
               className="w-full h-full flex transition-transform duration-300 ease-in-out" 
@@ -493,7 +493,7 @@ const Post = ({ post }) => {
               {post.media.map((mediaItem, index) => (
                 <div 
                   key={index} 
-                  className="w-full h-full flex-shrink-0 flex justify-center items-center"
+                  className="w-full max-h-96 flex-shrink-0 flex justify-center items-center"
                 >
                   {mediaItem.endsWith(".mp4") ? (
                     <video
